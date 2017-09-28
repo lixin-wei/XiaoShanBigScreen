@@ -1,0 +1,25 @@
+//标题前的那根竖线
+.title-bar {
+  &.horizontal {
+    width: 100%;
+    height: $TITLE_BAR_THICK;
+    margin-bottom: $TITLE_BAR_MARGIN;
+  }
+  &.vertical {
+    height: 100%;
+    width: $TITLE_BAR_THICK;
+    margin-right: $TITLE_BAR_MARGIN;
+  }
+  &.orange {
+    background: orange;
+  }
+  &.red {
+
+  }
+  &.blue {
+
+  }
+  &.green {
+
+  }
+}

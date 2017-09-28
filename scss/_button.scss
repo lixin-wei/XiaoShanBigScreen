@@ -1,0 +1,36 @@
+//按钮
+@mixin btn_color($start, $end) {
+  background: linear-gradient($start, $end);
+  &:hover {
+    background: linear-gradient(lighten($start, 10%), lighten($end, 10%));;
+  }
+  &:active {
+    background: linear-gradient($end, $start);
+  }
+}
+.btn {
+  width: 151px;
+  height: 30px;
+  border-radius: 3px;
+  color: white;
+  background: #222;
+  border: 1px solid black;
+  &.blue {
+    @include btn_color(#2a76ef, #081f3c);
+  }
+  &.orange {
+    @include btn_color(#ff7200, #4f1700);
+  }
+  &.green {
+    @include btn_color(#3ba50c, #0a2400);
+  }
+  &.large {
+    width: 151px;
+    height: 42px;
+    font-size: 18px;
+    border-radius: 7px;
+  }
+  i {
+    margin-right: 0.5em;
+  }
+}

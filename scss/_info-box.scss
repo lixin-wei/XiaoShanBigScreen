@@ -1,0 +1,60 @@
+//个人信息框
+.info-box {
+  background: url("../images/info-box.png");
+  width: 530px;
+  height: 143px;
+  margin-bottom: 20px;
+  position: relative;
+  .photo {
+    height: 100px;
+    width: 100px;
+    border: 2px solid white;
+    border-radius: 10px;
+    display: inline-block;
+    top: 22px;
+    left: 30px;
+    position: absolute;
+    box-shadow: 5px 5px 23px #111111;
+  }
+  .name {
+    position: absolute;
+    font-size: 28px;
+    top: 20px;
+    left: 160px;
+    width: 120px;
+    height: 40px;
+  }
+  .info {
+    position: absolute;
+    top: 31px;
+    left: 284px;
+    font-size: 19px;
+    height: 25px;
+    width: 130px;
+  }
+  .job {
+    position: absolute;
+    top: 61px;
+    left: 162px;
+    font-size: 19px;
+    height: 25px;
+    width: 288px;
+  }
+  .close {
+    position: absolute;
+    top: 4px;
+    right: 13px;
+    font-size: 33px;
+    cursor: pointer;
+  }
+  .last-row {
+    position: absolute;
+    width: 358px;
+    height: 33px;
+    top: 94px;
+    left: 161px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

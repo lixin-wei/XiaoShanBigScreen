@@ -1,0 +1,85 @@
+// 表格相关
+.table-container {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  height: 100%;
+}
+.table-row {
+  display: flex;
+  justify-content: space-between;
+}
+.cell {
+  width: $CELL_WIDTH;
+  height: $CELL_HEIGHT;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  text-align: center;
+  font-size: $CELL_FONT_SIZE;
+  position: relative;
+  //line-height: $CELL_FONT_SIZE;
+  //padding-top: $CELL_HEIGHT/2 - $CELL_FONT_SIZE/2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &:hover {
+    border: 1px solid white;
+  }
+  &.title-col {
+    background: rgba(165, 49, 136, 0.5);
+  }
+  &.title-row {
+    background: rgba(14, 137, 203, 0.5);
+  }
+
+  &.active-a {
+    overflow: hidden;
+    //直条状角标
+    &:before {
+      position: absolute;
+      display: inline-block;
+      vertical-align: middle;
+      content: "";
+      width: $LABEL_BAR_WIDTH;
+      height: $LABEL_BAR_HEIGHT;
+      background: #ff3041;
+      top: $CELL_HEIGHT/2 - $LABEL_BAR_HEIGHT/2;
+      left: 3px;
+      border-radius: 1px;
+      margin-right: 2px;
+    }
+  }
+  &.active-b {
+    @extend .active-a;
+    &:before {
+      background: #0086e2;
+    }
+  }
+  &.active-c {
+    &:after {
+      box-sizing: border-box;
+      display: inline-block;
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      content: " ";
+      width: $LABEL_TRIANGLE_LEN;
+      height: $LABEL_TRIANGLE_LEN;
+      border-top: $LABEL_TRIANGLE_LEN solid transparent;
+      border-right: $LABEL_TRIANGLE_LEN solid #FF43AD;
+      border-bottom: 0;
+      border-left: 0;
+    }
+  }
+  &.active-d {
+    @extend .active-c;
+    &:after {
+      top: 0;
+      border-top: $LABEL_TRIANGLE_LEN solid #43BAFF;
+      border-right: 0;
+      border-bottom: 0;
+      border-left: $LABEL_TRIANGLE_LEN solid transparent;
+    }
+  }
+}
