@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="lib/font-awesome/scss/font-awesome.css">
     <link rel="stylesheet" href="scss/index.css">
 </head>
-<body>
+<body class="noselect">
 <div id="main_container">
     <div id="head"></div>
     <div id="mid">
@@ -1235,7 +1235,17 @@
     </div>
     <div id="foot">
         <div id="foot_col1">
-
+            <div id="foot_col1_title_row">
+                <div id="foot_col1_title_box">
+                    全区干部构成结构图
+                </div>
+            </div>
+            <div id="chart_container">
+                <div id="chart_sex" style="width: 320px; height: 160px; display: inline-block;"></div>
+                <div id="chart_edu" style="width: 320px; height: 160px; display: inline-block;"></div>
+                <div id="chart_age" style="width: 320px; height: 160px; display: inline-block;"></div>
+                <div id="chart_grp" style="width: 320px; height: 160px; display: inline-block;"></div>
+            </div>
         </div>
         <div id="foot_col2">
 
@@ -1243,7 +1253,12 @@
         <div id="foot_col3">
 
         </div>
+        <div id="foot_col4">
+
+        </div>
     </div>
 </div>
+<script src="lib/echarts/echarts.js"></script>
+<script src="dist/js/index.js"></script>
 </body>
 </html>

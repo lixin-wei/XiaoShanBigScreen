@@ -5,6 +5,10 @@
   height: 143px;
   margin-bottom: 20px;
   position: relative;
+  cursor: pointer;
+  &:hover {
+    filter: brightness(1.5);
+  }
   .photo {
     height: 100px;
     width: 100px;

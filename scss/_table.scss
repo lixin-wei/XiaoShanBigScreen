@@ -1,3 +1,4 @@
+@import "variable";
 // 表格相关
 .table-container {
   display: flex;
@@ -23,6 +24,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
   &:hover {
     border: 1px solid white;
   }

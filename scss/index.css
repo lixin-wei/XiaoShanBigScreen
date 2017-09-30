@@ -7,8 +7,31 @@
   font-family: '微软雅黑', serif;
 }
 
+.noselect {
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+               supported by Chrome and Opera */
+  user-drag: none;
+  -webkit-user-drag: none;
+}
+
+img {
+  user-drag: none;
+  -webkit-user-drag: none;
+}
+
 #main_container {
-  background: url("../images/bkg1.jpg");
+  background: url("../images/bkg.jpg");
   width: 4000px;
   height: 1200px;
   display: flex;
@@ -28,10 +51,14 @@
   justify-content: space-between;
 }
 #mid #mid_col1 {
+  border: 2px solid #1d559a;
+  border-radius: 3px;
   width: 1370px;
   padding: 10px 18px 16px 17px;
 }
 #mid #mid_col2 {
+  border: 2px solid #1d559a;
+  border-radius: 3px;
   justify-content: space-between;
   width: 1983px;
   display: flex;
@@ -48,6 +75,8 @@
   width: 625px;
 }
 #mid #mid_col3 {
+  border: 2px solid #1d559a;
+  border-radius: 3px;
   width: 580px;
   padding-top: 29px;
   color: white;
@@ -85,12 +114,45 @@
   padding: 15px 21px 22px 21px;
 }
 #foot #foot_col1 {
-  width: 1369px;
+  border: 2px solid #1d559a;
+  border-radius: 3px;
+  width: 682px;
+  padding: 9px 9px 0 14px;
+}
+#foot #foot_col1 #foot_col1_title_row {
+  height: 53px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+#foot #foot_col1 #foot_col1_title_row #foot_col1_title_box {
+  height: 100%;
+  width: 248px;
+  background: url("../images/title-box.png");
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+#foot #foot_col1 #chart_container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 #foot #foot_col2 {
-  width: 1374px;
+  border: 2px solid #1d559a;
+  border-radius: 3px;
+  width: 665px;
 }
 #foot #foot_col3 {
+  border: 2px solid #1d559a;
+  border-radius: 3px;
+  width: 1374px;
+}
+#foot #foot_col4 {
+  border: 2px solid #1d559a;
+  border-radius: 3px;
   width: 1184px;
 }
 
@@ -100,6 +162,10 @@
   height: 143px;
   margin-bottom: 20px;
   position: relative;
+  cursor: pointer;
+}
+.info-box:hover {
+  filter: brightness(1.5);
 }
 .info-box .photo {
   height: 100px;
@@ -192,6 +258,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 .cell:hover {
   border: 1px solid white;

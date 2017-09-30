@@ -1,10 +1,30 @@
+@mixin bordered {
+  border: 2px solid #1d559a;
+  border-radius: 3px;
+}
 * {
   box-sizing: border-box;
   font-family: '微软雅黑', serif;
 }
 
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+  user-drag: none;
+  -webkit-user-drag: none;
+}
+
+img {
+  user-drag: none;
+  -webkit-user-drag: none;
+}
 #main_container {
-  background: url("../images/bkg1.jpg");
+  background: url("../images/bkg.jpg");
   width: 4000px;
   height: 1200px;
   display: flex;
@@ -25,10 +45,12 @@
   display: flex;
   justify-content: space-between;
   #mid_col1 {
+    @include bordered;
     width: 1370px;
     padding: 10px 18px 16px 17px;
   }
   #mid_col2 {
+    @include bordered;
     justify-content: space-between;
     width: 1983px;
     display: flex;
@@ -45,6 +67,7 @@
     }
   }
   #mid_col3 {
+    @include bordered;
     width: 580px;
     padding-top: 29px;
     color: white;
@@ -75,19 +98,48 @@
 }
 
 #foot {
-  height:450px;
-  bottom:0;
+  height: 450px;
+  bottom: 0;
   display: flex;
   flex-flow: row;
   justify-content: space-between;
   padding: 15px 21px 22px 21px;
   #foot_col1 {
-    width: 1369px;
+    @include bordered;
+    width: 682px;
+    padding: 9px 9px 0 14px;
+    #foot_col1_title_row {
+      height: 53px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 10px;
+      #foot_col1_title_box {
+        height: 100%;
+        width: 248px;
+        background: url("../images/title-box.png");
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+      }
+    }
+    #chart_container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
   }
   #foot_col2 {
-    width: 1374px;
+    @include bordered;
+    width: 665px;
   }
   #foot_col3 {
+    @include bordered;
+    width: 1374px;
+  }
+  #foot_col4 {
+    @include bordered;
     width: 1184px;
   }
 }
