@@ -1,5 +1,6 @@
 "use strict";
 
+//图表相关
 var chart_sex = echarts.init(document.getElementById("chart_sex"));
 var chart_edu = echarts.init(document.getElementById("chart_edu"));
 var chart_age = echarts.init(document.getElementById("chart_age"));
@@ -174,4 +175,36 @@ chart_sex.setOption(option_chart_sex);
 chart_edu.setOption(option_chart_edu);
 chart_age.setOption(option_chart_age);
 chart_grp.setOption(option_chart_grp);
+
+//info-box拖动
+var $active_box = null;
+var click_x = 0,
+    click_y = 0;
+$(".info-box").on("mousedown", function (e) {
+    $(this).css({
+        top: $(this).offset().top - $(window).scrollTop(),
+        left: $(this).offset().left - $(window).scrollLeft()
+    }).addClass("float");
+    $active_box = $(this);
+    click_x = e.pageX - $(this).offset().left;
+    click_y = e.pageY - $(this).offset().top;
+});
+$(window).on("mouseup", function () {
+    if ($active_box) {
+        $active_box.css({
+            top: 0,
+            left: 0
+        }).removeClass("float");
+        $active_box = null;
+    }
+});
+$(window).on("mousemove", function (e) {
+    // console.log(e.offsetX);
+    if ($active_box) {
+        $active_box.css({
+            top: e.pageY - $(window).scrollTop() - click_y,
+            left: e.pageX - $(window).scrollLeft() - click_x
+        });
+    }
+});
 //# sourceMappingURL=index.js.map

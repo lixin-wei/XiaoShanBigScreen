@@ -7,7 +7,14 @@
   position: relative;
   cursor: pointer;
   &:hover {
-    filter: brightness(1.5);
+    //filter: brightness(1.1);
+    filter: drop-shadow(0 0 20px #537aa7);
+  }
+  &.float {
+    opacity: 0.3;
+    position: fixed;
+    z-index: 100;
+    pointer-events: none;
   }
   .photo {
     height: 100px;

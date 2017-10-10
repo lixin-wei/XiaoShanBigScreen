@@ -1,5 +1,9 @@
 @import "variable";
 //标题前的那根竖线
+@mixin shine($color) {
+  background: $color;
+  filter: drop-shadow(0 0 10px $color);
+}
 .title-bar {
   &.horizontal {
     width: 100%;
@@ -12,7 +16,7 @@
     margin-right: $TITLE_BAR_MARGIN;
   }
   &.orange {
-    background: orange;
+    @include shine(orange);
   }
   &.red {
 

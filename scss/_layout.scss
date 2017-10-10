@@ -6,21 +6,20 @@
   box-sizing: border-box;
   font-family: '微软雅黑', serif;
 }
+body {
+  margin: 0;
+}
+img {
+  -webkit-user-drag: none;
+}
 
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
-  user-drag: none;
-  -webkit-user-drag: none;
-}
-
-img {
-  user-drag: none;
   -webkit-user-drag: none;
 }
 #main_container {
@@ -107,7 +106,7 @@ img {
   #foot_col1 {
     @include bordered;
     width: 682px;
-    padding: 9px 9px 0 14px;
+    padding: 4px 9px 0 14px;
     #foot_col1_title_row {
       height: 53px;
       display: flex;
