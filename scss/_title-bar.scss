@@ -16,15 +16,15 @@
     margin-right: $TITLE_BAR_MARGIN;
   }
   &.orange {
-    @include shine(orange);
+    @include shine(#f39800);
   }
   &.red {
-
+    @include shine(#d81e06);
   }
   &.blue {
-
+    @include shine(#1fb3ff);
   }
   &.green {
-
+    @include shine(#42ca83);
   }
 }

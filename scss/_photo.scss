@@ -1,0 +1,12 @@
+.photo {
+  height: 100px;
+  width: 100px;
+  border: 2px solid white;
+  border-radius: 10px;
+  display: inline-block;
+  box-shadow: 5px 5px 23px #111111;
+  .photo-large {
+    width: 212px;
+    height: 212px;
+  }
+}

@@ -1,0 +1,16 @@
+
+$DOT_R : 5px;
+.dot {
+  height: $DOT_R*2;
+  width: $DOT_R*2;
+  border-radius: $DOT_R;
+  &.yellow {
+    background: #fff100;
+  }
+  &.orange {
+    background: #ff6000;
+  }
+  &.hide {
+    background: transparent !important;
+  }
+}

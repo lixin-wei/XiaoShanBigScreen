@@ -18,6 +18,9 @@
   &.blue {
     @include btn_color(#2a76ef, #081f3c);
   }
+  &.light-blue {
+    @include btn_color(#57ade9, #09203c);
+  }
   &.orange {
     @include btn_color(#ff7200, #4f1700);
   }
