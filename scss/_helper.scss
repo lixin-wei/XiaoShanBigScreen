@@ -15,3 +15,44 @@
 .height-fill {
   height: 100%;
 }
+
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-flow: column;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.space-content-around {
+  justify-content: space-around;
+}
+
+.space-content-between {
+  justify-content: space-between;
+}
+
+@for $i from 1 through 12 {
+  .col-#{$i} {
+    float: left;
+    width: $i*100%/12;
+  }
+}
+
+.text-right {
+  text-align: right;
+}
+.text-blue {
+  color: #2184c0;
+}
+.text-green {
+  color: #01d406;
+}

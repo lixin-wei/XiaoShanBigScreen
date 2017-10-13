@@ -145,6 +145,53 @@ img {
       left: 28px;
       font-size: $HEADER_FONT_SIZE;
     }
+    #group_photo {
+      position: absolute;
+      top: 29px;
+      left: 114px;
+    }
+    #group_name {
+      position: absolute;
+      top: 39px;
+      left: 236px;
+      font-size: 22px;
+    }
+    #group_star {
+      color: #42ca83;
+      position: absolute;
+      top: 77px;
+      left: 239px;
+      font-size: 22px;
+    }
+    .legend-box {
+      width: 113px;
+      height: 60px;
+      position: absolute;
+      bottom: 22px;
+      left: 13px;
+      border: 1px solid #353943;
+      border-radius: 14px;
+      padding-left: 15px;
+    }
+    #detail_container_left {
+      height: 208px;
+      width: 299px;
+      position: absolute;
+      top: 175px;
+      left: 97px;
+    }
+    .row {
+      .col-7 {
+        padding-left: 16px;
+      }
+    }
+    #detail_container_right {
+      height: 177px;
+      width: 299px;
+      position: absolute;
+      top: 174px;
+      right: 3px;
+    }
   }
   #foot_col3 {
     @include bordered;

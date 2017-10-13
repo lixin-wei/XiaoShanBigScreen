@@ -21,6 +21,102 @@
   height: 100%;
 }
 
+.flex {
+  display: flex;
+}
+
+.flex-column {
+  flex-flow: column;
+}
+
+.align-items-center {
+  align-items: center;
+}
+
+.justify-content-center {
+  justify-content: center;
+}
+
+.space-content-around {
+  justify-content: space-around;
+}
+
+.space-content-between {
+  justify-content: space-between;
+}
+
+.col-1 {
+  float: left;
+  width: 8.33333%;
+}
+
+.col-2 {
+  float: left;
+  width: 16.66667%;
+}
+
+.col-3 {
+  float: left;
+  width: 25%;
+}
+
+.col-4 {
+  float: left;
+  width: 33.33333%;
+}
+
+.col-5 {
+  float: left;
+  width: 41.66667%;
+}
+
+.col-6 {
+  float: left;
+  width: 50%;
+}
+
+.col-7 {
+  float: left;
+  width: 58.33333%;
+}
+
+.col-8 {
+  float: left;
+  width: 66.66667%;
+}
+
+.col-9 {
+  float: left;
+  width: 75%;
+}
+
+.col-10 {
+  float: left;
+  width: 83.33333%;
+}
+
+.col-11 {
+  float: left;
+  width: 91.66667%;
+}
+
+.col-12 {
+  float: left;
+  width: 100%;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-blue {
+  color: #2184c0;
+}
+
+.text-green {
+  color: #01d406;
+}
+
 * {
   box-sizing: border-box;
   font-family: '微软雅黑', serif;
@@ -172,6 +268,51 @@ img {
   top: 25px;
   left: 28px;
   font-size: 27px;
+}
+#foot #foot_col2 #group_photo {
+  position: absolute;
+  top: 29px;
+  left: 114px;
+}
+#foot #foot_col2 #group_name {
+  position: absolute;
+  top: 39px;
+  left: 236px;
+  font-size: 22px;
+}
+#foot #foot_col2 #group_star {
+  color: #42ca83;
+  position: absolute;
+  top: 77px;
+  left: 239px;
+  font-size: 22px;
+}
+#foot #foot_col2 .legend-box {
+  width: 113px;
+  height: 60px;
+  position: absolute;
+  bottom: 22px;
+  left: 13px;
+  border: 1px solid #353943;
+  border-radius: 14px;
+  padding-left: 15px;
+}
+#foot #foot_col2 #detail_container_left {
+  height: 208px;
+  width: 299px;
+  position: absolute;
+  top: 175px;
+  left: 97px;
+}
+#foot #foot_col2 .row .col-7 {
+  padding-left: 16px;
+}
+#foot #foot_col2 #detail_container_right {
+  height: 177px;
+  width: 299px;
+  position: absolute;
+  top: 174px;
+  right: 3px;
 }
 #foot #foot_col3 {
   border: 2px solid #1d559a;
