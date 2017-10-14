@@ -205,6 +205,178 @@ img {
       left: 28px;
       font-size: $HEADER_FONT_SIZE;
     }
+    #foot_col3_photo_container {
+      position: absolute;
+      top: 15px;
+      left: 110px;
+      height: 353px;
+      color: #e9e9e9;
+      .name {
+        font-size: 27px;
+      }
+      .info1 {
+        font-size: 20px;
+      }
+      .info2 {
+        font-size: 20px;
+      }
+      .btn {
+        width: 102px;
+        height: 30px;
+        margin-right: 10px;
+      }
+    }
+    #splitter {
+      position: absolute;
+      left: 763px;
+      top: 10px;
+    }
+    #tree_blue {
+      position: absolute;
+      bottom: 10px;
+      left: 386px;
+    }
+    #tree_green {
+      position: absolute;
+      bottom: 10px;
+      left: 958px;
+    }
+    #tree_purple_label_1 {
+      position: absolute;
+      top: 147px;
+      left: 361px;
+    }
+    #tree_purple_label_2 {
+      position: absolute;
+      top: 88px;
+      left: 404px;
+    }
+    #tree_purple_label_3 {
+      position: absolute;
+      top: 27px;
+      left: 544px;
+    }
+    #tree_purple_label_4 {
+      position: absolute;
+      top: 50px;
+      left: 655px;
+    }
+    #tree_purple_label_5 {
+      position: absolute;
+      top: 120px;
+      left: 724px;
+    }
+    #tree_purple_label_6 {
+      position: absolute;
+      top: 136px;
+      left: 445px;
+    }
+    #tree_purple_label_7 {
+      position: absolute;
+      top: 93px;
+      left: 514px;
+    }
+    #tree_purple_label_8 {
+      position: absolute;
+      top: 134px;
+      left: 560px;
+    }
+    #tree_purple_label_9 {
+      position: absolute;
+      top: 152px;
+      left: 634px;
+    }
+    #tree_purple_label_10 {
+      position: absolute;
+      top: 171px;
+      left: 694px;
+    }
+
+    #tree_blue_label_1 {
+      position: absolute;
+      top: 50px;
+      right: 38px;
+    }
+    #tree_blue_label_2 {
+      position: absolute;
+      top: 87px;
+      right: 94px;
+    }
+    #tree_blue_label_3 {
+      position: absolute;
+      top: 145px;
+      right: 33px;
+    }
+    #tree_blue_label_4 {
+      position: absolute;
+      top: 63px;
+      right: 305px;
+    }
+    #tree_blue_label_5 {
+      position: absolute;
+      top: 63px;
+      right: 367px;
+    }
+    #tree_blue_label_6 {
+      position: absolute;
+      top: 156px;
+      right: 378px;
+    }
+
+    #tree_orange_label {
+      position: absolute;
+      top: 41px;
+      right: 201px;
+      transform: scale(1.5);
+    }
+
+    #tree_grey_label_1 {
+      position: absolute;
+      bottom: 19px;
+      left: 697px;
+    }
+    #tree_grey_label_2 {
+      position: absolute;
+      bottom: 19px;
+      left: 760px;
+    }
+    #tree_green_label_1 {
+      position: absolute;
+      bottom: 24px;
+      right: 370px;
+    }
+    #tree_green_label_2 {
+      position: absolute;
+      bottom: 25px;
+      right: 431px;
+    }
+
+    #label_de {
+      position: absolute;
+      bottom: 18px;
+      left: 550px;
+      font-size: 35px;
+    }
+    #label_cai {
+      position: absolute;
+      bottom: 18px;
+      right: 214px;
+      font-size: 35px;
+    }
+    #label_buzu {
+      color: #a4a5a8;
+      position: absolute;
+      bottom: 83px;
+      left: 739px;
+      font-size: 20px;
+    }
+    #label_shiyigangwei {
+      color: #a4a5a8;
+      position: absolute;
+      bottom: 96px;
+      right: 387px;
+      font-size: 20px;
+    }
   }
   #foot_col4 {
     @include bordered;

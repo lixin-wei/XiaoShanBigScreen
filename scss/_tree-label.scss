@@ -1,0 +1,62 @@
+$LABEL_INNER_R: 30px;
+$LABEL_OUTER_R: 33px;
+.tree-label {
+  height: $LABEL_INNER_R*2;
+  width: $LABEL_INNER_R*2;
+  border-radius: $LABEL_INNER_R;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  &.purple {
+    background: #7f14ca;
+  }
+  &.blue {
+    background: #007fcf;
+    &:before {
+      border-color: #015791;
+    }
+  }
+  &.green {
+    background: #278000;
+    &:before {
+      border-color: #1a5605;
+    }
+  }
+  &.orange {
+    background: #cf5300;
+    &:before {
+      border-color: #893906;
+    }
+  }
+  &.grey {
+    background: #1d1d1d;
+    &:before {
+      border-color: #54565b;
+    }
+  }
+  &:before {
+    content: "";
+    display: block;
+    position: absolute;
+    height: $LABEL_OUTER_R*2;
+    width: $LABEL_OUTER_R*2;
+    border: 4px solid #7f14ca;
+    border-radius: $LABEL_OUTER_R*2;
+  }
+  &:hover:before {
+    //border-color: #d30aa4;
+    filter: drop-shadow(0 0 10px #ffffff);
+  }
+  .tree-label-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 18px;
+    height: $LABEL_INNER_R * 4 / 3;
+    width: $LABEL_INNER_R * 4 / 3;
+  }
+
+}
