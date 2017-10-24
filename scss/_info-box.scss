@@ -4,17 +4,21 @@
   width: 530px;
   height: 143px;
   margin-bottom: 20px;
-  position: relative;
+  position: absolute;
   cursor: pointer;
+  //transition: all 0.5s;
+  &.active {
+    filter: drop-shadow(0 0 20px #537aa7) brightness(1.2);
+  }
   &:hover {
-    //filter: brightness(1.1);
-    filter: drop-shadow(0 0 20px #537aa7);
+    @extend .active;
   }
   &.float {
-    opacity: 0.3;
+    opacity: 0.5;
     position: fixed;
     z-index: 100;
     pointer-events: none;
+    transition: none;
   }
   .photo {
     top: 22px;

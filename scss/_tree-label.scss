@@ -9,6 +9,9 @@ $LABEL_OUTER_R: 33px;
   align-items: center;
   position: relative;
   cursor: pointer;
+  &, &:before {
+    transition: all 0.5s;
+  }
   &.purple {
     background: #7f14ca;
   }
@@ -45,9 +48,12 @@ $LABEL_OUTER_R: 33px;
     border: 4px solid #7f14ca;
     border-radius: $LABEL_OUTER_R*2;
   }
-  &:hover:before {
-    //border-color: #d30aa4;
-    filter: drop-shadow(0 0 10px #ffffff);
+  &:hover {
+    @extend .bigger;
+    &:before {
+      //border-color: #d30aa4;
+      filter: drop-shadow(0 0 10px #ffffff);
+    }
   }
   .tree-label-content {
     display: flex;

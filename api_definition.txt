@@ -1,0 +1,76 @@
+{
+    colTile: ["书记","镇长"..,"不定"], //16
+    rows: [
+        {
+            rowTitle: "楼塔",
+            items: [
+                {
+                    id: 1,
+                    name: "张晓东",
+                    sex: "男",
+                    birthDay: "1997-08-01",
+                    politicalStatus: "中共党员"
+                    positionID: 1,
+                    position: "戴村",
+                    jobID: 1,
+                    job: "党支部书记",
+                    eduBkg: "硕士",
+                    flags: []
+                },
+                {
+                    id: -1,
+                },
+                ...
+            ],
+        }
+    ],
+}
+
+[
+    {
+        rowTitle: "楼塔",
+        items: [
+            {
+                id: 1,
+                name: "张晓东",
+                sex: "男",
+                birthDay: "1997-08-01",
+                politicalStatus: "中共党员"
+                positionID: 1,
+                position: "戴村",
+                jobID: 1,
+                job: "书记",
+                eduBkg: "硕士",
+                flags: []
+            },
+            {
+                id: -1,
+                positionID: 1,
+                position: "戴村",
+                jobID: 1,
+                job: "书记",
+            },
+            ...
+        ],
+    }
+]
+
+输入:
+positionID = 1
+输出:
+[
+    6,
+    "2015-03-04",
+    3,
+    40.5,
+    1,
+    0,
+    2,
+
+    "较好",
+    "配合默契",
+    "较强",
+    0,
+    0,
+    "信访问题较多",
+]

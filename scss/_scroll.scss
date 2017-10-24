@@ -2,6 +2,7 @@
 .beauty-scroll {
   height: 100%;
   overflow-y: scroll;
+  overflow-x: hidden;
   &::-webkit-scrollbar-track {
     border-radius: 10px;
     background-color: transparent;
