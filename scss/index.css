@@ -117,6 +117,10 @@
   color: #01d406;
 }
 
+.text-center {
+  text-align: center;
+}
+
 .bigger, .tree-label:hover {
   transform: scale(1.2);
 }
@@ -164,6 +168,23 @@ img {
 
 #head {
   height: 70px;
+  position: relative;
+}
+#head #head_right_button_group {
+  position: absolute;
+  right: 15px;
+  top: 13px;
+  color: white;
+}
+#head #head_right_button_group img {
+  vertical-align: middle;
+}
+#head #head_right_button_group .btn {
+  margin: 0 7px;
+}
+#head #head_right_button_group #plan_name {
+  display: inline-block;
+  margin-right: 15px;
 }
 
 #mid {
@@ -834,6 +855,15 @@ img {
 .btn.light-blue:active {
   background: linear-gradient(#09203c, #57ade9);
 }
+.btn.shine-blue {
+  background: linear-gradient(#29b8ed, #015690);
+}
+.btn.shine-blue:hover {
+  background: linear-gradient(#58c8f1, #0174c3);
+}
+.btn.shine-blue:active {
+  background: linear-gradient(#015690, #29b8ed);
+}
 .btn.orange {
   background: linear-gradient(#ff7200, #4f1700);
 }
@@ -856,7 +886,7 @@ img {
   width: 151px;
   height: 42px;
   font-size: 18px;
-  border-radius: 7px;
+  border-radius: 5px;
 }
 .btn i {
   margin-right: 0.5em;
@@ -998,6 +1028,30 @@ img {
   font-size: 18px;
   height: 40px;
   width: 40px;
+}
+
+.pop-box {
+  font-size: small;
+  padding: 15px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.7);
+  filter: drop-shadow(0 0 15px #67aaff);
+  color: white;
+  max-width: 200px;
+}
+.pop-box ul {
+  padding: 0;
+  margin: 0 0 15px 0;
+}
+.pop-box ul li {
+  margin-bottom: 7px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.pop-box ul li:before {
+  content: " * ";
 }
 
 /*# sourceMappingURL=index.css.map */

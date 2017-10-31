@@ -10,7 +10,18 @@
 </head>
 <body class="noselect">
 <div id="main_container">
-    <div id="head"></div>
+    <div id="head">
+        <div id="head_right_button_group">
+            <div id="plan_name">*当前计划：2017秋模拟调动A计划</div>
+            <button class="btn shine-blue large"><i class="fa fa-save"></i>保存方案</button>
+            <button class="btn shine-blue large"><i class="fa fa-download"></i>载入方案</button>
+            <button class="btn shine-blue large"><i class="fa fa-share"></i>分享方案</button>
+            <img src="images/splitter.png" alt="" height="40">
+            <button class="btn green large"><i class="fa fa-upload"></i>应用方案</button>
+            <img src="images/splitter.png" alt="" height="40">
+            <button class="btn shine-blue large"><i class="fa fa-backward"></i>退回首页</button>
+        </div>
+    </div>
     <div id="mid">
         <!--div.table-row>div.cell.title-col*8>{列标题}-->
         <!--(div.table-row>(div.cell.title-row>{行标题})+(div.cell*16)>{测试文本})*21-->
@@ -1228,8 +1239,8 @@
                 <div class="info1">男 22岁 党员</div>
                 <div class="info2">戴村·党支部书记</div>
                 <div class="flex space-content-around">
-                    <button class="btn light-blue"><i class="fa fa-object-group"></i>亲属网</button>
-                    <button class="btn light-blue"><i class="fa fa-user-circle-o"></i>历届同事</button>
+                    <button class="btn light-blue" id="btn_family_net"><i class="fa fa-object-group"></i>亲属网</button>
+                    <button class="btn light-blue" id="btn_colleague"><i class="fa fa-user-circle-o"></i>历届同事</button>
                 </div>
             </div>
             <img src="images/splitter.png" alt="img" id="splitter">

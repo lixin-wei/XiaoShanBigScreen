@@ -199,7 +199,7 @@ chart_edu.setOption(option_chart_edu);
 chart_age.setOption(option_chart_age);
 chart_grp.setOption(option_chart_grp);
 
-//info-box拖动
+/** info-box拖动 **/
 let $box_list = $("#mid_col3_body_list");
 let $box_trash = $("#mid_col3_box_trash");
 let $tree_label_list = $(".tree-label");
@@ -359,7 +359,7 @@ $(window).on("mousemove", function (e) {
 $(document).ready(function () {
     for(let i=0; i<=30; ++i) {
         let $box = $($.parseHTML(`
-                        <div class="info-box">
+                    <div class="info-box">
                         <img class="photo" src="images/mans/man${i%6}.png" />
                         <div class="name">姓名${i}</div>
                         <div class="info">男 ${i}岁 党员</div>
@@ -385,4 +385,128 @@ $(document).ready(function () {
         $box.on("click", onClickInfoBox);
         $box_list.append($box);
     }
+});
+
+
+
+/** 气泡框相关 **/
+let $btn_family_net = $("#btn_family_net");
+let $btn_colleague = $("#btn_colleague");
+let $active_pop_box = null;
+function removePopBox() {
+    if($active_pop_box) {
+        $active_pop_box.remove();
+        $active_pop_box = null;
+    }
+}
+function showPopBox(x, y, $content) {
+    removePopBox();
+    let $popBox = $($.parseHTML(`
+        <div class="pop-box"></div>
+    `));
+    $popBox.append($content);
+    //先隐藏放到dom里，计算出大小
+    $popBox.hide();
+    $popBox.appendTo($("body"));
+    $popBox = $(".pop-box");
+
+    //然后显示
+    $popBox.css({
+        position: "fixed",
+        top: y - $popBox.outerHeight() - 20,
+        left: x - $popBox.outerWidth()/2 - 20
+    }).show();
+
+    $active_pop_box = $popBox;
+}
+$(window).on("scroll click", function () {
+    removePopBox();
+});
+$(".tree-label").click(function (e) {
+    let x = e.clientX;
+    let y = e.clientY;
+    let $content = $($.parseHTML(`
+        <div style="font-size: medium; color: #1a92d1; margin-bottom: 15px;">
+            <i class="fa fa-files-o" style="margin-right: 7px;"></i>
+            共14条记录支持
+        </div>
+        <ul>
+            <li>加强对XXXXXX的管理的文件</li>
+            <li>加强对XXXXXX的管理的文件</li>
+            <li>加强对XXXXXX的管理的文件</li>
+            <li>加强对XXXXXX的管理的文件</li>
+            <li>加强对XXXXXX的管理的文件</li>        
+        </ul>
+        <div class="text-center">
+            <button class="btn blue"><i class="fa fa-search"></i>查看全部</button>
+        </div>
+    `));
+    showPopBox(x, y, $content);
+    e.stopPropagation();
+});
+
+$btn_colleague.click(function (e) {
+    let x = e.clientX;
+    let y = e.clientY;
+    let $content = $($.parseHTML(`
+        <div style="font-size: medium; color: #1a92d1; margin-bottom: 15px;">
+            <i class="fa fa-files-o" style="margin-right: 7px;"></i>
+            历届同事
+        </div>
+        <table style="margin-bottom: 15px;" align="center">
+            <tr>
+                <td>张三</td>
+                <td>这是单位</td>
+                <td>这是职务</td>
+            </tr>
+            <tr>
+                <td>张三</td>
+                <td>这是单位</td>
+                <td>这是职务</td>
+            </tr>
+            <tr>
+                <td>张三</td>
+                <td>这是单位</td>
+                <td>这是职务</td>
+            </tr>
+        </table>
+        <div class="text-center">
+            <button class="btn blue"><i class="fa fa-search"></i>查看全部</button>
+        </div>
+    `));
+    showPopBox(x, y, $content);
+    e.stopPropagation();
+});
+
+$btn_family_net.click(function (e) {
+    let x = e.clientX;
+    let y = e.clientY;
+    let $content = $($.parseHTML(`
+        <div style="font-size: medium; color: #1a92d1; margin-bottom: 15px;">
+            <i class="fa fa-files-o" style="margin-right: 7px;"></i>
+            亲属网
+        </div>
+        <table style="margin-bottom: 15px;" align="center">
+            <tr>
+                <td>父亲</td>
+                <td>张三</td>
+                <td>这是职务</td>
+            </tr>
+            <tr>
+                <td>母亲</td>
+                <td>张三</td>
+                <td>这是职务</td>
+            </tr>
+            <tr>
+                <td>儿子</td>
+                <td>张三</td>
+                <td>这是职务</td>
+            </tr>
+        </table>
+        <div class="text-center">
+            <button class="btn blue"><i class="fa fa-search"></i>查看全部</button>
+        </div>
+    `));
+    showPopBox(x, y, $content);
+    e.stopPropagation();
 });

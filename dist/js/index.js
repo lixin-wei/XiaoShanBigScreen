@@ -176,7 +176,7 @@ chart_edu.setOption(option_chart_edu);
 chart_age.setOption(option_chart_age);
 chart_grp.setOption(option_chart_grp);
 
-//info-box拖动
+/** info-box拖动 **/
 var $box_list = $("#mid_col3_body_list");
 var $box_trash = $("#mid_col3_box_trash");
 var $tree_label_list = $(".tree-label");
@@ -339,7 +339,7 @@ $(window).on("mousemove", function (e) {
 
 $(document).ready(function () {
     for (var i = 0; i <= 30; ++i) {
-        var $box = $($.parseHTML("\n                        <div class=\"info-box\">\n                        <img class=\"photo\" src=\"images/mans/man" + i % 6 + ".png\" />\n                        <div class=\"name\">\u59D3\u540D" + i + "</div>\n                        <div class=\"info\">\u7537 " + i + "\u5C81 \u515A\u5458</div>\n                        <div class=\"job\">\u6234\u6751\xB7\u515A\u652F\u90E8\u4E66\u8BB0</div>\n                        <div class=\"close\">\n                            <i class=\"fa fa-close\"></i>\n                        </div>\n                        <div class=\"last-row\">\n                            <button class=\"btn blue\"><i class=\"fa fa-file-text\"></i>\u4E2A\u4EBA\u8D44\u6599\u5361</button>\n                            <div>\n                                \u5339\u914D\u5EA6:\n                                <div class=\"percent-bar\">\n                                    <div class=\"thumb\">50%</div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n        "));
+        var $box = $($.parseHTML("\n                    <div class=\"info-box\">\n                        <img class=\"photo\" src=\"images/mans/man" + i % 6 + ".png\" />\n                        <div class=\"name\">\u59D3\u540D" + i + "</div>\n                        <div class=\"info\">\u7537 " + i + "\u5C81 \u515A\u5458</div>\n                        <div class=\"job\">\u6234\u6751\xB7\u515A\u652F\u90E8\u4E66\u8BB0</div>\n                        <div class=\"close\">\n                            <i class=\"fa fa-close\"></i>\n                        </div>\n                        <div class=\"last-row\">\n                            <button class=\"btn blue\"><i class=\"fa fa-file-text\"></i>\u4E2A\u4EBA\u8D44\u6599\u5361</button>\n                            <div>\n                                \u5339\u914D\u5EA6:\n                                <div class=\"percent-bar\">\n                                    <div class=\"thumb\">50%</div>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n        "));
         $box.css({
             top: BOX_HEIGHT * i
         });
@@ -347,5 +347,60 @@ $(document).ready(function () {
         $box.on("click", onClickInfoBox);
         $box_list.append($box);
     }
+});
+
+/** 气泡框相关 **/
+var $btn_family_net = $("#btn_family_net");
+var $btn_colleague = $("#btn_colleague");
+var $active_pop_box = null;
+function removePopBox() {
+    if ($active_pop_box) {
+        $active_pop_box.remove();
+        $active_pop_box = null;
+    }
+}
+function showPopBox(x, y, $content) {
+    removePopBox();
+    var $popBox = $($.parseHTML("\n        <div class=\"pop-box\"></div>\n    "));
+    $popBox.append($content);
+    //先隐藏放到dom里，计算出大小
+    $popBox.hide();
+    $popBox.appendTo($("body"));
+    $popBox = $(".pop-box");
+
+    //然后显示
+    $popBox.css({
+        position: "fixed",
+        top: y - $popBox.outerHeight() - 20,
+        left: x - $popBox.outerWidth() / 2 - 20
+    }).show();
+
+    $active_pop_box = $popBox;
+}
+$(window).on("scroll click", function () {
+    removePopBox();
+});
+$(".tree-label").click(function (e) {
+    var x = e.clientX;
+    var y = e.clientY;
+    var $content = $($.parseHTML("\n        <div style=\"font-size: medium; color: #1a92d1; margin-bottom: 15px;\">\n            <i class=\"fa fa-files-o\" style=\"margin-right: 7px;\"></i>\n            \u517114\u6761\u8BB0\u5F55\u652F\u6301\n        </div>\n        <ul>\n            <li>\u52A0\u5F3A\u5BF9XXXXXX\u7684\u7BA1\u7406\u7684\u6587\u4EF6</li>\n            <li>\u52A0\u5F3A\u5BF9XXXXXX\u7684\u7BA1\u7406\u7684\u6587\u4EF6</li>\n            <li>\u52A0\u5F3A\u5BF9XXXXXX\u7684\u7BA1\u7406\u7684\u6587\u4EF6</li>\n            <li>\u52A0\u5F3A\u5BF9XXXXXX\u7684\u7BA1\u7406\u7684\u6587\u4EF6</li>\n            <li>\u52A0\u5F3A\u5BF9XXXXXX\u7684\u7BA1\u7406\u7684\u6587\u4EF6</li>        \n        </ul>\n        <div class=\"text-center\">\n            <button class=\"btn blue\"><i class=\"fa fa-search\"></i>\u67E5\u770B\u5168\u90E8</button>\n        </div>\n    "));
+    showPopBox(x, y, $content);
+    e.stopPropagation();
+});
+
+$btn_colleague.click(function (e) {
+    var x = e.clientX;
+    var y = e.clientY;
+    var $content = $($.parseHTML("\n        <div style=\"font-size: medium; color: #1a92d1; margin-bottom: 15px;\">\n            <i class=\"fa fa-files-o\" style=\"margin-right: 7px;\"></i>\n            \u5386\u5C4A\u540C\u4E8B\n        </div>\n        <table style=\"margin-bottom: 15px;\" align=\"center\">\n            <tr>\n                <td>\u5F20\u4E09</td>\n                <td>\u8FD9\u662F\u5355\u4F4D</td>\n                <td>\u8FD9\u662F\u804C\u52A1</td>\n            </tr>\n            <tr>\n                <td>\u5F20\u4E09</td>\n                <td>\u8FD9\u662F\u5355\u4F4D</td>\n                <td>\u8FD9\u662F\u804C\u52A1</td>\n            </tr>\n            <tr>\n                <td>\u5F20\u4E09</td>\n                <td>\u8FD9\u662F\u5355\u4F4D</td>\n                <td>\u8FD9\u662F\u804C\u52A1</td>\n            </tr>\n        </table>\n        <div class=\"text-center\">\n            <button class=\"btn blue\"><i class=\"fa fa-search\"></i>\u67E5\u770B\u5168\u90E8</button>\n        </div>\n    "));
+    showPopBox(x, y, $content);
+    e.stopPropagation();
+});
+
+$btn_family_net.click(function (e) {
+    var x = e.clientX;
+    var y = e.clientY;
+    var $content = $($.parseHTML("\n        <div style=\"font-size: medium; color: #1a92d1; margin-bottom: 15px;\">\n            <i class=\"fa fa-files-o\" style=\"margin-right: 7px;\"></i>\n            \u4EB2\u5C5E\u7F51\n        </div>\n        <table style=\"margin-bottom: 15px;\" align=\"center\">\n            <tr>\n                <td>\u7236\u4EB2</td>\n                <td>\u5F20\u4E09</td>\n                <td>\u8FD9\u662F\u804C\u52A1</td>\n            </tr>\n            <tr>\n                <td>\u6BCD\u4EB2</td>\n                <td>\u5F20\u4E09</td>\n                <td>\u8FD9\u662F\u804C\u52A1</td>\n            </tr>\n            <tr>\n                <td>\u513F\u5B50</td>\n                <td>\u5F20\u4E09</td>\n                <td>\u8FD9\u662F\u804C\u52A1</td>\n            </tr>\n        </table>\n        <div class=\"text-center\">\n            <button class=\"btn blue\"><i class=\"fa fa-search\"></i>\u67E5\u770B\u5168\u90E8</button>\n        </div>\n    "));
+    showPopBox(x, y, $content);
+    e.stopPropagation();
 });
 //# sourceMappingURL=index.js.map

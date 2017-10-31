@@ -21,6 +21,9 @@
   &.light-blue {
     @include btn_color(#57ade9, #09203c);
   }
+  &.shine-blue {
+    @include btn_color(#29b8ed, #015690);
+  }
   &.orange {
     @include btn_color(#ff7200, #4f1700);
   }
@@ -31,7 +34,7 @@
     width: 151px;
     height: 42px;
     font-size: 18px;
-    border-radius: 7px;
+    border-radius: 5px;
   }
   i {
     margin-right: 0.5em;
