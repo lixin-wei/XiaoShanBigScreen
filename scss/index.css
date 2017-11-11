@@ -179,7 +179,7 @@ img {
 #head #head_right_button_group img {
   vertical-align: middle;
 }
-#head #head_right_button_group .btn {
+#head #head_right_button_group .btn, #head #head_right_button_group span {
   margin: 0 7px;
 }
 #head #head_right_button_group #plan_name {
@@ -791,6 +791,9 @@ img {
 .cell.title-row {
   background: rgba(14, 137, 203, 0.5);
 }
+.cell.changed {
+  background: #43baff6b !important;
+}
 .cell.active-a, .cell.active-b {
   overflow: hidden;
 }
@@ -1052,27 +1055,115 @@ img {
 }
 
 .pop-box {
-  font-size: small;
+  font-size: large;
   padding: 15px;
   border-radius: 5px;
   border: 1px solid rgba(255, 255, 255, 0.5);
   background: rgba(0, 0, 0, 0.7);
   filter: drop-shadow(0 0 15px #67aaff);
   color: white;
-  max-width: 200px;
+  max-width: 500px;
 }
 .pop-box ul {
   padding: 0;
   margin: 0 0 15px 0;
+  list-style: none;
 }
 .pop-box ul li {
   margin-bottom: 7px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
 }
 .pop-box ul li:before {
   content: " * ";
+}
+
+canvas#line_layer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  transition: all 0.5s;
+}
+
+/* Base for label styling */
+[type="checkbox"]:not(:checked),
+[type="checkbox"]:checked {
+  position: absolute;
+  display: none;
+}
+
+[type="checkbox"]:not(:checked) + label,
+[type="checkbox"]:checked + label {
+  position: relative;
+  padding-left: 1.95em;
+  cursor: pointer;
+}
+
+/* checkbox aspect */
+[type="checkbox"]:not(:checked) + label:before,
+[type="checkbox"]:checked + label:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1.25em;
+  height: 1.25em;
+  border: 2px solid #ccc;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* checked mark aspect */
+[type="checkbox"]:not(:checked) + label:after,
+[type="checkbox"]:checked + label:after {
+  content: '✔';
+  position: absolute;
+  top: .1em;
+  left: .3em;
+  font-size: 1.3em;
+  line-height: 0.8;
+  color: #09ad7e;
+  transition: all .2s;
+}
+
+/* checked mark aspect changes */
+[type="checkbox"]:not(:checked) + label:after {
+  opacity: 0;
+  transform: scale(0);
+}
+
+[type="checkbox"]:checked + label:after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* disabled checkbox */
+[type="checkbox"]:disabled:not(:checked) + label:before,
+[type="checkbox"]:disabled:checked + label:before {
+  box-shadow: none;
+  border-color: #bbb;
+  background-color: #ddd;
+}
+
+[type="checkbox"]:disabled:checked + label:after {
+  color: #999;
+}
+
+[type="checkbox"]:disabled + label {
+  color: #aaa;
+}
+
+/* accessibility */
+[type="checkbox"]:checked:focus + label:before,
+[type="checkbox"]:not(:checked):focus + label:before {
+  border: 2px dotted blue;
+}
+
+/* hover style just for information */
+label:hover:before {
+  border: 2px solid #4778d9 !important;
 }
 
 /*# sourceMappingURL=index.css.map */

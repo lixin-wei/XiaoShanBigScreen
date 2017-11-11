@@ -65,7 +65,9 @@
   &.title-row {
     background: rgba(14, 137, 203, 0.5);
   }
-
+  &.changed {
+    background: #43baff6b !important;
+  }
   &.active-a {
     overflow: hidden;
     //直条状角标

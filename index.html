@@ -13,6 +13,10 @@
     <div id="head">
         <div id="head_right_button_group">
             <div id="plan_name">*当前计划：2017秋模拟调动A计划</div>
+            <span>
+                <input type="checkbox" id="cb_line_layer" checked />
+                <label for="cb_line_layer">显示调度线</label>
+            </span>
             <button class="btn shine-blue large"><i class="fa fa-save"></i>保存方案</button>
             <button class="btn shine-blue large"><i class="fa fa-download"></i>载入方案</button>
             <button class="btn shine-blue large"><i class="fa fa-share"></i>分享方案</button>
@@ -230,24 +234,21 @@
                 <div class="tree-label-content">建设</div>
             </div>
 
-            <div class="tree-label grey" id="tree_grey_label_1">
-                <div class="tree-label-content">性子急躁</div>
-            </div>
-            <div class="tree-label grey" id="tree_grey_label_2">
-                <div class="tree-label-content">性子急躁</div>
-            </div>
+            <!--<div class="tree-label grey" id="tree_grey_label_1">-->
+                <!--<div class="tree-label-content">不足</div>-->
+            <!--</div>-->
 
-            <div class="tree-label green" id="tree_green_label_1">
-                <div class="tree-label-content">纪检</div>
-            </div>
-            <div class="tree-label green" id="tree_green_label_2">
-                <div class="tree-label-content">纪检</div>
-            </div>
+            <!--<div class="tree-label green" id="tree_green_label_1">-->
+                <!--<div class="tree-label-content">纪检</div>-->
+            <!--</div>-->
+            <!--<div class="tree-label green" id="tree_green_label_2">-->
+                <!--<div class="tree-label-content">纪检</div>-->
+            <!--</div>-->
 
             <div id="label_de">徳</div>
             <div id="label_cai">才</div>
-            <div id="label_buzu">不足</div>
-            <div id="label_shiyigangwei">适宜岗位</div>
+            <!--<div id="label_buzu">不足</div>-->
+            <!--<div id="label_shiyigangwei">适宜岗位</div>-->
         </div>
         <div id="foot_col4">
             <div id="foot_col4_header">
@@ -376,6 +377,7 @@
         </div>
     </div>
 </div>
+<canvas id="line_layer"></canvas>
 <script src="lib/echarts/echarts.js"></script>
 <script src="dist/app.js"></script>
 </body>
