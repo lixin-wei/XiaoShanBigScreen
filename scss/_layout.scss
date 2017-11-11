@@ -76,14 +76,8 @@ img {
     display: flex;
     flex-flow: row;
     padding: 10px 25px 16px 17px;
-    #mid_col2_col1 {
-      width: 625px;
-    }
-    #mid_col2_col2 {
-      width: 625px;
-    }
-    #mid_col2_col3 {
-      width: 625px;
+    [id^=mid_col2_col] {
+      width: 377px;
     }
   }
   #mid_col3 {

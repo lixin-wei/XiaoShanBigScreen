@@ -209,14 +209,8 @@ img {
   flex-flow: row;
   padding: 10px 25px 16px 17px;
 }
-#mid #mid_col2 #mid_col2_col1 {
-  width: 625px;
-}
-#mid #mid_col2 #mid_col2_col2 {
-  width: 625px;
-}
-#mid #mid_col2 #mid_col2_col3 {
-  width: 625px;
+#mid #mid_col2 [id^=mid_col2_col] {
+  width: 377px;
 }
 #mid #mid_col3 {
   border: 2px solid #1d559a;
@@ -664,16 +658,22 @@ img {
   font-size: 28px;
   top: 20px;
   left: 160px;
-  width: 120px;
+  width: 128px;
   height: 40px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .info-box .info {
   position: absolute;
   top: 31px;
-  left: 284px;
+  left: 300px;
   font-size: 19px;
   height: 25px;
-  width: 130px;
+  width: 197px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .info-box .job {
   position: absolute;
@@ -753,6 +753,10 @@ img {
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border: 4px solid transparent;
 }
 .cell.active, .cell:hover {
   border: 1px solid #fff;
@@ -763,6 +767,23 @@ img {
 }
 .cell.title-col:hover, .cell.title-row:hover {
   border: 0;
+}
+.cell.block {
+  width: 100%;
+}
+.cell.expanded {
+  width: 103px;
+}
+.cell.thin {
+  width: 48px;
+}
+.cell.disabled {
+  background: #58c8f117;
+  cursor: default;
+}
+.cell.disabled:hover {
+  border: none;
+  filter: none;
 }
 .cell.title-col {
   background: rgba(165, 49, 136, 0.5);

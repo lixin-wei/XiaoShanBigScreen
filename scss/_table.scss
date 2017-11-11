@@ -25,6 +25,10 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border: 4px solid transparent;
   &.active {
     border: 1px solid #fff;
     filter: drop-shadow(0 0 10px #fff);
@@ -36,6 +40,23 @@
     cursor: default;
     &:hover {
       border: 0;
+    }
+  }
+  &.block {
+    width: 100%;
+  }
+  &.expanded {
+    width: 103px;
+  }
+  &.thin {
+    width: 48px;
+  }
+  &.disabled {
+    background: #58c8f117;
+    cursor: default;
+    &:hover {
+      border: none;
+      filter: none;
     }
   }
   &.title-col {
