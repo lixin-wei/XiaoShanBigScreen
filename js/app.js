@@ -201,6 +201,9 @@ function onClickCell() {
     }
     console.log($(this).width());
 }
+function onClickTitleCell() {
+    
+}
 
 //事件统一注册函数
 function setEventForCell($cell) {
