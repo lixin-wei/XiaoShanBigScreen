@@ -19,10 +19,9 @@ $(window).on("resize scroll", function () {
     resizeLineLayer();
     resetOrigin();
 });
-$(document).on("ready", function () {
-    resizeLineLayer();
-    resetOrigin();
-});
+resizeLineLayer();
+resetOrigin();
+
 $("#cb_line_layer").change(function () {
     if(this.checked) {
         lineLayer.show();
@@ -239,11 +238,13 @@ $(window).on("mouseup", function (e) {
             }
             let $from = floating_person.$box.data("from");
             let $to = $active_cell;
-            //设置高亮
-            $from.addClass("changed");
-            $to.addClass("changed");
-            //加变动线
-            lineLayer.addLine(getNodeCenter($from), getNodeCenter($to));
+            if(!$from.is($to)) {
+                //设置高亮
+                $from.addClass("changed");
+                $to.addClass("changed");
+                //加变动线
+                lineLayer.addLine(getNodeCenter($from), getNodeCenter($to));
+            }
             //设置姓名
             $active_cell.text(clipName(floating_person.name, 3));
             //把person附加到cell上
