@@ -43,7 +43,7 @@ export class LineLayer {
         let that = this;
         this.line_list.forEach((line) => {
             that.ctx.strokeStyle = "rgba(155,255,155,0.7)";
-            that.ctx.lineWidth = 2;
+            that.ctx.lineWidth = 4;
             that.ctx.lineCap = "round";
             that.ctx.fillStyle = "red";
 

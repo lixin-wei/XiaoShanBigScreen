@@ -1069,7 +1069,23 @@ img {
   background: rgba(0, 0, 0, 0.7);
   filter: drop-shadow(0 0 15px #67aaff);
   color: white;
-  max-width: 500px;
+  max-width: 700px;
+}
+.pop-box table td {
+  text-align: center;
+  border-left: 1px solid white;
+  border-bottom: 1px solid white;
+  white-space: nowrap;
+  padding: 0.1rem 1rem;
+}
+.pop-box table td:first-child {
+  border-left: 0;
+}
+.pop-box table tr:last-child td {
+  border-bottom: 0;
+}
+.pop-box table td:first-child, .pop-box table td:nth-child(2) {
+  min-width: 80px;
 }
 .pop-box ul {
   padding: 0;

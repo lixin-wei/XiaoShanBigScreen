@@ -35,7 +35,9 @@ let $box_list = $("#mid_col3_body_list");
 let $box_trash = $("#mid_col3_box_trash");
 let $de_tree_label_list = $(".tree-label.purple");
 let $cai_tree_label_list = $(".tree-label.blue, .tree-label.orange");
+let $lack_label = $("#tree_grey_label_1");
 let $person_info_container = $("#foot_col3_photo_container");
+let $town_box = $("#foot_col2");
 let floating_person = null;
 let $active_cell = null;
 let click_x = 0, click_y = 0;
@@ -52,6 +54,7 @@ function focusOn($ele) {
     }
 }
 function setPersonInfo(person) {
+    console.log(`person_id = ${person.ID}`);
     $person_info_container.find(".photo").attr("src", `images/mans/${person.photo}`);
     $person_info_container.find(".name").text(person.name);
     $person_info_container.find(".info1").text(person.getInfo());
@@ -60,6 +63,7 @@ function setPersonInfo(person) {
     //先隐藏所有标签
     $de_tree_label_list.css({"transform" : "scale(0)"}).data("vis", false);
     $cai_tree_label_list.css({"transform" : "scale(0)"}).data("vis", false);
+    $lack_label.css({"transform" : "scale(0)"}).data("vis", false);
     $.ajax({
         url: "http://localhost:5000/summary",
         crossDomain: true,
@@ -104,8 +108,17 @@ function setPersonInfo(person) {
                     }
                 });
                 console.log(DELables); console.log(CAILabels);
-            }, 500);
+                if(res["不足和风险点"] && res["不足和风险点"].labels.length) {
+                    let lack_list = res["不足和风险点"].labels[0].ref;
+                    let sentence_list = [];
+                    lack_list.forEach((ref) => {
+                        sentence_list.push({str: ref.sentence, source: ref.source.fileName});
+                    });
+                    $lack_label.data("ref", sentence_list);
+                    $lack_label.css({"transform": "scale(1)"}).data("vis", true);
+                }
 
+            }, 500);
         }
     });
 }
@@ -184,7 +197,7 @@ function onMouseMoveCell(e) { //cell中的box拖出事件
         $(this).text("");
         floating_person.$box.show();
         //记录下从哪个格子拖出来的，高亮用
-        floating_person.$box.data("from", $(this));
+        floating_person.$box.data("cell_from", $(this));
     }
 }
 function onRightClickCell(e) {
@@ -194,28 +207,43 @@ function onRightClickCell(e) {
     return false;
 }
 function onClickCell() {
-    let p = $(this).data("person");
-    if(p) {
-        focusOn($(this));
-        setPersonInfo(p);
+    if($(this).hasClass("title-row")) {
+        $town_box.find("#group_name").text($(this).text());
+        $town_box.find("#group_photo").attr("src", `images/street/${getRandomInt(1, 99)}`);
+        let $star_box = $town_box.find("#group_star i");
+        let star = getRandomInt(2, 5);
+        for(let i=0 ; i<star ; ++i) {
+            $star_box[i].classList = "fa fa-star";
+        }
+        for(let i=star ; i<5 ; ++i) {
+            $star_box[i].classList = "fa fa-star-o";
+        }
     }
-    console.log($(this).width());
-}
-function onClickTitleCell() {
-    
+    else {
+        let p = $(this).data("person");
+        if(p) {
+            focusOn($(this));
+            setPersonInfo(p);
+        }
+        console.log($(this).width());
+    }
 }
 
 //事件统一注册函数
-function setEventForCell($cell) {
+function initCell($cell) {
     $cell.click(onClickCell)
         .mousemove(onMouseMoveCell)
         .mouseleave(onMouseLeaveCell)
         .mouseenter(onMouseEnterCell)
         .contextmenu(onRightClickCell);
+
 }
-function setEventForBox($box) {
+function initBox($box, $bind_cell = null) {
     $box.mousemove(onMouseMoveInfoBox)
         .click(onClickInfoBox);
+    if($bind_cell) {
+        $box.data("cell_from", $bind_cell);
+    }
 }
 
 //全局事件
@@ -239,9 +267,9 @@ $(window).on("mouseup", function (e) {
                 goToList($active_cell.data("person").$box);
                 $active_cell.data("person", null);
             }
-            let $from = floating_person.$box.data("from");
+            let $from = floating_person.$box.data("cell_from");
             let $to = $active_cell;
-            if(!$from.is($to)) {
+            if($from && $to && !$to.is($from)) {
                 //设置高亮
                 $from.addClass("changed");
                 $to.addClass("changed");
@@ -258,7 +286,7 @@ $(window).on("mouseup", function (e) {
         }
         else { //否则让box回去
             goToList(floating_person.$box);
-            floating_person.$box.data("from").addClass("changed");
+            floating_person.$box.data("cell_from").addClass("changed");
         }
         floating_person = null;
     }
@@ -327,8 +355,31 @@ $("div.tree-label").click(function (e) {
         </div>
         `));
         ref.forEach((r) => {
-            let $li = $("<li />").text(r.sentence);
+            let $li = $("<li />").text(`${r.sentence} —— 《${r.source.fileName}》`);
             $content.find("ul").append($li);
+        });
+        showPopBox(x, y, $content);
+    }
+    e.stopPropagation();
+});
+$lack_label.click(function (e) {
+    if($(this).data("vis")) {
+        let x = e.clientX;
+        let y = e.clientY;
+        let ref = $(this).data("ref");
+        let $content = $($.parseHTML(`
+        <div>
+            <div style="font-size:larger ;color: #1a92d1; margin-bottom: 15px;">
+                <i class="fa fa-files-o" style="margin-right: 7px;"></i>
+                共${ref.length}条记录支持
+            </div>
+            <table></table>
+        </div>
+        `));
+        ref.forEach((r) => {
+            let $tr = $("<tr/>");
+            $tr.append($(`<td/>`).text(r.str)).append($("<td/>").text(r.source));
+            $content.find("table").append($tr);
         });
         showPopBox(x, y, $content);
     }
@@ -338,30 +389,27 @@ $btn_colleague.click(function (e) {
     let x = e.clientX;
     let y = e.clientY;
     let $content = $($.parseHTML(`
-        <div style="font-size: medium; color: #1a92d1; margin-bottom: 15px;">
+        <div style="font-size: larger; color: #1a92d1; margin-bottom: 15px;">
             <i class="fa fa-files-o" style="margin-right: 7px;"></i>
             历届同事
         </div>
-        <table style="margin-bottom: 15px;" align="center">
+        <table style="margin-bottom: 5px;" align="center">
             <tr>
-                <td>张三</td>
-                <td>这是单位</td>
-                <td>这是职务</td>
+                <td>叶狄武</td>
+                <td>团区委</td>
+                <td>主席</td>
             </tr>
             <tr>
-                <td>张三</td>
-                <td>这是单位</td>
-                <td>这是职务</td>
+                <td>莫树焯</td>
+                <td>科协</td>
+                <td>副主席</td>
             </tr>
             <tr>
-                <td>张三</td>
-                <td>这是单位</td>
-                <td>这是职务</td>
+                <td>楼航英</td>
+                <td>财政局（地税局）</td>
+                <td>副局长</td>
             </tr>
         </table>
-        <div class="text-center">
-            <button class="btn blue"><i class="fa fa-search"></i>查看全部</button>
-        </div>
     `));
     showPopBox(x, y, $content);
     e.stopPropagation();
@@ -370,35 +418,31 @@ $btn_family_net.click(function (e) {
     let x = e.clientX;
     let y = e.clientY;
     let $content = $($.parseHTML(`
-        <div style="font-size: medium; color: #1a92d1; margin-bottom: 15px;">
+        <div style="font-size: larger; color: #1a92d1; margin-bottom: 15px;">
             <i class="fa fa-files-o" style="margin-right: 7px;"></i>
             亲属网
         </div>
-        <table style="margin-bottom: 15px;" align="center">
+        <table>
             <tr>
                 <td>父亲</td>
-                <td>张三</td>
-                <td>这是职务</td>
+                <td>余嘉裕</td>
+                <td>浙江省机电设备招标局工程师（已退休）</td>
             </tr>
             <tr>
                 <td>母亲</td>
-                <td>张三</td>
-                <td>这是职务</td>
+                <td>倪凡</td>
+                <td>衙前第二小学教师</td>
             </tr>
             <tr>
                 <td>儿子</td>
-                <td>张三</td>
-                <td>这是职务</td>
+                <td>谢韦婷</td>
+                <td>年幼在家</td>
             </tr>
         </table>
-        <div class="text-center">
-            <button class="btn blue"><i class="fa fa-search"></i>查看全部</button>
-        </div>
     `));
     showPopBox(x, y, $content);
     e.stopPropagation();
 });
-
 
 /** 初始数据填充 **/
 
@@ -425,7 +469,7 @@ $(document).ready(function () {
         for (let i=0 ; i<20 ; ++i) {
             normalTableController.newLine();
             //街镇标题
-            normalTableController.addRowTitleCell(data.rows[i].rowTitle);
+            normalTableController.addRowTitleCell(data.rows[i].rowTitle).click(onClickCell);
             for (let j=0 ; j<16 ; ++j) {
                 let p_data = data.rows[i].items[j];
                 let $cell = normalTableController.addCell();
@@ -434,12 +478,12 @@ $(document).ready(function () {
                     $cell.text(clipName(person.name, 4));
                     //生成一个box的node
                     //隐藏并丢到trash里
-                    setEventForBox(person.$box);
+                    initBox(person.$box, $cell);
                     person.$box.hide().addClass("float");
                     $cell.data("person", person);
                     $box_trash.append(person.$box);
                 }
-                setEventForCell($cell);
+                initCell($cell);
             }
             normalTableController.applyLine();
         }
@@ -450,19 +494,19 @@ $(document).ready(function () {
         for(let x=l ; x<=r ; ++x) {
             //标题行
             unfixedTableController.newLine();
-            unfixedTableController.addTitleCell(clipName(data[x].rowTitle, 7));
+            unfixedTableController.addTitleCell(clipName(data[x].rowTitle, 7)).click(onClickCell);
 
             //所有人
             for(let i=0 ; i<data[x].items.length ; ++i) {
                 let p_data = data[x].items[i];
                 let person = new Person(p_data);
                 let $cell = unfixedTableController.addCell(clipName(person.name, 3));
-                setEventForCell($cell);
+                initCell($cell);
 
                 if(person.ID !== -1) {
                     //生成一个box的node
                     //隐藏并丢到trash里
-                    setEventForBox(person.$box);
+                    initBox(person.$box, $cell);
                     person.$box.hide().addClass("float");
                     $cell.data("person", person);
                     $box_trash.append(person.$box);
