@@ -212,6 +212,9 @@ img {
 #mid #mid_col2 [id^=mid_col2_col] {
   width: 377px;
 }
+#mid #mid_col2 #mid_col2_col5 {
+  height: 429px;
+}
 #mid #mid_col3 {
   border: 2px solid #1d559a;
   border-radius: 3px;
@@ -793,10 +796,10 @@ img {
   filter: none;
 }
 .cell.title-col {
-  background: rgba(165, 49, 136, 0.5);
+  background: rgba(165, 49, 136, 0.7);
 }
 .cell.title-row {
-  background: rgba(14, 137, 203, 0.5);
+  background: rgba(14, 137, 203, 0.7);
 }
 .cell.changed {
   background: #43baff6b !important;

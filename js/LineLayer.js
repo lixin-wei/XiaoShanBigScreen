@@ -17,7 +17,9 @@ export class LineLayer {
         this.ctx = this.canvas.getContext("2d");
         this.ox = 0;
         this.oy = 0;
+        this.dashOffset = 0;
         this.line_list = [];
+        this.draw();
     }
     hide() {
         this.canvas.style.opacity = "0";
@@ -32,49 +34,67 @@ export class LineLayer {
     setOrigin(x, y) {
         this.ox = x;
         this.oy = y;
-        this.draw();
     }
     addLine(p1, p2) {
         this.line_list.push(new Line(p1, p2));
-        this.draw();
     }
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         let that = this;
+        that.dashOffset--;
+        if(that.dashOffset <= 0) that.dashOffset = 15;
         this.line_list.forEach((line) => {
-            that.ctx.strokeStyle = "rgba(155,255,155,0.7)";
-            that.ctx.lineWidth = 4;
+            that.ctx.strokeStyle = "rgba(255,255,255,0.7)";
             that.ctx.lineCap = "round";
             that.ctx.fillStyle = "red";
 
-            that.ctx.beginPath();
             that.ctx.save();
-            const arr_len = 10;
-            let x1 = line.p1.x - that.ox, y1 = line.p1.y - that.oy;
-            let x2 = line.p2.x - that.ox, y2 = line.p2.y - that.oy;
-            let d = Math.sqrt((x1-x2)*(x1-x2)+(y1 - y2)*(y1 - y2));
-            let h = y2 - y1;
-            //求出旋转角度
-            let angle = Math.asin(h/d);
-            that.ctx.translate(x1, y1);
-            //如果在二三象限，x反向
-            if(x2 - x1 < 0)that.ctx.scale(-1,1);
-            that.ctx.rotate(angle);
-            that.ctx.moveTo(0, 0); that.ctx.lineTo(d - arr_len / Math.sqrt(2), 0);
-            //箭头
-            that.ctx.translate(d, 0);
-            that.ctx.rotate(Math.PI*3/4);
-            that.ctx.moveTo(0, 0); that.ctx.lineTo(arr_len, 0);
-            that.ctx.rotate(Math.PI/2);
-            that.ctx.moveTo(0, 0); that.ctx.lineTo(arr_len, 0);
-            that.ctx.translate(arr_len, 0);
-            that.ctx.rotate(-Math.PI*3/4);
-            that.ctx.moveTo(0, 0); that.ctx.lineTo(arr_len*Math.sqrt(2), 0);
-            that.ctx.restore();
-            that.ctx.closePath();
+            {
+                const arr_len = 10;
+                let x1 = line.p1.x - that.ox, y1 = line.p1.y - that.oy;
+                let x2 = line.p2.x - that.ox, y2 = line.p2.y - that.oy;
+                let d = Math.sqrt((x1-x2)*(x1-x2)+(y1 - y2)*(y1 - y2));
+                let h = y2 - y1;
+                //求出旋转角度
+                let angle = Math.asin(h/d);
+                that.ctx.translate(x1, y1);
+                //如果在二三象限，x反向
+                if(x2 - x1 < 0)that.ctx.scale(-1,1);
+                that.ctx.beginPath();
+                {
+                    that.ctx.lineWidth = 3;
+                    that.ctx.setLineDash([5, 10]);
+                    that.ctx.lineDashOffset = that.dashOffset;
+                    that.ctx.rotate(angle);
+                    that.ctx.moveTo(0, 0);
+                    if(x2 - x1 < 0)
+                        that.ctx.quadraticCurveTo(d/2 ,-d/5 ,d, 0);
+                    else
+                        that.ctx.quadraticCurveTo(d/2 ,d/5 ,d, 0);
+                }
+                that.ctx.stroke();
+                that.ctx.closePath();
 
-            that.ctx.fill();
-            that.ctx.stroke();
+                // that.ctx.beginPath();
+                // {
+                //     //箭头
+                //     that.ctx.lineWidth = 1;
+                //     that.ctx.setLineDash([]);
+                //     that.ctx.translate(d, 0);
+                //     that.ctx.rotate(Math.PI*3/4);
+                //     that.ctx.moveTo(0, 0); that.ctx.lineTo(arr_len, 0);
+                //     that.ctx.rotate(Math.PI/2);
+                //     that.ctx.moveTo(0, 0); that.ctx.lineTo(arr_len, 0);
+                //     that.ctx.translate(arr_len, 0);
+                //     that.ctx.rotate(-Math.PI*3/4);
+                //     that.ctx.moveTo(0, 0); that.ctx.lineTo(arr_len*Math.sqrt(2), 0);
+                //     that.ctx.stroke();
+                // }
+                // that.ctx.closePath();
+                // that.ctx.stroke();
+            }
+            that.ctx.restore();
         });
+        requestAnimationFrame(() => {this.draw()});
     }
 }

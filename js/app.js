@@ -55,7 +55,7 @@ function focusOn($ele) {
 }
 function setPersonInfo(person) {
     console.log(`person_id = ${person.ID}`);
-    $person_info_container.find(".photo").attr("src", `images/mans/${person.photo}`);
+    $person_info_container.find(".photo").attr("src", `images/mans/man${person.ID%6}`);
     $person_info_container.find(".name").text(person.name);
     $person_info_container.find(".info1").text(person.getInfo());
     $person_info_container.find(".info2").text(person.job);
@@ -455,7 +455,7 @@ let unfixedTableController5 = new UnfixedTableController($("#table_right5"));
 $(document).ready(function () {
     //人员表数据
     //左边表格
-    $.get("../blog3/ajax/dp_leaderJson.php?BM=1", function (data) {
+    $.get("php/dp_leaderJson.php?BM=1", function (data) {
         data = data[0];
         console.log(data);
         //第一行的职位标题
@@ -494,7 +494,7 @@ $(document).ready(function () {
         for(let x=l ; x<=r ; ++x) {
             //标题行
             unfixedTableController.newLine();
-            unfixedTableController.addTitleCell(clipName(data[x].rowTitle, 7)).click(onClickCell);
+            unfixedTableController.addTitleCell(clipName(data[x].rowTitle, 3)).click(onClickCell);
 
             //所有人
             for(let i=0 ; i<data[x].items.length ; ++i) {
@@ -513,17 +513,18 @@ $(document).ready(function () {
                 }
             }
             unfixedTableController.applyLine();
+            unfixedTableController.finishBlock();
         }
     }
 
-    $.get("../blog3/ajax/dp_leaderJson.php?BM=2", function (data) {
+    $.get("php/dp_leaderJson.php?BM=2", function (data) {
         data = data[0].rows;
         console.log(data);
         insertToTable(data, 0, 11, unfixedTableController1);
-        insertToTable(data, 12, 30, unfixedTableController2);
-        insertToTable(data, 31, 47, unfixedTableController3);
-        insertToTable(data, 48, 63, unfixedTableController4);
-        insertToTable(data, 64, 76, unfixedTableController5);
+        insertToTable(data, 12, 32, unfixedTableController2);
+        insertToTable(data, 33, 49, unfixedTableController3);
+        insertToTable(data, 50, 66, unfixedTableController4);
+        insertToTable(data, 67, 76, unfixedTableController5);
     }, "json");
 });
 

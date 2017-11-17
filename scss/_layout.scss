@@ -79,6 +79,9 @@ img {
     [id^=mid_col2_col] {
       width: 377px;
     }
+    #mid_col2_col5 {
+      height: 429px;
+    }
   }
   #mid_col3 {
     @include bordered;
