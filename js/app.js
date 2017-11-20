@@ -55,7 +55,7 @@ function focusOn($ele) {
 }
 function setPersonInfo(person) {
     console.log(`person_id = ${person.ID}`);
-    $person_info_container.find(".photo").attr("src", `images/mans/man${person.ID%6}`);
+    $person_info_container.find(".photo img").attr("src", `images/photos/${person.photo}`);
     $person_info_container.find(".name").text(person.name);
     $person_info_container.find(".info1").text(person.getInfo());
     $person_info_container.find(".info2").text(person.job);
@@ -489,18 +489,18 @@ $(document).ready(function () {
         }
     }, "json");
     //右边表格
-    function insertToTable(data, l, r, unfixedTableController) {
+    function insertToTable(data, l, r, table) {
         //对于每个单位
         for(let x=l ; x<=r ; ++x) {
             //标题行
-            unfixedTableController.newLine();
-            unfixedTableController.addTitleCell(clipName(data[x].rowTitle, 3)).click(onClickCell);
+            table.newLine();
+            table.addTitleCell(clipName(data[x].rowTitle, 3)).click(onClickCell);
 
             //所有人
             for(let i=0 ; i<data[x].items.length ; ++i) {
                 let p_data = data[x].items[i];
                 let person = new Person(p_data);
-                let $cell = unfixedTableController.addCell(clipName(person.name, 3));
+                let $cell = table.addCell(clipName(person.name, 3));
                 initCell($cell);
 
                 if(person.ID !== -1) {
@@ -512,8 +512,8 @@ $(document).ready(function () {
                     $box_trash.append(person.$box);
                 }
             }
-            unfixedTableController.applyLine();
-            unfixedTableController.finishBlock();
+            table.applyLine();
+            table.finishBlock();
         }
     }
 

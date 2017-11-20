@@ -17,7 +17,9 @@ export class Person {
     generateInfoBoxNode() {
         let $node = $(`
                     <div class="info-box">
-                        <img class="photo" src="images/mans/man${this.ID%6}" />
+                        <div class="photo">
+                            <img src="images/photos/${this.photo}" />
+                        </div>
                         <div class="name">${this.name}</div>
                         <div class="job">${this.job}</div>
                         <div class="info">${this.getInfo()}</div>

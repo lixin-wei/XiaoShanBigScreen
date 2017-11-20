@@ -543,7 +543,7 @@ img {
   position: absolute;
   width: 44px;
   top: 25px;
-  left: 28px;
+  left: 35px;
   font-size: 27px;
 }
 #foot #foot_col4 .photo-col {
@@ -628,16 +628,25 @@ img {
 }
 
 .photo {
+  overflow: hidden;
   height: 100px;
-  width: 100px;
+  width: 81px;
   border: 2px solid white;
   border-radius: 10px;
   display: inline-block;
   box-shadow: 5px 5px 23px #111111;
 }
 .photo.photo-large {
-  width: 212px;
+  width: 163px;
   height: 212px;
+}
+.photo.photo-square {
+  height: 100px;
+  width: 100px;
+}
+
+.photo img {
+  width: 100%;
 }
 
 .info-box {
@@ -667,7 +676,7 @@ img {
   position: absolute;
   font-size: 28px;
   top: 20px;
-  left: 160px;
+  left: 139px;
   width: 128px;
   height: 40px;
   overflow: hidden;
@@ -688,7 +697,7 @@ img {
 .info-box .job {
   position: absolute;
   top: 61px;
-  left: 162px;
+  left: 140px;
   font-size: 19px;
   height: 25px;
   width: 288px;
@@ -705,7 +714,7 @@ img {
   width: 358px;
   height: 33px;
   top: 94px;
-  left: 161px;
+  left: 137px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -787,13 +796,16 @@ img {
 .cell.thin {
   width: 48px;
 }
-.cell.disabled {
+.cell.disabled, .cell.empty {
   background: #58c8f117;
   cursor: default;
 }
-.cell.disabled:hover {
+.cell.disabled:hover, .cell.empty:hover {
   border: none;
   filter: none;
+}
+.cell.empty {
+  background: none;
 }
 .cell.title-col {
   background: rgba(165, 49, 136, 0.7);

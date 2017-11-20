@@ -51,13 +51,16 @@
   &.thin {
     width: 48px;
   }
-  &.disabled {
+  &.disabled, &.empty {
     background: #58c8f117;
     cursor: default;
     &:hover {
       border: none;
       filter: none;
     }
+  }
+  &.empty {
+    background: none;
   }
   &.title-col {
     background: rgba(165, 49, 136, 0.7);

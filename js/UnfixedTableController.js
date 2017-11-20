@@ -24,7 +24,7 @@ export class UnfixedTableController {
         this.applyLine();
         this.$last_line = $(`<div class='table-row' />`);
         if(this.is_pad) {
-            this.addDisabledCell();
+            this.addEmptyCell();
         }
     }
     addCellWithClass(text, class_str, col_weight = 1) {
@@ -45,5 +45,8 @@ export class UnfixedTableController {
     }
     addDisabledCell() {
         return this.addCellWithClass("", "cell thin disabled");
+    }
+    addEmptyCell() {
+        return this.addCellWithClass("", "cell thin empty");
     }
 }

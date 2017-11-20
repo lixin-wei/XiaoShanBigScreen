@@ -1,12 +1,20 @@
 .photo {
+  overflow: hidden;
   height: 100px;
-  width: 100px;
+  width: 81px;
   border: 2px solid white;
   border-radius: 10px;
   display: inline-block;
   box-shadow: 5px 5px 23px #111111;
   &.photo-large {
-    width: 212px;
+    width: 163px;
     height: 212px;
   }
+  &.photo-square {
+    height: 100px;
+    width: 100px;
+  }
+}
+.photo img {
+  width: 100%;
 }
