@@ -4,11 +4,13 @@ export class PKStageController {
     constructor() {
         this.$container = $("#foot_col4");
     }
-    setLeft(person) {
-        let $photo_col = this.$container.find("#photo_col_left");
+    setPerson(person, dir) {
+        let $photo_col = this.$container.find(`#photo_col_${dir}`);
         $photo_col.find(".photo img").attr("src", G.PERSON_PHOTO_ROOT + person.photo);
         $photo_col.find(".photo-col-name").text(person.name);
-        $("#person_detail_left").text(`${person.sex} ${person.birthday} ${person.politicalStatus} ${person.eduBkg}`);
+        $(`#person_detail_${dir}`).text(`${person.sex} ${person.birthday} ${person.politicalStatus} ${person.eduBkg}`);
+        let $items = $("#foot_col_mid_container").find(".item");
+        $items.find(`.col-${dir}`).empty();
         $.ajax({
             url: G.PERSON_INFO_API_URL,
             crossDomain: true,
@@ -21,7 +23,6 @@ export class PKStageController {
                     let index = index_list[i];
                     //设置指标名称
                     $item.find(".label").text(index_list[i]);
-                    $item.find(".col-left").empty();
                     if(res.hasOwnProperty(index)) {
                         let labels = res[index].labels;
                         //填充指标标签
@@ -29,44 +30,18 @@ export class PKStageController {
                             let label = labels[j];
                             let $badge = $("<span class='badge'/>");
                             $badge.text(label.name);
-                            $item.find(".col-left").append($badge);
+                            $item.find(`.col-${dir}`).append($badge);
                         }
                     }
                 }
             }
         });
     }
+    setLeft(person) {
+        this.setPerson(person, "left");
+    }
     setRight(person) {
-        let $photo_col = this.$container.find("#photo_col_right");
-        $photo_col.find(".photo img").attr("src", G.PERSON_PHOTO_ROOT + person.photo);
-        $photo_col.find(".photo-col-name").text(person.name);
-        $("#person_detail_right").text(`${person.sex} ${person.birthday} ${person.politicalStatus} ${person.eduBkg}`);
-        $.ajax({
-            url: G.PERSON_INFO_API_URL,
-            crossDomain: true,
-            dataType: "json",
-            data: {id: person.ID},
-            success: function (res) {
-                let items = $("#foot_col_mid_container").find(".item");
-                for(let i=0 ; i<index_list.length ; ++i) {
-                    let $item = $(items[i]);
-                    let index = index_list[i];
-                    //设置指标名称
-                    $item.find(".label").text(index_list[i]);
-                    $item.find(".col-right").empty();
-                    if(res.hasOwnProperty(index)) {
-                        let labels = res[index].labels;
-                        //填充指标标签
-                        for(let j = 0 ; j<labels.length ; ++j){
-                            let label = labels[j];
-                            let $badge = $("<span class='badge'/>");
-                            $badge.text(label.name);
-                            $item.find(".col-right").append($badge);
-                        }
-                    }
-                }
-            }
-        });
+        this.setPerson(person, "right");
     }
     clearLeft() {
         let $photo_col = this.$container.find("#photo_col_left");
@@ -75,7 +50,6 @@ export class PKStageController {
         $("#person_detail_left").text("");
         let $items = $("#foot_col_mid_container").find(".item");
         $items.find(".col-left").empty();
-        $items.find(".col-right").empty();
     }
     clearRight() {
         let $photo_col = this.$container.find("#photo_col_right");
@@ -83,7 +57,6 @@ export class PKStageController {
         $photo_col.find(".photo-col-name").text("---");
         $("#person_detail_right").text("");
         let $items = $("#foot_col_mid_container").find(".item");
-        $items.find(".col-right").empty();
         $items.find(".col-right").empty();
     }
 }
