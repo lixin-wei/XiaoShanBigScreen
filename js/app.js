@@ -1,8 +1,10 @@
 window.$ = window.jQuery = require("jquery");
+import * as G from "./Statics";
 import {NormalTableController} from "./NormalTableController";
 import {UnfixedTableController} from "./UnfixedTableController";
 import {chartController} from "./ChartController";
 import {LineLayer} from "./LineLayer";
+import {PKStageController} from "./PKStageController";
 import {Person} from "./Person";
 import {getRandomInt, clipName, getNodeCenter} from "./HelperFuncitions";
 
@@ -21,7 +23,6 @@ $(window).on("resize scroll", function () {
 });
 resizeLineLayer();
 resetOrigin();
-
 $("#cb_line_layer").change(function () {
     if(this.checked) {
         lineLayer.show();
@@ -30,6 +31,7 @@ $("#cb_line_layer").change(function () {
         lineLayer.hide();
     }
 });
+
 /** info-box拖动 **/
 let $box_list = $("#mid_col3_body_list");
 let $box_trash = $("#mid_col3_box_trash");
@@ -40,8 +42,10 @@ let $person_info_container = $("#foot_col3_photo_container");
 let $town_box = $("#foot_col2");
 let floating_person = null;
 let $active_cell = null;
+let $active_stage = null;
 let click_x = 0, click_y = 0;
 let isMouseDown = false;
+let stage = new PKStageController();
 const BOX_HEIGHT = 150;
 const TRASH_X = $box_list.offset().left;
 const TRASH_Y = $box_list.offset().top;
@@ -55,7 +59,7 @@ function focusOn($ele) {
 }
 function setPersonInfo(person) {
     console.log(`person_id = ${person.ID}`);
-    $person_info_container.find(".photo img").attr("src", `images/photos/${person.photo}`);
+    $person_info_container.find(".photo img").attr("src", G.PERSON_PHOTO_ROOT + person.photo);
     $person_info_container.find(".name").text(person.name);
     $person_info_container.find(".info1").text(person.getInfo());
     $person_info_container.find(".info2").text(person.job);
@@ -65,7 +69,7 @@ function setPersonInfo(person) {
     $cai_tree_label_list.css({"transform" : "scale(0)"}).data("vis", false);
     $lack_label.css({"transform" : "scale(0)"}).data("vis", false);
     $.ajax({
-        url: "http://localhost:5000/summary",
+        url: G.PERSON_INFO_API_URL,
         crossDomain: true,
         dataType: "json",
         data: {id: person.ID},
@@ -209,7 +213,7 @@ function onRightClickCell(e) {
 function onClickCell() {
     if($(this).hasClass("title-row")) {
         $town_box.find("#group_name").text($(this).text());
-        $town_box.find("#group_photo").attr("src", `images/street/${getRandomInt(1, 99)}`);
+        $town_box.find("#group_photo").attr("src", G.STREET_PHOTO_ROOT +  getRandomInt(1, 99));
         let $star_box = $town_box.find("#group_star i");
         let star = getRandomInt(2, 5);
         for(let i=0 ; i<star ; ++i) {
@@ -228,6 +232,65 @@ function onClickCell() {
         console.log($(this).width());
     }
 }
+
+//PK台的相关事件
+$("#foot_col4").find(".photo-col .photo")
+    .mousemove(function () {
+        $active_stage = $(this);
+    })
+    .mouseout(function () {
+        $active_stage = null;
+    })
+    //PK台box拽出
+    .mousedown(function () {
+        if($(this).data("person")) {
+            floating_person = $(this).data("person");
+            floating_person.$box.show();
+            $(this).data("person", null);
+
+            if($(this).parent().attr("id") === "photo_col_left")
+                stage.clearLeft();
+            else
+                stage.clearRight();
+        }
+    });
+let $stage_btn_left = $("#photo_col_left").find(".btn");
+let $stage_btn_right = $("#photo_col_right").find(".btn");
+//PK台的各种按钮
+$($stage_btn_left[0]).on("mousedown click", function (e) {
+    e.stopPropagation();
+});
+$($stage_btn_left[1]).on("mousedown click", function (e) {
+    e.stopPropagation();
+});
+//离开PK台，左
+$($stage_btn_left[2]).on("mousedown click", function (e) {
+    let $photo = $("#photo_col_left").find(".photo");
+    let person = $photo.data("person");
+    if(person) {
+        goToList(person.$box);
+        stage.clearLeft();
+        $photo.data("person", null);
+    }
+    e.stopPropagation();
+});
+$($stage_btn_right[0]).on("mousedown click", function (e) {
+    e.stopPropagation();
+});
+$($stage_btn_right[1]).on("mousedown click", function (e) {
+    e.stopPropagation();
+});
+//离开PK台，右
+$($stage_btn_right[2]).on("mousedown click", function (e) {
+    let $photo = $("#photo_col_right").find(".photo");
+    let person = $photo.data("person");
+    if(person) {
+        goToList(person.$box);
+        stage.clearRight();
+        $photo.data("person", null);
+    }
+    e.stopPropagation();
+});
 
 //事件统一注册函数
 function initCell($cell) {
@@ -282,6 +345,23 @@ $(window).on("mouseup", function (e) {
             $active_cell.data("person", floating_person);
             //隐藏box
             floating_person.$box.hide();
+
+        }
+        //如果是拖到PK台
+        else if($active_stage) {
+            //如果当前pk位已经有人了
+            if($active_stage.data("person")) {
+                //让这个box回备选区去
+                goToList($active_stage.data("person").$box);
+                $active_stage.data("person", null);
+            }
+            floating_person.$box.hide();
+            $active_stage.data("person", floating_person);
+            if($active_stage.parent().attr("id") === "photo_col_left")
+                stage.setLeft(floating_person);
+            else
+                stage.setRight(floating_person);
+            floating_person = null;
 
         }
         else { //否则让box回去

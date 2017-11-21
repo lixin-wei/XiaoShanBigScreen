@@ -1,3 +1,4 @@
+import * as G from "./Statics";
 import {getRandomInt} from "./HelperFuncitions";
 
 export class Person {
@@ -18,7 +19,7 @@ export class Person {
         let $node = $(`
                     <div class="info-box">
                         <div class="photo">
-                            <img src="images/photos/${this.photo}" />
+                            <img src="${G.PERSON_PHOTO_ROOT + this.photo}" />
                         </div>
                         <div class="name">${this.name}</div>
                         <div class="job">${this.job}</div>

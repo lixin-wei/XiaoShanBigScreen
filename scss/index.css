@@ -555,6 +555,9 @@ img {
   justify-content: space-between;
   position: absolute;
 }
+#foot #foot_col4 .photo-col:hover {
+  filter: drop-shadow(0 0 50px rgba(255, 255, 255, 0.5));
+}
 #foot #foot_col4 .photo-col .photo-col-name {
   font-size: 21px;
 }
@@ -602,6 +605,7 @@ img {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  overflow: hidden;
 }
 #foot #foot_col4 #foot_col_mid_container .col-left {
   width: 363px;

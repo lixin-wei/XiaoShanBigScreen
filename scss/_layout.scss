@@ -423,6 +423,9 @@ img {
       align-items: center;
       justify-content: space-between;
       position: absolute;
+      &:hover {
+        filter: drop-shadow(0 0 50px rgba(255, 255, 255, 0.5));
+      }
       .photo-col-name {
         font-size: 21px;
       }
@@ -473,6 +476,7 @@ img {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        overflow: hidden;
       }
       .col-left {
         width: 363px;
