@@ -41,6 +41,7 @@ let $lack_label = $("#tree_grey_label_1");
 let $person_info_container = $("#foot_col3_photo_container");
 let $town_box = $("#foot_col2");
 let floating_person = null;
+let showing_person_id = null;
 let $active_cell = null;
 let $active_stage = null;
 let click_x = 0, click_y = 0;
@@ -59,6 +60,7 @@ function focusOn($ele) {
 }
 function setPersonInfo(person) {
     console.log(`person_id = ${person.ID}`);
+    showing_person_id = person.ID;
     $person_info_container.find(".photo img").attr("src", G.PERSON_PHOTO_ROOT + person.photo);
     $person_info_container.find(".name").text(person.name);
     $person_info_container.find(".info1").text(person.getInfo());
@@ -395,25 +397,21 @@ $(window).on("mousemove", function (e) { //box跟随鼠标移动
 let $btn_family_net = $("#btn_family_net");
 let $btn_colleague = $("#btn_colleague");
 let $active_pop_box = null;
-let is_mouse_in_box = false;
-function onMouseMovePopBox (e) {
-    is_mouse_in_box = true;
-    e.stopPropagation();
-}
-function onMouseLeavePopBox (e) {
-    is_mouse_in_box = false;
-}
 function removePopBox() {
     if($active_pop_box) {
-        $active_pop_box.remove();
+        let $temp = $active_pop_box;
+        //马上设成null，防止点太快出BUG
         $active_pop_box = null;
+        $temp.fadeOut(500, function () {
+            $temp.remove();
+        });
     }
 }
 function showPopBox(x, y, $content, position = "right", font_size = "large") {
     removePopBox();
     let $popBox = $($.parseHTML(`
         <div class="pop-box beauty-scroll" style="font-size: ${font_size}"></div>
-    `)).mousemove(onMouseMovePopBox).mouseout(onMouseLeavePopBox);
+    `));
     $popBox.append($content);
     //先隐藏放到dom里，计算出大小
     $popBox.hide();
@@ -434,18 +432,16 @@ function showPopBox(x, y, $content, position = "right", font_size = "large") {
         position: "fixed",
         top: y - $popBox.outerHeight() - 20,
         left: left
-    }).show();
+    }).fadeIn();
 
     $active_pop_box = $popBox;
 }
 $(window).on("scroll click", function () {
-    if(!is_mouse_in_box) {
-        removePopBox();
-    }
-    else return false;
+    removePopBox();
 });
 
-$("div.tree-label").click(function (e) {
+//各个按钮的气泡框事件
+$de_tree_label_list.add($cai_tree_label_list).click(function (e) {
     if($(this).data("vis")) {
         let x = e.clientX;
         let y = e.clientY;
@@ -469,6 +465,7 @@ $("div.tree-label").click(function (e) {
     e.stopPropagation();
 });
 $lack_label.click(function (e) {
+    console.log($active_pop_box);
     if($(this).data("vis")) {
         let x = e.clientX;
         let y = e.clientY;
@@ -495,58 +492,58 @@ $btn_colleague.click(function (e) {
     let x = e.clientX;
     let y = e.clientY;
     let $content = $($.parseHTML(`
+    <div>
         <div style="font-size: larger; color: #1a92d1; margin-bottom: 15px;">
             <i class="fa fa-files-o" style="margin-right: 7px;"></i>
-            历届同事
+            亲属网
         </div>
-        <table style="margin-bottom: 5px;" align="center">
-            <tr>
-                <td>叶狄武</td>
-                <td>团区委</td>
-                <td>主席</td>
-            </tr>
-            <tr>
-                <td>莫树焯</td>
-                <td>科协</td>
-                <td>副主席</td>
-            </tr>
-            <tr>
-                <td>楼航英</td>
-                <td>财政局（地税局）</td>
-                <td>副局长</td>
-            </tr>
+        <table>
         </table>
+    </div>
     `));
-    showPopBox(x, y, $content);
+    $.get("php/getColleague.php", {id: showing_person_id}, function (res) {
+        for(let i=0 ; i<res.length ; ++i) {
+            let data = res[i];
+            let $tr = $(`
+                <tr>
+                    <td>${data['name']}</td>
+                    <td>${data['place']}</td>
+                    <td>${data['jobs']}</td>
+                </tr>
+            `);
+            $content.find("table").append($tr);
+        }
+        showPopBox(x, y, $content);
+    }, "json");
     e.stopPropagation();
 });
 $btn_family_net.click(function (e) {
     let x = e.clientX;
     let y = e.clientY;
     let $content = $($.parseHTML(`
+    <div>
         <div style="font-size: larger; color: #1a92d1; margin-bottom: 15px;">
             <i class="fa fa-files-o" style="margin-right: 7px;"></i>
             亲属网
         </div>
         <table>
-            <tr>
-                <td>父亲</td>
-                <td>余嘉裕</td>
-                <td>浙江省机电设备招标局工程师（已退休）</td>
-            </tr>
-            <tr>
-                <td>母亲</td>
-                <td>倪凡</td>
-                <td>衙前第二小学教师</td>
-            </tr>
-            <tr>
-                <td>儿子</td>
-                <td>谢韦婷</td>
-                <td>年幼在家</td>
-            </tr>
         </table>
+    </div>
     `));
-    showPopBox(x, y, $content);
+    $.get("php/getFamilyNet.php", {id: showing_person_id}, function (res) {
+        for(let i=0 ; i<res.length ; ++i) {
+            let data = res[i];
+            let $tr = $(`
+                <tr>
+                    <td>${data[0]}</td>
+                    <td>${data[1]}</td>
+                    <td>${data[2]} ${data[3]}</td>
+                </tr>
+            `);
+            $content.find("table").append($tr);
+        }
+        showPopBox(x, y, $content);
+    }, "json");
     e.stopPropagation();
 });
 $("#foot_col_mid_container").find(".item .label").click(function (e) {

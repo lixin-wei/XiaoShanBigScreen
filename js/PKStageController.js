@@ -52,6 +52,7 @@ export class PKStageController {
         $("#person_detail_left").text("");
         let $items = $("#foot_col_mid_container").find(".item");
         $items.find(".col-left").empty();
+        $items.find(".label").data("ref_left", null);
     }
     clearRight() {
         let $photo_col = this.$container.find("#photo_col_right");
@@ -60,5 +61,6 @@ export class PKStageController {
         $("#person_detail_right").text("");
         let $items = $("#foot_col_mid_container").find(".item");
         $items.find(".col-right").empty();
+        $items.find(".label").data("ref_right", null);
     }
 }
