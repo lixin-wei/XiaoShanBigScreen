@@ -1,5 +1,4 @@
 .pop-box {
-  font-size: large;
   padding: 15px;
   border-radius: 5px;
   border: 1px solid rgba(255,255,255,0.5);
@@ -7,19 +6,14 @@
   filter: drop-shadow(0 0 15px #67aaff);
   color: white;
   max-width: 700px;
+  max-height: 550px;
+  overflow-y: scroll;
   table {
     td {
       text-align: center;
-      border-left: 1px solid white;
-      border-bottom: 1px solid white;;
-      white-space: nowrap;
+      border: 1px solid rgb(255, 255, 255);
+      //white-space: nowrap;
       padding: 0.1rem 1rem;
-    }
-    td:first-child {
-      border-left: 0;
-    }
-    tr:last-child td {
-      border-bottom: 0;
     }
     td:first-child, td:nth-child(2) {
       min-width: 80px;

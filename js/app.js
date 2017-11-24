@@ -89,6 +89,9 @@ function setPersonInfo(person) {
             });
             //给两棵树显示标签
             setTimeout(function () {
+                $de_tree_label_list.css({"transform" : "scale(0)"}).data("vis", false);
+                $cai_tree_label_list.css({"transform" : "scale(0)"}).data("vis", false);
+                $lack_label.css({"transform" : "scale(0)"}).data("vis", false);
                 let x=0, y=0;
                 let vis_a = {}, vis_b = {};
                 DELables.forEach((label) => {
@@ -160,6 +163,7 @@ function goToList($box) {
 
 //info box 相关事件响应
 function onMouseMoveInfoBox(e) { //InfoBox的拖出事件
+    console.log("move");
     if(isMouseDown && !floating_person) {
         let maxQueueCnt = 0;
         $box_list.find(".info-box").each(function () {
@@ -180,6 +184,7 @@ function onMouseMoveInfoBox(e) { //InfoBox的拖出事件
     }
 }
 function onClickInfoBox() { //InfoBox的点击事件
+    console.log("click");
     focusOn($(this));
     setPersonInfo($(this).data("person_obj"));
 }
@@ -390,35 +395,56 @@ $(window).on("mousemove", function (e) { //box跟随鼠标移动
 let $btn_family_net = $("#btn_family_net");
 let $btn_colleague = $("#btn_colleague");
 let $active_pop_box = null;
+let is_mouse_in_box = false;
+function onMouseMovePopBox (e) {
+    is_mouse_in_box = true;
+    e.stopPropagation();
+}
+function onMouseLeavePopBox (e) {
+    is_mouse_in_box = false;
+}
 function removePopBox() {
     if($active_pop_box) {
         $active_pop_box.remove();
         $active_pop_box = null;
     }
 }
-function showPopBox(x, y, $content) {
+function showPopBox(x, y, $content, position = "right", font_size = "large") {
     removePopBox();
     let $popBox = $($.parseHTML(`
-        <div class="pop-box"></div>
-    `));
+        <div class="pop-box beauty-scroll" style="font-size: ${font_size}"></div>
+    `)).mousemove(onMouseMovePopBox).mouseout(onMouseLeavePopBox);
     $popBox.append($content);
     //先隐藏放到dom里，计算出大小
     $popBox.hide();
     $popBox.appendTo($("body"));
     $popBox = $(".pop-box");
-
+    let left = x;
+    if(position === "right") {
+        left = x + 20;
+    }
+    else if(position === "left") {
+        left = x - $popBox.outerWidth() - 20;
+    }
+    else if (position === "middle") {
+        left = x - $popBox.outerWidth()/2;
+    }
     //然后显示
     $popBox.css({
         position: "fixed",
         top: y - $popBox.outerHeight() - 20,
-        left: x + 20
+        left: left
     }).show();
 
     $active_pop_box = $popBox;
 }
 $(window).on("scroll click", function () {
-    removePopBox();
+    if(!is_mouse_in_box) {
+        removePopBox();
+    }
+    else return false;
 });
+
 $("div.tree-label").click(function (e) {
     if($(this).data("vis")) {
         let x = e.clientX;
@@ -523,9 +549,71 @@ $btn_family_net.click(function (e) {
     showPopBox(x, y, $content);
     e.stopPropagation();
 });
+$("#foot_col_mid_container").find(".item .label").click(function (e) {
+    let x = e.clientX;
+    let y = e.clientY;
+    let $content = $($.parseHTML(`
+        <table>
+            <tr>
+                <td colspan="2">左方</td><td colspan="2">右方</td>            
+            </tr>
+            <tr>
+                <td>标签</td>
+                <td>来源</td>
+                <td>标签</td>
+                <td>来源</td>
+            </tr>
+        </table>
+    `));
+    let data_left = $(this).data("ref_left"), data_right =  $(this).data("ref_right");
+    let len_l = 0, len_r = 0;
+    if(data_left) len_l = data_left.length;
+    if(data_right) len_r = data_right.length;
+    for(let i=0 ; i < Math.max(len_l, len_r) ; ++i) {
+        let $tr = $("<tr/>");
+        if(i<len_l) {
+            let ref_len = Math.max(data_left[i].ref.length, 1);//没有来源也占一行
+            //左方标签名
+            let $td = $("<td/>");
+            $td.text(data_left[i].name);
+            $tr.append($td);
+            //左方来源
+            $td = $("<td/>");
+            for(let j = 0 ; j < ref_len ; ++j) {
+                let r = data_left[i].ref[j];
+                if (r) {
+                    $td.append($("<div/>").text(`${r.sentence} —— ${r.source.fileName}`));
+                }
+            }
+            $tr.append($td);
+        }
+        else $tr.append($("<td/>")).append($("<td/>"));
+
+        if(i<len_r) {
+            let ref_len = Math.max(data_right[i].ref.length, 1);//没有来源也占一行
+            //右方标签名
+            let $td = $("<td/>");
+            $td.text(data_right[i].name);
+            $tr.append($td);
+            //右方来源
+            $td = $("<td/>");
+            for(let j = 0 ; j < ref_len ; ++j) {
+                let r = data_right[i].ref[j];
+                if (r) {
+                    $td.append($("<div/>").text(`${r.sentence} —— ${r.source.fileName}`));
+                }
+            }
+            $tr.append($td);
+        }
+        else $tr.append($("<td/>")).append($("<td/>"));
+
+        $content.append($tr);
+    }
+    showPopBox(x, y, $content, "middle", "large");
+    e.stopPropagation();
+});
 
 /** 初始数据填充 **/
-
 let normalTableController = new NormalTableController();
 let unfixedTableController1 = new UnfixedTableController($("#table_right1"));
 let unfixedTableController2 = new UnfixedTableController($("#table_right2"));
@@ -606,5 +694,13 @@ $(document).ready(function () {
         insertToTable(data, 50, 66, unfixedTableController4);
         insertToTable(data, 67, 76, unfixedTableController5);
     }, "json");
+});
+
+/** 其他一些初始化 **/
+$(document).ready(function () {
+    //隐藏所有标签
+    $de_tree_label_list.css({"transform" : "scale(0)"}).data("vis", false);
+    $cai_tree_label_list.css({"transform" : "scale(0)"}).data("vis", false);
+    $lack_label.css({"transform" : "scale(0)"}).data("vis", false);
 });
 

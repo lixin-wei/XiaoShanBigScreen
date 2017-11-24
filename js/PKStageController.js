@@ -21,11 +21,13 @@ export class PKStageController {
                 for(let i=0 ; i<index_list.length ; ++i) {
                     let $item = $(items[i]);
                     let index = index_list[i];
-                    //设置指标名称
-                    $item.find(".label").text(index_list[i]);
+                    //设置指标名称，清空来源数据
+                    $item.find(".label").text(index_list[i]).data(`ref_${dir}`, null);
+                    //如果有这个标签，填充指标标签
                     if(res.hasOwnProperty(index)) {
                         let labels = res[index].labels;
-                        //填充指标标签
+                        //给指标附上来源的数据
+                        $item.find(".label").data(`ref_${dir}`, labels);
                         for(let j = 0 ; j<labels.length ; ++j){
                             let label = labels[j];
                             let $badge = $("<span class='badge'/>");

@@ -476,15 +476,23 @@ img {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        overflow: hidden;
+        //overflow: hidden;
+        .label {
+          padding: 3px 5px;
+          &:hover {
+            filter: drop-shadow(0 0 15px #ffffff);
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 5px;
+          }
+        }
       }
       .col-left {
-        width: 363px;
+        width: 353px;
         display: flex;
         justify-content: flex-end;
       }
       .col-right {
-        width: 363px;
+        width: 353px;
       }
     }
 

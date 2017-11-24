@@ -605,15 +605,22 @@ img {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  overflow: hidden;
+}
+#foot #foot_col4 #foot_col_mid_container .item .label {
+  padding: 3px 5px;
+}
+#foot #foot_col4 #foot_col_mid_container .item .label:hover {
+  filter: drop-shadow(0 0 15px #ffffff);
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 5px;
 }
 #foot #foot_col4 #foot_col_mid_container .col-left {
-  width: 363px;
+  width: 353px;
   display: flex;
   justify-content: flex-end;
 }
 #foot #foot_col4 #foot_col_mid_container .col-right {
-  width: 363px;
+  width: 353px;
 }
 #foot #foot_col4 .person-detail {
   color: #b1b1b2;
@@ -1081,7 +1088,6 @@ img {
 }
 
 .pop-box {
-  font-size: large;
   padding: 15px;
   border-radius: 5px;
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -1089,19 +1095,13 @@ img {
   filter: drop-shadow(0 0 15px #67aaff);
   color: white;
   max-width: 700px;
+  max-height: 550px;
+  overflow-y: scroll;
 }
 .pop-box table td {
   text-align: center;
-  border-left: 1px solid white;
-  border-bottom: 1px solid white;
-  white-space: nowrap;
+  border: 1px solid white;
   padding: 0.1rem 1rem;
-}
-.pop-box table td:first-child {
-  border-left: 0;
-}
-.pop-box table tr:last-child td {
-  border-bottom: 0;
 }
 .pop-box table td:first-child, .pop-box table td:nth-child(2) {
   min-width: 80px;
