@@ -416,7 +416,7 @@ function showPopBox(x, y, $content, position = "right", font_size = "large") {
     //先隐藏放到dom里，计算出大小
     $popBox.hide();
     $popBox.appendTo($("body"));
-    $popBox = $(".pop-box");
+    $popBox = $(".pop-box:last-child");
     let left = x;
     if(position === "right") {
         left = x + 20;
