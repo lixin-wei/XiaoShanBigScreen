@@ -221,14 +221,6 @@ function onClickCell() {
     if($(this).hasClass("title-row")) {
         $town_box.find("#group_name").text($(this).text());
         $town_box.find("#group_photo").attr("src", G.STREET_PHOTO_ROOT +  getRandomInt(1, 99));
-        let $star_box = $town_box.find("#group_star i");
-        let star = getRandomInt(2, 5);
-        for(let i=0 ; i<star ; ++i) {
-            $star_box[i].classList = "fa fa-star";
-        }
-        for(let i=star ; i<5 ; ++i) {
-            $star_box[i].classList = "fa fa-star-o";
-        }
     }
     else {
         let p = $(this).data("person");
@@ -495,7 +487,7 @@ $btn_colleague.click(function (e) {
     <div>
         <div style="font-size: larger; color: #1a92d1; margin-bottom: 15px;">
             <i class="fa fa-files-o" style="margin-right: 7px;"></i>
-            亲属网
+            历届同事
         </div>
         <table>
         </table>
@@ -512,6 +504,10 @@ $btn_colleague.click(function (e) {
                 </tr>
             `);
             $content.find("table").append($tr);
+        }
+        if(res.length === 0) {
+            $content.find("table").remove();
+            $content.append($("<div/>").text("无信息"));
         }
         showPopBox(x, y, $content);
     }, "json");
@@ -541,6 +537,43 @@ $btn_family_net.click(function (e) {
                 </tr>
             `);
             $content.find("table").append($tr);
+        }
+        if(res.length === 0) {
+            $content.find("table").remove();
+            $content.append($("<div/>").text("无信息"));
+        }
+        showPopBox(x, y, $content);
+    }, "json");
+    e.stopPropagation();
+});
+$("#btn_abroad").click(function (e) {
+    let x = e.clientX;
+    let y = e.clientY;
+    let $content = $($.parseHTML(`
+    <div>
+        <div style="font-size: larger; color: #1a92d1; margin-bottom: 15px;">
+            <i class="fa fa-files-o" style="margin-right: 7px;"></i>
+            出国境情况
+        </div>
+        <table>
+        </table>
+    </div>
+    `));
+    $.get("php/getAbroadInfo.php", {id: showing_person_id}, function (res) {
+        for(let i=0 ; i<res.length ; ++i) {
+            let data = res[i];
+            let $tr = $(`
+                <tr>
+                    <td>${data[0]} --- ${data[1]}</td>
+                    <td>${data[2]}</td>
+                    <td>${data[3]}</td>
+                </tr>
+            `);
+            $content.find("table").append($tr);
+        }
+        if(res.length === 0) {
+            $content.find("table").remove();
+            $content.append($("<div/>").text("无信息"));
         }
         showPopBox(x, y, $content);
     }, "json");
