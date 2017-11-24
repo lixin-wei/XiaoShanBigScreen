@@ -247,6 +247,7 @@ img {
 }
 #mid #mid_col3 #mid_col3_body #mid_col3_body_list {
   position: relative;
+  height: 100%;
 }
 
 #foot {
@@ -869,7 +870,6 @@ img {
 }
 
 .beauty-scroll {
-  height: 100%;
   overflow-y: scroll;
   overflow-x: hidden;
 }
