@@ -149,7 +149,7 @@ class mysql {
         $condition = $condition ? ' Where ' . $condition : NULL;
 		$order =$order?' ORDER BY ' . $order :NULL;
         if ($debug) {
-            echo "SELECT $columnName FROM $table $condition $order";
+            echo "<pre>SELECT $columnName FROM $table $condition $order;</pre>";
         } else {
             $this->query("SELECT $columnName FROM $table $condition $order");
         }
@@ -225,7 +225,7 @@ class mysql {
             echo "<div style='height:20px; background:#000000; border:1px #000000 solid'>";
             echo "<font color='white'>错误号：12142</font>";
             echo "</div><br />";
-            echo "错误原因：" . mysql_error() . "<br /><br />";
+            echo "错误原因：" . mysqli_error() . "<br /><br />";
             echo "<div style='height:20px; background:#FF0000; border:1px #FF0000 solid'>";
             echo "<font color='white'>" . $message . "</font>";
             echo "</div>";

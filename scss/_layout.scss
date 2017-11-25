@@ -170,16 +170,24 @@ img {
     }
     #group_name {
       position: absolute;
-      top: 39px;
+      top: 27px;
       left: 236px;
       font-size: 22px;
     }
-    #group_star {
-      color: #42ca83;
+    #group_description {
       position: absolute;
-      top: 77px;
-      left: 239px;
-      font-size: 22px;
+      top: 63px;
+      left: 238px;
+      height: 65px;
+
+      display: block; /* Fallback for non-webkit */
+      display: -webkit-box;
+      max-width: 400px;
+      margin: 0 auto;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .legend-box {
       width: 113px;
@@ -489,8 +497,7 @@ img {
       }
       .col-left {
         width: 353px;
-        display: flex;
-        justify-content: flex-end;
+        text-align: right;
       }
       .col-right {
         width: 353px;

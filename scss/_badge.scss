@@ -3,4 +3,9 @@
   padding: 3px 13px;
   border-radius: 8px;
   margin: 0 3px;
+  white-space: nowrap;
+  &.white {
+    background: transparent;
+    border: 1px solid white;
+  }
 }

@@ -3,9 +3,11 @@ import * as G from "./Statics";
 import {NormalTableController} from "./NormalTableController";
 import {UnfixedTableController} from "./UnfixedTableController";
 import {chartController} from "./ChartController";
+import {GroupBoxController} from "./GroupBoxController";
 import {LineLayer} from "./LineLayer";
 import {PKStageController} from "./PKStageController";
 import {Person} from "./Person";
+import {Group} from "./Group";
 import {getRandomInt, clipName, getNodeCenter} from "./HelperFuncitions";
 
 /** 变动线层 **/
@@ -47,6 +49,7 @@ let $active_stage = null;
 let click_x = 0, click_y = 0;
 let isMouseDown = false;
 let stage = new PKStageController();
+let group_box = new GroupBoxController();
 const BOX_HEIGHT = 150;
 const TRASH_X = $box_list.offset().left;
 const TRASH_Y = $box_list.offset().top;
@@ -59,8 +62,8 @@ function focusOn($ele) {
     }
 }
 function setPersonInfo(person) {
-    console.log(`person_id = ${person.ID}`);
-    showing_person_id = person.ID;
+    console.log(`person_id = ${person.id}`);
+    showing_person_id = person.id;
     $person_info_container.find(".photo img").attr("src", G.PERSON_PHOTO_ROOT + person.photo);
     $person_info_container.find(".name").text(person.name);
     $person_info_container.find(".info1").text(person.getInfo());
@@ -74,7 +77,7 @@ function setPersonInfo(person) {
         url: G.PERSON_INFO_API_URL,
         crossDomain: true,
         dataType: "json",
-        data: {id: person.ID},
+        data: {id: person.id},
         success: function (res) {
             let DELables = [], CAILabels = [];
             let DEKeys = ["政治品德", "工作作风", "个性特点", "群众基础"],
@@ -207,6 +210,9 @@ function onMouseMoveCell(e) { //cell中的box拖出事件
         $(this).data("person", null);
         $(this).text("");
         floating_person.$box.show();
+        //修改group
+        $(this).data("group").removeMember(floating_person.id);
+        group_box.update();
         //记录下从哪个格子拖出来的，高亮用
         floating_person.$box.data("cell_from", $(this));
     }
@@ -219,8 +225,7 @@ function onRightClickCell(e) {
 }
 function onClickCell() {
     if($(this).hasClass("title-row")) {
-        $town_box.find("#group_name").text($(this).text());
-        $town_box.find("#group_photo").attr("src", G.STREET_PHOTO_ROOT +  getRandomInt(1, 99));
+        group_box.setGroup($(this).data("group"));
     }
     else {
         let p = $(this).data("person");
@@ -317,7 +322,9 @@ $(window).on("mouseup", function (e) {
         //如果当前鼠标下有cell，则填充
         if($active_cell) {
             if($active_cell.data("person")) { //如果当前cell已经有内容了
-
+                //修改group
+                $active_cell.data("group").removeMember($active_cell.data("person").id);
+                group_box.update();
                 //让这个box回备选区去
                 if($active_cell.hasClass("active")) {
                     focusOn(null);
@@ -342,6 +349,9 @@ $(window).on("mouseup", function (e) {
             $active_cell.text(clipName(floating_person.name, 3));
             //把person附加到cell上
             $active_cell.data("person", floating_person);
+            //设置group
+            $active_cell.data("group").addMember($active_cell.data("person"));
+            group_box.update();
             //隐藏box
             floating_person.$box.hide();
 
@@ -366,6 +376,9 @@ $(window).on("mouseup", function (e) {
         else { //否则让box回去
             goToList(floating_person.$box);
             floating_person.$box.data("cell_from").addClass("changed");
+            let group = floating_person.$box.data("cell_from").data("group");
+            group.removeMember(floating_person.id);
+            group_box.update();
         }
         floating_person = null;
     }
@@ -399,11 +412,11 @@ function removePopBox() {
         });
     }
 }
-function showPopBox(x, y, $content, position = "right", font_size = "large") {
+function showPopBox(x, y, $content, position,  css = {}) {
     removePopBox();
     let $popBox = $($.parseHTML(`
-        <div class="pop-box beauty-scroll" style="font-size: ${font_size}"></div>
-    `));
+        <div class="pop-box beauty-scroll"></div>
+    `)).css(css);
     $popBox.append($content);
     //先隐藏放到dom里，计算出大小
     $popBox.hide();
@@ -468,13 +481,13 @@ $lack_label.click(function (e) {
                 <i class="fa fa-files-o" style="margin-right: 7px;"></i>
                 共${ref.length}条记录支持
             </div>
-            <table></table>
+            <ul>
+            </ul>
         </div>
         `));
         ref.forEach((r) => {
-            let $tr = $("<tr/>");
-            $tr.append($(`<td/>`).text(r.str)).append($("<td/>").text(r.source));
-            $content.find("table").append($tr);
+            let $li = $("<li />").text(`${r.str} —— 《${r.source}》`);
+            $content.find("ul").append($li);
         });
         showPopBox(x, y, $content);
     }
@@ -489,18 +502,24 @@ $btn_colleague.click(function (e) {
             <i class="fa fa-files-o" style="margin-right: 7px;"></i>
             历届同事
         </div>
-        <table>
+        <table style="line-height: 2rem;">
         </table>
     </div>
     `));
     $.get("php/getColleague.php", {id: showing_person_id}, function (res) {
         for(let i=0 ; i<res.length ; ++i) {
             let data = res[i];
+            let colleagues = "";
+            for(let j=0 ; j<res[i].colleagues.length ; ++j) {
+                let p = res[i].colleagues[j];
+                if(j) colleagues += ", ";
+                colleagues += `<span class="badge white">${p.name}[${p.job}]</span>`
+            }
             let $tr = $(`
                 <tr>
-                    <td>${data['name']}</td>
-                    <td>${data['place']}</td>
-                    <td>${data['jobs']}</td>
+                    <td style="min-width: 250px;"><span class="nowrap">${data['begin_time']}</span> -> <span class="nowrap">${data['end_time']}</span></td>
+                    <td style="min-width: 200px">${data['place']}[${data['job']}]</td>
+                    <td>${colleagues}</td>
                 </tr>
             `);
             $content.find("table").append($tr);
@@ -509,7 +528,7 @@ $btn_colleague.click(function (e) {
             $content.find("table").remove();
             $content.append($("<div/>").text("无信息"));
         }
-        showPopBox(x, y, $content);
+        showPopBox(x, y, $content, "right",{"max-width": "1550px"});
     }, "json");
     e.stopPropagation();
 });
@@ -556,6 +575,9 @@ $("#btn_abroad").click(function (e) {
             出国境情况
         </div>
         <table>
+            <tr>
+                <td>时间</td><td>地点</td><td>事由</td>
+            </tr>
         </table>
     </div>
     `));
@@ -582,69 +604,59 @@ $("#btn_abroad").click(function (e) {
 $("#foot_col_mid_container").find(".item .label").click(function (e) {
     let x = e.clientX;
     let y = e.clientY;
+    let person_l = $("#photo_col_left").find(".photo").data("person");
+    let person_r = $("#photo_col_right").find(".photo").data("person");
+    let name_l = "---", name_r = "---";
+    if(person_l) name_l = person_l.name;
+    if(person_r) name_r = person_r.name;
     let $content = $($.parseHTML(`
         <table>
             <tr>
-                <td colspan="2">左方</td><td colspan="2">右方</td>            
+                <td width="25%">${name_l}</td>
+                <td width="50%" colspan="2">${$(this).text()}</td>
+                <td width="25%">${name_r}</td>            
             </tr>
             <tr>
-                <td>标签</td>
-                <td>来源</td>
-                <td>标签</td>
-                <td>来源</td>
+                <td colspan="2" width="50%"></td>
+                <td colspan="2" width="50%"></td>
             </tr>
         </table>
     `));
     let data_left = $(this).data("ref_left"), data_right =  $(this).data("ref_right");
-    let len_l = 0, len_r = 0;
-    if(data_left) len_l = data_left.length;
-    if(data_right) len_r = data_right.length;
-    for(let i=0 ; i < Math.max(len_l, len_r) ; ++i) {
-        let $tr = $("<tr/>");
-        if(i<len_l) {
-            let ref_len = Math.max(data_left[i].ref.length, 1);//没有来源也占一行
-            //左方标签名
-            let $td = $("<td/>");
-            $td.text(data_left[i].name);
-            $tr.append($td);
-            //左方来源
-            $td = $("<td/>");
-            for(let j = 0 ; j < ref_len ; ++j) {
-                let r = data_left[i].ref[j];
-                if (r) {
-                    $td.append($("<div/>").text(`${r.sentence} —— ${r.source.fileName}`));
-                }
-            }
-            $tr.append($td);
-        }
-        else $tr.append($("<td/>")).append($("<td/>"));
-
-        if(i<len_r) {
-            let ref_len = Math.max(data_right[i].ref.length, 1);//没有来源也占一行
-            //右方标签名
-            let $td = $("<td/>");
-            $td.text(data_right[i].name);
-            $tr.append($td);
-            //右方来源
-            $td = $("<td/>");
-            for(let j = 0 ; j < ref_len ; ++j) {
-                let r = data_right[i].ref[j];
-                if (r) {
-                    $td.append($("<div/>").text(`${r.sentence} —— ${r.source.fileName}`));
-                }
-            }
-            $tr.append($td);
-        }
-        else $tr.append($("<td/>")).append($("<td/>"));
-
-        $content.append($tr);
+    let $cell_left = $content.find("tr:last-child").find("td:first-child");
+    let $cell_right = $content.find("tr:last-child").find("td:last-child");
+    if(data_left){
+        data_left.forEach((label) => {
+            let $div = $("<div/>");
+            $div.append($("<h3/>").text(label.name));
+            let $ref_container = $("<div/>");
+            label.ref.forEach((r) => {
+                let $single_ref = $("<p/>").text(`${r.sentence}`);
+                $ref_container.append($single_ref);
+            });
+            $div.append($ref_container);
+            $cell_left.append($div);
+        });
     }
-    showPopBox(x, y, $content, "middle", "large");
+    if(data_right) {
+        data_right.forEach((label) => {
+            let $div = $("<div/>");
+            $div.append($("<h3/>").text(label.name));
+            let $ref_container = $("<div/>");
+            label.ref.forEach((r) => {
+                let $single_ref = $("<p/>").text(`${r.sentence}`);
+                $ref_container.append($single_ref);
+            });
+            $div.append($ref_container);
+            $cell_right.append($div);
+        });
+    }
+    showPopBox(x, y, $content, "middle");
     e.stopPropagation();
 });
 
 /** 初始数据填充 **/
-let normalTableController = new NormalTableController();
+let table_left = new NormalTableController();
 let unfixedTableController1 = new UnfixedTableController($("#table_right1"));
 let unfixedTableController2 = new UnfixedTableController($("#table_right2"));
 let unfixedTableController3 = new UnfixedTableController($("#table_right3"));
@@ -657,22 +669,25 @@ $(document).ready(function () {
         data = data[0];
         console.log(data);
         //第一行的职位标题
-        normalTableController.newLine();
-        normalTableController.addColTitleCell("---");
+        table_left.newLine();
+        table_left.addColTitleCell("---");
         for (let i=0 ; i<16 ; ++i) {
-            normalTableController.addColTitleCell(data.colTitle[i]);
+            table_left.addColTitleCell(data.colTitle[i]);
         }
-        normalTableController.applyLine();
+        table_left.applyLine();
         //各个街镇的行
         for (let i=0 ; i<20 ; ++i) {
-            normalTableController.newLine();
+            table_left.newLine();
+            let group = new Group(data.rows[i].groupID, data.rows[i].rowTitle, data.rows[i].desc);
             //街镇标题
-            normalTableController.addRowTitleCell(data.rows[i].rowTitle).click(onClickCell);
+            table_left.addRowTitleCell(data.rows[i].rowTitle).click(onClickCell).data("group", group);
             for (let j=0 ; j<16 ; ++j) {
                 let p_data = data.rows[i].items[j];
-                let $cell = normalTableController.addCell();
-                if(p_data.ID !== -1) {
+                let $cell = table_left.addCell();
+                $cell.data("group", group);
+                if(p_data.id !== -1) {
                     let person = new Person(p_data);
+                    group.addMember(person);
                     $cell.text(clipName(person.name, 4));
                     //生成一个box的node
                     //隐藏并丢到trash里
@@ -683,7 +698,8 @@ $(document).ready(function () {
                 }
                 initCell($cell);
             }
-            normalTableController.applyLine();
+            group.setOriginState();
+            table_left.applyLine();
         }
     }, "json");
     //右边表格
@@ -691,17 +707,20 @@ $(document).ready(function () {
         //对于每个单位
         for(let x=l ; x<=r ; ++x) {
             //标题行
+            let group = new Group(data[x].groupID, data[x].rowTitle, data[x].desc);
             table.newLine();
-            table.addTitleCell(clipName(data[x].rowTitle, 3)).click(onClickCell);
+            table.addTitleCell(clipName(data[x].rowTitle, 3)).click(onClickCell).data("group", group);
 
             //所有人
             for(let i=0 ; i<data[x].items.length ; ++i) {
                 let p_data = data[x].items[i];
                 let person = new Person(p_data);
                 let $cell = table.addCell(clipName(person.name, 3));
+                $cell.data("group", group);
                 initCell($cell);
 
-                if(person.ID !== -1) {
+                if(person.id !== -1) {
+                    group.addMember(person);
                     //生成一个box的node
                     //隐藏并丢到trash里
                     initBox(person.$box, $cell);
@@ -710,6 +729,7 @@ $(document).ready(function () {
                     $box_trash.append(person.$box);
                 }
             }
+            group.setOriginState();
             table.applyLine();
             table.finishBlock();
         }

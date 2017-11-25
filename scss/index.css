@@ -121,6 +121,10 @@
   text-align: center;
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
 .bigger, .tree-label:hover {
   transform: scale(1.2);
 }
@@ -306,16 +310,24 @@ img {
 }
 #foot #foot_col2 #group_name {
   position: absolute;
-  top: 39px;
+  top: 27px;
   left: 236px;
   font-size: 22px;
 }
-#foot #foot_col2 #group_star {
-  color: #42ca83;
+#foot #foot_col2 #group_description {
   position: absolute;
-  top: 77px;
-  left: 239px;
-  font-size: 22px;
+  top: 63px;
+  left: 238px;
+  height: 65px;
+  display: block;
+  /* Fallback for non-webkit */
+  display: -webkit-box;
+  max-width: 400px;
+  margin: 0 auto;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 #foot #foot_col2 .legend-box {
   width: 113px;
@@ -617,8 +629,7 @@ img {
 }
 #foot #foot_col4 #foot_col_mid_container .col-left {
   width: 353px;
-  display: flex;
-  justify-content: flex-end;
+  text-align: right;
 }
 #foot #foot_col4 #foot_col_mid_container .col-right {
   width: 353px;
@@ -659,6 +670,11 @@ img {
 
 .photo img {
   width: 100%;
+}
+
+.photo img.fit-height {
+  width: auto;
+  height: 100%;
 }
 
 .info-box {
@@ -1023,6 +1039,11 @@ img {
   padding: 3px 13px;
   border-radius: 8px;
   margin: 0 3px;
+  white-space: nowrap;
+}
+.badge.white {
+  background: transparent;
+  border: 1px solid white;
 }
 
 .tree-label {
@@ -1102,9 +1123,7 @@ img {
   text-align: center;
   border: 1px solid white;
   padding: 0.1rem 1rem;
-}
-.pop-box table td:first-child, .pop-box table td:nth-child(2) {
-  min-width: 80px;
+  min-width: 100px;
 }
 .pop-box ul {
   padding: 0;

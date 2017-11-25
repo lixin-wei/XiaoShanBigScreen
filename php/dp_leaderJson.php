@@ -27,32 +27,36 @@
 	$tempRowTitle;
 	$db = new mysql;
 	if($BM_FLAG==1)
-	$db->select("bm LEFT JOIN bmzw on BM_ID=zw_BMID LEFT JOIN gbryqd ON zw_PersonID = BH","BM_ID,BM_NAME,zw_Order,zw_Name,BH,XM,XRZW,XB,CSNY,XLZC,ZZMM,ZP","BM_FLAG=$BM_FLAG and zw_Order<>5 and zw_Order<>6","BM_ID,zw_Order",FALSE);
+	$db->select("bm LEFT JOIN bmzw on BM_ID=zw_BMID LEFT JOIN gbryqd ON zw_PersonID = BH","BM_ID,BM_NAME,zw_Order,zw_Name,BH,XM,XRZW,XB,CSNY,XLZC,ZZMM,ZP,BM_DESC","BM_FLAG=$BM_FLAG and zw_Order<>5 and zw_Order<>6","BM_ID,zw_Order",FALSE);
 	else
-	$db->select("bm LEFT JOIN bmzw on BM_ID=zw_BMID LEFT JOIN gbryqd ON zw_PersonID = BH","BM_ID,BM_NAME,zw_Order,zw_Name,BH,XM,XRZW,XB,CSNY,XLZC,ZZMM,ZP","BM_FLAG=$BM_FLAG","BM_ID,zw_Order",FALSE);
+	$db->select("bm LEFT JOIN bmzw on BM_ID=zw_BMID LEFT JOIN gbryqd ON zw_PersonID = BH","BM_ID,BM_NAME,zw_Order,zw_Name,BH,XM,XRZW,XB,CSNY,XLZC,ZZMM,ZP,BM_DESC","BM_FLAG=$BM_FLAG","BM_ID,zw_Order",FALSE);
 	
 	
 	$nums=$db->db_num_rows();
 	$k=0;
 	$flag=0;
 	$zjName="";
+	$desc ="";
 	while($k<$nums){
 		$temp=$db->fetch_row();
 		if($flag!=0 && $flag!=$temp[0]){
 			$tempRowTitle=$zjName;
 			array_push($tempRows,array(
 				"rowTitle"=>$tempRowTitle,
+                "groupID" => $flag,
+				"desc" => $desc,
 				"items"=>$tempItems
 			));
 			clear_arr($tempItems);
 		}
 		$flag=$temp[0];
 		$zjName=$temp[1];
+        $desc = $temp[12];
 		if($temp[4]!=null){
 		  clear_arr($tempFlags);
 		  array_push($tempFlags,array(1,2,3));//根据实际情况调整
 		  array_push($tempItems,array(
-			  "ID"=>$temp[4],
+			  "id"=>$temp[4],
 			  "name"=>$temp[5],
 			  "sex"=>$temp[7],
 			  "birthday"=>$temp[8],
@@ -66,7 +70,7 @@
 		  ));
 		}else{
 		  array_push($tempItems,array(
-			  "ID"=>-1
+			  "id"=>-1
 		  ));
 		}
 		//echo json_encode($tempItems,JSON_UNESCAPED_UNICODE);
@@ -78,7 +82,6 @@
 	array_push($arrZJ,array(
 		"colTitle"=>$tempColTitle,
 		"rows"=>$tempRows
-		)
-	);
+    ));
 	echo json_encode($arrZJ,JSON_UNESCAPED_UNICODE);
 ?>

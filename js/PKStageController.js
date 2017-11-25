@@ -15,7 +15,7 @@ export class PKStageController {
             url: G.PERSON_INFO_API_URL,
             crossDomain: true,
             dataType: "json",
-            data: {id: person.ID},
+            data: {id: person.id},
             success: function (res) {
                 let items = $("#foot_col_mid_container").find(".item");
                 for(let i=0 ; i<index_list.length ; ++i) {

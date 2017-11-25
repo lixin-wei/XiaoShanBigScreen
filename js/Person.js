@@ -3,7 +3,7 @@ import {getRandomInt} from "./HelperFuncitions";
 
 export class Person {
     constructor(data) {
-        this.ID = data.ID || -1;
+        this.id = data.id || -1;
         this.birthday = data.birthday || "0000-00-00";
         this.eduBkg = data.eduBkg || "";
         this.job = data.job || "";

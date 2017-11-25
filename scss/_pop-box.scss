@@ -14,9 +14,7 @@
       border: 1px solid rgb(255, 255, 255);
       //white-space: nowrap;
       padding: 0.1rem 1rem;
-    }
-    td:first-child, td:nth-child(2) {
-      min-width: 80px;
+      min-width: 100px;
     }
   }
   ul {
