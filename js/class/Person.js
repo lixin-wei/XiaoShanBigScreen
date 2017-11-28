@@ -1,10 +1,10 @@
-import * as G from "./Statics";
-import {getRandomInt} from "./HelperFuncitions";
-
+import * as G from "../include/Global";
+import {getRandomInt} from "../HelperFuncitions";
+let moment = require("moment");
 export class Person {
     constructor(data) {
         this.id = data.id || -1;
-        this.birthday = data.birthday || "0000-00-00";
+        this.birthday = moment(data.birthday) || moment("1800-00-00");
         this.eduBkg = data.eduBkg || "";
         this.job = data.job || "";
         this.jobID = data.jobID || "";
@@ -42,7 +42,7 @@ export class Person {
         return $node;
     }
     getInfo() {
-        return `${this.sex} ${this.birthday.substr(0,4)} ${this.politicalStatus}`;
+        return `${this.sex} ${this.birthday.format("YYYY-MM")} ${this.politicalStatus}`;
     }
     updateInfo() {
         this.$box.find(".name").text(this.name);

@@ -1,6 +1,5 @@
 window.$ = window.jQuery = require("jquery");
-
-let xx = $("<div/>");
+let moment = require("moment");
 let option_chart_sex = {
     color : ["#007dc5", "#00c505"],
     textStyle : {
@@ -36,8 +35,8 @@ let option_chart_sex = {
             radius : '65%',
             center: ['75%', '40%'],
             data:[
-                {value:627, name:'男'},
-                {value:154, name:'女'},
+                {value:0, name:'男'},
+                {value:0, name:'女'},
             ],
             label : {
                 normal: {
@@ -70,7 +69,7 @@ let option_chart_edu = {
         orient: 'vertical',
         left: 'left',
         top: "middle",
-        data: ['研究生','硕士',"大学","大专及以下"],
+        data: ['博士','硕士、研究生',"大学","大专及以下"],
         textStyle : {
             color: "white"
         }
@@ -82,10 +81,10 @@ let option_chart_edu = {
             radius : '65%',
             center: ['75%', '40%'],
             data:[
-                {value:65, name:'研究生'},
-                {value:87, name:'硕士'},
-                {value:42, name:'大学'},
-                {value:75, name:'大专及以下'},
+                {value:0, name:'博士'},
+                {value:0, name:'硕士、研究生'},
+                {value:0, name:'大学'},
+                {value:0, name:'大专及以下'},
             ],
             label : {
                 normal: {
@@ -179,8 +178,8 @@ let option_chart_grp = {
             radius : '65%',
             center: ['75%', '40%'],
             data:[
-                {value:755, name:'中共党员'},
-                {value:26, name:'其他'},
+                {value:0, name:'中共党员'},
+                {value:0, name:'其他'},
             ],
             label : {
                 normal: {
@@ -191,18 +190,67 @@ let option_chart_grp = {
     ]
 };
 
-class ChartController {
-    constructor() {
-        this.chart_sex = echarts.init(document.getElementById("chart_sex"));
-        this.chart_edu = echarts.init(document.getElementById("chart_edu"));
-        this.chart_age = echarts.init(document.getElementById("chart_age"));
-        this.chart_grp = echarts.init(document.getElementById("chart_grp"));
 
-        this.chart_sex.setOption(option_chart_sex);
-        this.chart_edu.setOption(option_chart_edu);
-        this.chart_age.setOption(option_chart_age);
-        this.chart_grp.setOption(option_chart_grp);
+let chart_sex = echarts.init(document.getElementById("chart_sex"));
+let chart_edu = echarts.init(document.getElementById("chart_edu"));
+let chart_age = echarts.init(document.getElementById("chart_age"));
+let chart_grp = echarts.init(document.getElementById("chart_grp"));
+
+export function update() {
+    chart_sex.setOption(option_chart_sex);
+    chart_edu.setOption(option_chart_edu);
+    chart_age.setOption(option_chart_age);
+    chart_grp.setOption(option_chart_grp);
+}
+update();
+
+export function addPerson(person) {
+    let data = option_chart_sex.series[0].data;
+    //性别统计
+    if(person.sex === "男") {
+        data[0].value++;
+    }
+    else {
+        data[1].value++;
+    }
+    //教育背景统计
+    let edu = person.eduBkg;
+    data = option_chart_edu.series[0].data;
+    if(edu.indexOf("博士") !== -1) {
+        data[0].value++;
+    }
+    else if(edu.indexOf("硕士") !== -1 || edu.indexOf("研究生") !== -1) {
+        data[1].value++;
+    }
+    else if(edu.indexOf("学士") !== -1 || edu.indexOf("大学") !== -1) {
+        data[2].value++;
+    }
+    else {
+        data[3].value++;
+    }
+    //年龄统计
+    let bir = person.birthday;
+    data = option_chart_age.series[0].data;
+    if(bir.isBefore(moment("1694-12-01"))) {
+        data[0].value++;
+    }
+    else if(bir.isBefore(moment("1969-12-01"))) {
+        data[1].value++;
+    }
+    else if(bir.isBefore(moment("1974-12-01"))) {
+        data[2].value++;
+    }
+    else if(bir.isBefore(moment("1979-12-01"))) {
+        data[3].value++;
+    }
+    else {
+        data[4].value++;
+    }
+    //党派统计
+    if(person.politicalStatus === "中共党员") {
+        option_chart_grp.series[0].data[0].value++;
+    }
+    else {
+        option_chart_grp.series[0].data[1].value++;
     }
 }
-
-export let chartController = new ChartController();

@@ -212,11 +212,15 @@ img {
       }
     }
     #detail_container_right {
-      height: 177px;
+      height: 215px;
       width: 299px;
       position: absolute;
       top: 174px;
       right: 3px;
+      overflow: hidden;
+      &>div {
+        margin-bottom: 15px;
+      }
     }
   }
   #foot_col3 {

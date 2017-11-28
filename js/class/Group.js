@@ -13,7 +13,7 @@ export class Group {
             this.getMemberNum(),
             this.getModifyDate(),
             this.getModifyTimes(),
-            this.getEverageAge(),
+            this.geAverageAge(),
             this.getBackMemberNum(),
             this.getNonCPCNum(),
             this.getFemaleNum()
@@ -32,12 +32,12 @@ export class Group {
         return this.member.length;
     }
     getModifyDate() {
-        return new Date().toDateString();
+        return moment().format("YYYY-MM-DD");
     }
     getModifyTimes() {
         return this.modify_times;
     }
-    getEverageAge() {
+    geAverageAge() {
         let res = 0;
         this.member.forEach((p) => {
             let m = moment(p.birthday);

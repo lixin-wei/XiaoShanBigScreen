@@ -350,11 +350,15 @@ img {
   padding-left: 16px;
 }
 #foot #foot_col2 #detail_container_right {
-  height: 177px;
+  height: 215px;
   width: 299px;
   position: absolute;
   top: 174px;
   right: 3px;
+  overflow: hidden;
+}
+#foot #foot_col2 #detail_container_right > div {
+  margin-bottom: 15px;
 }
 #foot #foot_col3 {
   border: 2px solid #1d559a;
