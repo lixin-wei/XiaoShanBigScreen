@@ -425,7 +425,7 @@ $(document).ready(function () {
             //标题行
             let group = new Group(data[x].groupID, data[x].rowTitle, data[x].desc);
             table.newLine();
-            table.addTitleCell(clipName(data[x].rowTitle, 3)).click(onClickCell).data("group", group);
+            table.addTitleCell(clipName(data[x].rowTitle, 4)).click(onClickCell).data("group", group);
 
             //所有人
             for(let i=0 ; i<data[x].items.length ; ++i) {

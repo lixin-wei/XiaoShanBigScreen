@@ -18,24 +18,28 @@ while($row = $db->fetch_assoc()) {
 $res = [];
 //对于每条经历，找出时间区间内的所有同事
 foreach ($experiences as $exp) {
-    $condition1 = $exp['ZZSJ'] ? "QSSJ>\"{$exp['ZZSJ']}\"" : "1";
-    $condition2 = $exp['QSSJ'] ? "ZZSJ<\"${exp['QSSJ']}\"" : "1";
+    $condition1 = $exp['ZZSJ'] ? "(QSSJ IS NOT NULL AND QSSJ>\"{$exp['ZZSJ']}\")" : "0";
+    $condition2 = $exp['QSSJ'] ? "(ZZSJ IS NOT NULL AND ZZSJ<\"${exp['QSSJ']}\")" : "0";
 
-    $db->select("grjl", "XM, JLSQ", "NOT($condition1 OR $condition2) AND JLDD = \"{$exp['JLDD']}\"");
-    $item = array(
-        "begin_time" => $exp['QSSJ'],
-        "end_time" => $exp['ZZSJ'],
-        "place" => $exp['JLDD'],
-        "job" => $exp['JLSQ'],
-        "colleagues" => []
-    );
+    $db->select("grjl", "BH, XM, JLSQ", "NOT($condition1 OR $condition2) AND JLDD = \"{$exp['JLDD']}\"");
+    $colleges = [];
     while($row = $db->fetch_assoc()) {
-        array_push($item['colleagues'], array(
+        if($row['BH'] == $id) continue;
+        array_push($colleges, array(
             "name" => $row['XM'],
             "job" => $row['JLSQ']
         ));
     }
-    array_push($res, $item);
+    if(count($colleges) != 0) {
+        $item = array(
+            "begin_time" => $exp['QSSJ'],
+            "end_time" => $exp['ZZSJ'],
+            "place" => $exp['JLDD'],
+            "job" => $exp['JLSQ'],
+            "colleagues" => $colleges
+        );
+        array_push($res, $item);
+    }
 }
 
 echo json_encode($res);

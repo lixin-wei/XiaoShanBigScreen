@@ -1,5 +1,12 @@
 import * as G from "./include/Global";
+import * as PopBox from "./component/PopBox";
 let curGroup = null;
+export function getGroupID() {
+    if(curGroup){
+        return curGroup.id;
+    }
+    return null;
+}
 export function update() {
     if(curGroup) {
         setGroup(curGroup);
@@ -44,7 +51,7 @@ export function setGroup(group) {
     }
     //右边的评价
     $.post("http://localhost:5000/team", {teamID: group.id}, function (data) {
-        // console.log(data);
+        console.log(data);
 
         if(data["一把手作用"])
             $($items_r[0]).text(data["一把手作用"].labels[0].name);
@@ -63,7 +70,20 @@ export function setGroup(group) {
 
         if(data["存在问题"]) {
             data["存在问题"].labels.forEach((label) => {
-                $($items_r[3]).append($("<div class='text-blue'/>").text(label.name));
+                $($items_r[3]).append(
+                    $("<div class='text-blue'/>")
+                        .text(label.name)
+                        // .data("ref", label.ref)
+                        //问题标签点击显示来源
+                        .click(function (e) {
+                            let $content = $("<ul class='ref-list'/>");
+                            label.ref.forEach((r) => {
+                                $content.append("<li/>").text(r.source.fileName);
+                            });
+                            PopBox.show(e.pageX, e.pageY, $content);
+                            e.stopPropagation();
+                        })
+                );
             });
         }
         else

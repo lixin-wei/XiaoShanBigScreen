@@ -1,12 +1,13 @@
 import * as G from "./include/Global";
 import * as PopBox from "./component/PopBox";
+import * as GroupBox from "./GroupBoxField";
 const index_list = ["工作业绩",  "个性特点",  "群众基础",  "分类考核",  "不足与风险",  "能力类型",  "专业特长",  "工作作风",  "适宜岗位"];
 let $container = $("#foot_col4");
 export function setPerson(person, dir) {
     let $photo_col = $container.find(`#photo_col_${dir}`);
     $photo_col.find(".photo img").attr("src", G.PERSON_PHOTO_ROOT + person.photo);
     $photo_col.find(".photo-col-name").text(person.name);
-    $(`#person_detail_${dir}`).text(`${person.sex} ${person.birthday} ${person.politicalStatus} ${person.eduBkg}`);
+    $(`#person_detail_${dir}`).text(`${person.sex} ${person.birthday.format("YYYY-MM")} ${person.politicalStatus} ${person.eduBkg}`);
     let $items = $("#foot_col_mid_container").find(".item");
     $items.find(`.col-${dir}`).empty();
     $.ajax({
@@ -62,10 +63,9 @@ export function clearRight() {
     $items.find(".label").data("ref_right", null);
 }
 
-
 $("#foot_col_mid_container").find(".item .label").click(function (e) {
-    let x = e.clientX;
-    let y = e.clientY;
+    let x = e.pageX;
+    let y = e.pageY;
     let person_l = $("#photo_col_left").find(".photo").data("person");
     let person_r = $("#photo_col_right").find(".photo").data("person");
     let name_l = "---", name_r = "---";
@@ -113,7 +113,43 @@ $("#foot_col_mid_container").find(".item .label").click(function (e) {
             $cell_right.append($div);
         });
     }
-    PopBox.show(x, y, $content, "middle");
+    PopBox.show(x, y, $content, {
+        position: {x: "center", y: "top"}
+    });
     e.stopPropagation();
 });
 
+let $job_chooser = $("#foot_col4_job");
+$job_chooser.click(function (e) {
+    let x = $(this).offset().left + $(this).outerWidth()/2;
+    let y = $(this).offset().top + $(this).outerHeight()/2;
+    if(GroupBox.getGroupID() === null) {
+        let $content = $("<div class='text-center' />").text("请先选择领导班子");
+        PopBox.show(x, y, $content, {
+            position: {x: "center", y: "middle"},
+            css: {width: "300px"},
+            showClose: false
+        });
+    }
+    else {
+        let $content = $("<ul class='file-list'/>");
+        $.get("php/getJobList.php", {groupID: GroupBox.getGroupID()}, function (res) {
+            res.forEach((job) => {
+                let $li = $("<li/>").text(job.jobName);
+                $li.click(function () {
+                    $job_chooser.text(job.jobName);
+                    PopBox.remove();
+                });
+                $content.append($li);
+            });
+            PopBox.show(x, y, $content, {
+                position: {x: "center", y: "middle"},
+                css: {width: "300px"},
+                showClose: false
+            });
+
+        }, "json");
+    }
+
+    e.stopPropagation();
+});

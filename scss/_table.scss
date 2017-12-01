@@ -51,8 +51,12 @@
   &.thin {
     width: 48px;
   }
+  &.thin.title-row, &.thin.empty {
+    width: 65px;
+  }
   &.disabled, &.empty {
-    background: #58c8f117;
+    //background: #58c8f117;
+    background: transparent;
     cursor: default;
     &:hover {
       border: none;

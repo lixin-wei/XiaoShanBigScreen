@@ -1,10 +1,10 @@
 import * as G from "./include/Global";
 import * as PopBox from "./component/PopBox";
-
+let moment = require("moment");
 G.$de_tree_label_list.add(G.$cai_tree_label_list).click(function (e) {
     if($(this).data("vis")) {
-        let x = e.clientX;
-        let y = e.clientY;
+        let x = e.pageX;
+        let y = e.pageY;
         let ref = $(this).data("ref");
         let $content = $($.parseHTML(`
         <div>
@@ -12,7 +12,7 @@ G.$de_tree_label_list.add(G.$cai_tree_label_list).click(function (e) {
                 <i class="fa fa-files-o" style="margin-right: 7px;"></i>
                 共${ref.length}条记录支持
             </div>
-            <ul>
+            <ul class="ref-list">
             </ul>
         </div>
         `));
@@ -26,8 +26,8 @@ G.$de_tree_label_list.add(G.$cai_tree_label_list).click(function (e) {
 });
 G.$lack_label.click(function (e) {
     if($(this).data("vis")) {
-        let x = e.clientX;
-        let y = e.clientY;
+        let x = e.pageX;
+        let y = e.pageY;
         let ref = $(this).data("ref");
         let $content = $($.parseHTML(`
         <div>
@@ -35,7 +35,7 @@ G.$lack_label.click(function (e) {
                 <i class="fa fa-files-o" style="margin-right: 7px;"></i>
                 共${ref.length}条记录支持
             </div>
-            <ul>
+            <ul class="ref-list">
             </ul>
         </div>
         `));
@@ -47,16 +47,17 @@ G.$lack_label.click(function (e) {
     }
     e.stopPropagation();
 });
+
 $("#btn_colleague").click(function (e) {
-    let x = e.clientX;
-    let y = e.clientY;
+    let x = e.pageX;
+    let y = e.pageY;
     let $content = $($.parseHTML(`
     <div>
         <div style="font-size: larger; color: #1a92d1; margin-bottom: 15px;">
             <i class="fa fa-files-o" style="margin-right: 7px;"></i>
             历届同事
         </div>
-        <table style="line-height: 2rem;">
+        <table style="line-height: 2.5rem;">
         </table>
     </div>
     `));
@@ -69,9 +70,11 @@ $("#btn_colleague").click(function (e) {
                 if(j) colleagues += ", ";
                 colleagues += `<span class="badge white">${p.name}[${p.job}]</span>`
             }
+            let begin_time = data['begin_time'] || "未知";
+            let end_time = data['end_time'] || "至今";
             let $tr = $(`
                 <tr>
-                    <td style="min-width: 250px;"><span class="nowrap">${data['begin_time']}</span> -> <span class="nowrap">${data['end_time']}</span></td>
+                    <td style="min-width: 250px;"><span class="nowrap">${begin_time}</span> -> <span class="nowrap">${end_time}</span></td>
                     <td style="min-width: 200px">${data['place']}[${data['job']}]</td>
                     <td>${colleagues}</td>
                 </tr>
@@ -82,13 +85,16 @@ $("#btn_colleague").click(function (e) {
             $content.find("table").remove();
             $content.append($("<div/>").text("无信息"));
         }
-        PopBox.show(x, y, $content, "right",{"max-width": "1550px"});
+        PopBox.show(x, y, $content, {
+            position: {x: "right", y: "top"},
+            css: {"max-width": "1550px"}
+        });
     }, "json");
     e.stopPropagation();
 });
 $("#btn_family_net").click(function (e) {
-    let x = e.clientX;
-    let y = e.clientY;
+    let x = e.pageX;
+    let y = e.pageY;
     let $content = $($.parseHTML(`
     <div>
         <div style="font-size: larger; color: #1a92d1; margin-bottom: 15px;">
@@ -120,8 +126,8 @@ $("#btn_family_net").click(function (e) {
     e.stopPropagation();
 });
 $("#btn_abroad").click(function (e) {
-    let x = e.clientX;
-    let y = e.clientY;
+    let x = e.pageX;
+    let y = e.pageY;
     let $content = $($.parseHTML(`
     <div>
         <div style="font-size: larger; color: #1a92d1; margin-bottom: 15px;">
@@ -143,6 +149,43 @@ $("#btn_abroad").click(function (e) {
                     <td>${data[0]} --- ${data[1]}</td>
                     <td>${data[2]}</td>
                     <td>${data[3]}</td>
+                </tr>
+            `);
+            $content.find("table").append($tr);
+        }
+        if(res.length === 0) {
+            $content.find("table").remove();
+            $content.append($("<div/>").text("无信息"));
+        }
+        PopBox.show(x, y, $content);
+    }, "json");
+    e.stopPropagation();
+});
+
+$("#btn_house_info").click(function (e) {
+    let x = e.pageX;
+    let y = e.pageY;
+    let $content = $($.parseHTML(`
+    <div>
+        <div style="font-size: larger; color: #1a92d1; margin-bottom: 15px;">
+            <i class="fa fa-files-o" style="margin-right: 7px;"></i>
+            房产情况
+        </div>
+        <table>
+            <tr>
+                <td>地址</td><td>类别</td><td>交易价格(万元)</td>
+            </tr>
+        </table>
+    </div>
+    `));
+    $.get("php/getHouseInfo.php", {id: G.showing_person_id}, function (res) {
+        for(let i=0 ; i<res.length ; ++i) {
+            let data = res[i];
+            let $tr = $(`
+                <tr>
+                    <td>${data['address']}</td>
+                    <td>${data['type']}</td>
+                    <td>${data['price']}</td>
                 </tr>
             `);
             $content.find("table").append($tr);

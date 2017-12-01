@@ -1,0 +1,30 @@
+错误SQL语句：
+SELECT BM_ID,BM_NAME,zw_Order,zw_Name,BH,XM,XRZW,XB,CSNY,XLZC,ZZMM,ZP,BM_DESC FROM bm LEFT JOIN bmzw on BM_ID=zw_BMID LEFT JOIN gbryqd ON zw_PersonID = BH  Where BM_FLAG=2  ORDER BY BM_ID,zw_Order
+客户IP:127.0.0.1
+时间 :2017-11-30 05:45:52
+
+错误SQL语句：
+SELECT zw_Name FROM bmzw  Where zw_BMID=1 and zw_Order!=5 and zw_Order!=6 
+客户IP:127.0.0.1
+时间 :2017-11-30 05:45:52
+
+SQL语句错误
+SELECT BM_ID,BM_NAME,zw_Order,zw_Name,BH,XM,XRZW,XB,CSNY,XLZC,ZZMM,ZP,BM_DESC FROM bm LEFT JOIN bmzw on BM_ID=zw_BMID LEFT JOIN gbryqd ON zw_PersonID = BH  Where BM_FLAG=2  ORDER BY BM_ID,zw_Order
+客户IP:127.0.0.1
+时间 :2017-11-30 05:45:52
+
+SQL语句错误
+SELECT zw_Name FROM bmzw  Where zw_BMID=1 and zw_Order!=5 and zw_Order!=6 
+客户IP:127.0.0.1
+时间 :2017-11-30 05:45:52
+
+错误SQL语句：
+SELECT BM_ID,BM_NAME,zw_Order,zw_Name,BH,XM,XRZW,XB,CSNY,XLZC,ZZMM,ZP,BM_DESC FROM bm LEFT JOIN bmzw on BM_ID=zw_BMID LEFT JOIN gbryqd ON zw_PersonID = BH  Where BM_FLAG=1 and zw_Order<>5 and zw_Order<>6  ORDER BY BM_ID,zw_Order
+客户IP:127.0.0.1
+时间 :2017-11-30 05:45:52
+
+SQL语句错误
+SELECT BM_ID,BM_NAME,zw_Order,zw_Name,BH,XM,XRZW,XB,CSNY,XLZC,ZZMM,ZP,BM_DESC FROM bm LEFT JOIN bmzw on BM_ID=zw_BMID LEFT JOIN gbryqd ON zw_PersonID = BH  Where BM_FLAG=1 and zw_Order<>5 and zw_Order<>6  ORDER BY BM_ID,zw_Order
+客户IP:127.0.0.1
+时间 :2017-11-30 05:45:52
+

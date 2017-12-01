@@ -1,0 +1,29 @@
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+  font-size: larger;
+  li {
+    padding: 0 0.5rem;
+    cursor: pointer;
+    &.active, &:hover {
+      background: #0b6293;
+    }
+  }
+}
+
+.ref-list {
+    padding: 0;
+    margin: 0 0 15px 0;
+    list-style: none;
+    li {
+      margin-bottom: 7px;
+      //text-overflow: ellipsis;
+      //white-space: nowrap;
+      //overflow: hidden;
+      &:before {
+        content: " * ";
+      }
+    }
+}
