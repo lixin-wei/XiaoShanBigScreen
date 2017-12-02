@@ -61,7 +61,7 @@ $("#btn_colleague").click(function (e) {
         </table>
     </div>
     `));
-    $.get("php/getColleague.php", {id: G.showing_person_id}, function (res) {
+    $.get("php/getColleague.php", {ID: G.showing_person_id}, function (res) {
         for(let i=0 ; i<res.length ; ++i) {
             let data = res[i];
             let colleagues = "";
@@ -106,7 +106,7 @@ $("#btn_family_net").click(function (e) {
         </table>
     </div>
     `));
-    $.get("php/getFamilyNet.php", {id: G.showing_person_id}, function (res) {
+    $.get("php/getFamilyNet.php", {ID: G.showing_person_id}, function (res) {
         for(let i=0 ; i<res.length ; ++i) {
             let data = res[i];
             let $tr = $(`
@@ -142,7 +142,7 @@ $("#btn_abroad").click(function (e) {
         </table>
     </div>
     `));
-    $.get("php/getAbroadInfo.php", {id: G.showing_person_id}, function (res) {
+    $.get("php/getAbroadInfo.php", {ID: G.showing_person_id}, function (res) {
         for(let i=0 ; i<res.length ; ++i) {
             let data = res[i];
             let $tr = $(`
@@ -179,7 +179,7 @@ $("#btn_house_info").click(function (e) {
         </table>
     </div>
     `));
-    $.get("php/getHouseInfo.php", {id: G.showing_person_id}, function (res) {
+    $.get("php/getHouseInfo.php", {ID: G.showing_person_id}, function (res) {
         for(let i=0 ; i<res['house'].length ; ++i) {
             let data = res['house'][i];
             let $tr = $(`

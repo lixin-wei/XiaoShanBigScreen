@@ -4,7 +4,7 @@ import * as PKStage from "./PKStageField";
 let curGroup = null;
 export function getGroupID() {
     if(curGroup){
-        return curGroup.id;
+        return curGroup.ID;
     }
     return null;
 }
@@ -33,8 +33,8 @@ export function setGroup(group) {
     //设置名字、照片和描述
     curGroup = group;
     $("#group_name").text(group.name);
-    if(group.id<=21) {
-        $photo.attr("src", G.STREET_PHOTO_ROOT + group.id);
+    if(group.ID<=21) {
+        $photo.attr("src", G.STREET_PHOTO_ROOT + group.ID);
         $desc.text(group.desc);
     }
     else {
@@ -55,7 +55,7 @@ export function setGroup(group) {
         $($items_l[6]).find("span.text-green").text(" / " + group.getFemaleNum());
     }
     //右边的评价
-    $.get("http://localhost:5000/team", {id: group.id}, function (data) {
+    $.get("http://localhost:5000/team", {ID: group.ID}, function (data) {
         console.log(data);
 
         if(data["一把手作用"])

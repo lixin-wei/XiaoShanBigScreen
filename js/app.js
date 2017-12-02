@@ -1,3 +1,5 @@
+import {planMap} from "./include/Global";
+
 window.$ = window.jQuery = require("jquery");
 import * as G from "./include/Global";
 import {getRandomInt, clipName, getNodeCenter} from "./HelperFuncitions";
@@ -30,8 +32,8 @@ function focusOn($ele) {
     }
 }
 function setPersonInfo(person) {
-    console.log(`person_id = ${person.id}`);
-    G.showing_person_id = person.id;
+    console.log(`person_id = ${person.ID}`);
+    G.showing_person_id = person.ID;
     G.$person_info_container.find(".photo img").attr("src", G.PERSON_PHOTO_ROOT + person.photo);
     G.$person_info_container.find(".name").text(person.name);
     G.$person_info_container.find(".info1").text(person.getInfo());
@@ -45,7 +47,7 @@ function setPersonInfo(person) {
         url: G.PERSON_INFO_API_URL,
         crossDomain: true,
         dataType: "json",
-        data: {id: person.id},
+        data: {id: person.ID},
         success: function (res) {
             let DELables = [], CAILabels = [];
             let DEKeys = ["政治品德", "工作作风", "个性特点", "群众基础"],
@@ -179,7 +181,7 @@ function onMouseMoveCell(e) { //cell中的box拖出事件
         $(this).text("");
         G.floating_person.$box.show();
         //修改group
-        $(this).data("group").removeMember(G.floating_person.id);
+        $(this).data("group").removeMember(G.floating_person.ID);
         GroupBox.update();
         //记录下从哪个格子拖出来的，高亮用
         G.floating_person.$box.data("cell_from", $(this));
@@ -291,7 +293,7 @@ $(window).on("mouseup", function (e) {
         if(G.$active_cell) {
             if(G.$active_cell.data("person")) { //如果当前cell已经有内容了
                 //修改group
-                G.$active_cell.data("group").removeMember(G.$active_cell.data("person").id);
+                G.$active_cell.data("group").removeMember(G.$active_cell.data("person").ID);
                 GroupBox.update();
                 //让这个box回备选区去
                 if(G.$active_cell.hasClass("active")) {
@@ -345,7 +347,7 @@ $(window).on("mouseup", function (e) {
             goToList(G.floating_person.$box);
             G.floating_person.$box.data("cell_from").addClass("changed");
             let group = G.floating_person.$box.data("cell_from").data("group");
-            group.removeMember(G.floating_person.id);
+            group.removeMember(G.floating_person.ID);
             GroupBox.update();
         }
         G.floating_person = null;
@@ -368,90 +370,114 @@ $(window).on("mousemove", function (e) { //box跟随鼠标移动
 
 /** 气泡框相关 **/
 import {} from "./PersonDetailField";
-
 /** 初始数据填充 **/
 let table_left = new NormalTableController();
 $(document).ready(function () {
-    //人员表数据
-    //左边表格
-    $.get("php/dp_leaderJson.php?BM=1", function (data) {
-        data = data[0];
-        console.log(data);
-        //第一行的职位标题
-        table_left.newLine();
-        table_left.addColTitleCell("---");
-        for (let i=0 ; i<16 ; ++i) {
-            table_left.addColTitleCell(data.colTitle[i]);
-        }
-        table_left.applyLine();
-        //各个街镇的行
-        for (let i=0 ; i<20 ; ++i) {
-            table_left.newLine();
-            let group = new Group(data.rows[i].groupID, data.rows[i].rowTitle, data.rows[i].desc);
-            //街镇标题
-            table_left.addRowTitleCell(data.rows[i].rowTitle).click(onClickCell).data("group", group);
-            for (let j=0 ; j<16 ; ++j) {
-                let p_data = data.rows[i].items[j];
-                let $cell = table_left.addCell();
-                $cell.data("group", group);
-                if(p_data.id !== -1) {
-                    let person = new Person(p_data);
-                    Charts.addPerson(person);
-                    group.addMember(person);
-                    $cell.text(clipName(person.name, 4));
-                    //生成一个box的node
-                    //隐藏并丢到trash里
-                    initBox(person.$box, $cell);
-                    person.$box.hide().addClass("float");
-                    $cell.data("person", person);
-                    G.$box_trash.append(person.$box);
+    //首先获取整个职位结构
+    $.get("php/getPositionStructure", {}, function (positionStc) {
+        G.positionStc = positionStc;
+        //然后获取到当前的plan
+        $.get("php/getPlan.php", {ID: "-1"}, function (map) {
+            // console.log(map);
+            G.planMap = map;
+            //汇总所有人，得到信息表
+            let personIDList = [];
+            Object.entries(G.planMap).forEach(([i, row]) => {
+                Object.entries(row).forEach(([j, id]) => {
+                    if(id !== null)personIDList.push(id);
+                })
+            });
+            $.post("php/getPersonInfo.php", {IDList: personIDList}, function (personInfoMap) {
+                //开始填充，左表
+                let data = positionStc['fixed'];
+                table_left.newLine();
+                table_left.addColTitleCell("---");
+                for (let i=0 ; i<18 ; ++i) {
+                    if(i+1 === 5 || i+1 === 6 ) continue;
+                    table_left.addColTitleCell(data[0]['items'][i]['name']);
                 }
-                initCell($cell);
-            }
-            group.setOriginState();
-            table_left.applyLine();
-        }
-        Charts.update();
-    }, "json");
-    //右边表格
-    $.get("php/dp_leaderJson.php?BM=2", function (data) {
-        data = data[0].rows;
-        console.log(data);
-        //对于每个单位
-        for(let x=0 ; x<data.length ; ++x) {
-            //标题行
-            let group = new Group(data[x].groupID, data[x].rowTitle, data[x].desc);
-            RightTable.newLine();
-            RightTable.addTitleCell(clipName(data[x].rowTitle, 4)).click(onClickCell).data("group", group);
-
-            //所有人
-            for(let i=0 ; i<data[x].items.length ; ++i) {
-                let p_data = data[x].items[i];
-                let person = new Person(p_data);
-                let $cell = RightTable.addCell(clipName(person.name, 3));
-                $cell.data("group", group);
-                initCell($cell);
-
-                if(person.id !== -1) {
-                    group.addMember(person)
-                    Charts.addPerson(person);
-                    //生成一个box的node
-                    //隐藏并丢到trash里
-                    initBox(person.$box, $cell);
-                    person.$box.hide().addClass("float");
-                    $cell.data("person", person);
-                    G.$box_trash.append(person.$box);
+                table_left.applyLine();
+                //各个街镇的行
+                for (let x=0 ; x<20 ; ++x) {
+                    table_left.newLine();
+                    let group = new Group(data[x].ID, data[x].name, data[x].desc);
+                    //街镇标题
+                    table_left.addRowTitleCell(data[x].name).click(onClickCell).data("group", group);
+                    for (let y=0 ; y<18 ; ++y) {
+                        if(y+1 === 5 || y+1 === 6 ) continue;
+                        let groupID = data[x].ID, jobID = data[x].items[y].ID;
+                        let pID = G.planMap[groupID][jobID];
+                        let p_data = personInfoMap[pID];
+                        let $cell = table_left.addCell();
+                        $cell.data("group", group);
+                        if(pID !== null) {
+                            p_data['groupID'] = groupID;
+                            p_data['jobID'] = jobID;
+                            p_data['job'] = `${data[x].name} ${data[x].items[y].name}`;
+                            let person = new Person(p_data);
+                            Charts.addPerson(person);
+                            group.addMember(person);
+                            $cell.text(clipName(person.name, 4));
+                            //生成一个box的node
+                            //隐藏并丢到trash里
+                            initBox(person.$box, $cell);
+                            person.$box.hide().addClass("float");
+                            $cell.data("person", person);
+                            G.$box_trash.append(person.$box);
+                        }
+                        initCell($cell);
+                    }
+                    group.setOriginState();
+                    table_left.applyLine();
                 }
-            }
-            group.setOriginState();
-            RightTable.applyLine();
-            RightTable.finishBlock();
-        }
-        Charts.update();
+                //右表
+                //对于每个单位
+                data = positionStc['unfixed'];
+                console.log(data);
+                for(let x=0 ; x<data.length ; ++x) {
+                    //标题行
+                    let group = new Group(data[x].ID, data[x].name, data[x].desc);
+                    RightTable.newLine();
+                    RightTable.addTitleCell(clipName(data[x].name, 4)).click(onClickCell).data("group", group);
+
+                    //所有人
+                    for(let y=0 ; y<data[x].items.length ; ++y) {
+                        let groupID = data[x].ID, jobID = data[x].items[y].ID;
+                        let pID = G.planMap[groupID][jobID];
+                        let p_data = personInfoMap[pID];
+
+                        let $cell = RightTable.addCell();
+                        $cell.data("group", group);
+                        initCell($cell);
+
+                        if(pID !== null) {
+                            p_data['groupID'] = groupID;
+                            p_data['jobID'] = jobID;
+                            p_data['job'] = `${data[x].name} ${data[x].items[y].name}`;
+                            let person = new Person(p_data);
+                            $cell.text(clipName(person.name, 3));
+                            group.addMember(person);
+                            Charts.addPerson(person);
+                            //生成一个box的node
+                            //隐藏并丢到trash里
+                            initBox(person.$box, $cell);
+                            person.$box.hide().addClass("float");
+                            $cell.data("person", person);
+                            G.$box_trash.append(person.$box);
+                        }
+                    }
+                    group.setOriginState();
+                    RightTable.applyLine();
+                    RightTable.finishBlock();
+                }
+                Charts.update();
+            }, "json")
+        }, "json");
     }, "json");
 });
 
-/** 其他一些初始化 **/
+
+/** 初始化 **/
 $(document).ready(function () {
     //隐藏所有标签
     G.$de_tree_label_list.css({"transform" : "scale(0)"}).data("vis", false);

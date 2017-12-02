@@ -2,7 +2,7 @@
 include_once "./mysqlAll.php";//调用数据库处理函数
 //ini_set("display_errors", "off");
 $db = new mysql();
-$id = intval($_GET['id']);
+$id = intval($_GET['ID']);
 
 
 //先获取到所有经历过的地点

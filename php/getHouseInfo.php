@@ -1,7 +1,7 @@
 <?php
 include_once "./mysqlAll.php";//调用数据库处理函数
 $db = new mysql();
-$id = intval($_GET['id']);
+$id = intval($_GET['ID']);
 //房产地址、房产性质、房屋建筑面积、房产交易价格
 $db->select("grygsxbg_fcqk", "FCJTDZ as address, FCXZ as type, FWJZMJ as area, FCJYJG as price, FCJYSJ as time", "BH = $id");
 

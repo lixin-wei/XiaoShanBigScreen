@@ -104,9 +104,9 @@ class mysql {
  
     /*
     mysql_fetch_row()    array  $row[0],$row[1],$row[2]
-    mysql_fetch_array()  array  $row[0] 或 $row[id]
+    mysql_fetch_array()  array  $row[0] 或 $row[ID]
     mysql_fetch_assoc()  array  用$row->content 字段大小写敏感
-    mysql_fetch_object() object 用$row[id],$row[content] 字段大小写敏感
+    mysql_fetch_object() object 用$row[ID],$row[content] 字段大小写敏感
     */
  
     /*取得结果数据*/

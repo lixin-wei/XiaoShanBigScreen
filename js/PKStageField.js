@@ -15,7 +15,7 @@ export function setPerson(person, dir) {
         crossDomain: true,
         method: "GET",
         dataType: "json",
-        data: {id: person.id},
+        data: {id: person.ID},
         success: function (res) {
             let items = $("#foot_col_mid_container").find(".item");
             for(let i=0 ; i<index_list.length ; ++i) {

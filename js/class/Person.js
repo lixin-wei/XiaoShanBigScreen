@@ -3,7 +3,7 @@ import {getRandomInt} from "../HelperFuncitions";
 let moment = require("moment");
 export class Person {
     constructor(data) {
-        this.id = data.id || -1;
+        this.ID = data.ID || -1;
         this.birthday = moment(data.birthday) || moment("1800-00-00");
         this.eduBkg = data.eduBkg || "";
         this.job = data.job || "";

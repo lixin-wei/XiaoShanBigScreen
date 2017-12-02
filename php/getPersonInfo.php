@@ -2,17 +2,32 @@
 include_once "./mysqlAll.php";//调用数据库处理函数
 
 
-$IDList = json_decode($_POST['IDList']);
+//var_dump($_POST);
+$IDList = $_POST['IDList'];
 $db = new mysql();
 
 $IDListStr = implode(",", $IDList);
-$sql = "SELECT * FROM gbryqd WHERE BH in ($IDListStr)";
 
-$res = $db->query($sql);
+//TODO: 现任职务改成动态生成
+$sql = <<<SQL
+SELECT 
+  BH as ID,
+  CSNY as birthday,
+  XW as eduBkg,
+  XM as name,
+  ZP as photo,
+  ZZMM as politicalStatus,
+  XB as sex
+FROM gbryqd 
+WHERE BH in ($IDListStr)
+SQL;
 
-$return = [];
-while($row = $res->fetch_assoc()) {
-    array_push($return, $row);
+
+$db->query($sql);
+
+$res = array();
+while($row = $db->fetch_assoc()) {
+    $res[$row['ID']] = $row;
 }
 
-echo json_encode($return);
+echo json_encode($res);

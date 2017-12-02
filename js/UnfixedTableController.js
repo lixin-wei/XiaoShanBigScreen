@@ -1,5 +1,5 @@
 
-let $tableSet = $("#mid_col2").find("div[id^=mid_col2] .table-container");
+let $tableSet = $("#mid_col2").find("div[ID^=mid_col2] .table-container");
 let curTable = 0;
 let $lastLine = null;
 let row = 0, col = 0, MAX_ROW = 23, MAX_COL = 7;

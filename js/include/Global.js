@@ -14,3 +14,9 @@ export let floating_person = null;
 export let showing_person_id = null;
 export let $active_cell = null;
 export let $active_stage = null;
+
+
+//计划表，[班子ID][职位ID] -> 人ID
+export let planMap = null;
+//整个职位表，用来建表格用
+export let positionStc = null;

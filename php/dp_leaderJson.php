@@ -56,7 +56,7 @@
 		  clear_arr($tempFlags);
 		  array_push($tempFlags,array(1,2,3));//根据实际情况调整
 		  array_push($tempItems,array(
-			  "id"=>$temp[4],
+			  "ID"=>$temp[4],
 			  "name"=>$temp[5],
 			  "sex"=>$temp[7],
 			  "birthday"=>$temp[8],
@@ -70,7 +70,7 @@
 		  ));
 		}else{
 		  array_push($tempItems,array(
-			  "id"=>-1
+			  "ID"=>-1
 		  ));
 		}
 		//echo json_encode($tempItems,JSON_UNESCAPED_UNICODE);

@@ -1,7 +1,7 @@
 let moment = require('moment');
 export class Group {
     constructor(id, name, desc) {
-        this.id = id || -1;
+        this.ID = id || -1;
         this.name = name || "";
         this.desc = desc || "";
         this.modify_times = 0;
@@ -25,7 +25,7 @@ export class Group {
         this.modify_times++
     }
     removeMember(id) {
-        this.member = this.member.filter((p) => p.id !== id);
+        this.member = this.member.filter((p) => p.ID !== id);
         this.modify_times++;
     }
     getMemberNum() {
