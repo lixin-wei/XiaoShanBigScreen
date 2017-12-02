@@ -72,7 +72,7 @@ export function setGroup(group) {
             $($items_r[2]).text(data["整体战斗力"].labels[0].name);
         else
             $($items_r[2]).text("无材料");
-
+        $problem_item.empty();
         if(data["存在问题"]) {
             data["存在问题"].labels.forEach((label) => {
                 $($problem_item).append(
@@ -94,7 +94,7 @@ export function setGroup(group) {
             });
         }
         else
-            $($items_r[3]).text("无材料");
+            $($problem_item).append($("<div class='text-blue hover-white'/>").text("无材料"));
     }, "json");
 }
 
