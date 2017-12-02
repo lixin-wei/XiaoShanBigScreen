@@ -1,4 +1,5 @@
 window.$ = window.jQuery = require("jquery");
+let echarts = require("echarts");
 let moment = require("moment");
 let option_chart_sex = {
     color : ["#007dc5", "#00c505"],
