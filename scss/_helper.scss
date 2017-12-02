@@ -64,3 +64,10 @@
 .nowrap {
   white-space: nowrap;
 }
+
+.hover-white {
+  &:hover {
+    background: white;
+    border-radius: 3px;
+  }
+}

@@ -125,6 +125,11 @@
   white-space: nowrap;
 }
 
+.hover-white:hover {
+  background: white;
+  border-radius: 3px;
+}
+
 .bigger, .tree-label:hover {
   transform: scale(1.2);
 }
@@ -349,7 +354,7 @@ img {
   top: 175px;
   left: 97px;
 }
-#foot #foot_col2 .row .col-7 {
+#foot #foot_col2 .row .col-7 div, #foot #foot_col2 .row .col-7 span:first-child {
   padding-left: 16px;
 }
 #foot #foot_col2 #detail_container_right {

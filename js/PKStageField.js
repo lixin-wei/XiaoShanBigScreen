@@ -13,6 +13,7 @@ export function setPerson(person, dir) {
     $.ajax({
         url: G.PERSON_INFO_API_URL,
         crossDomain: true,
+        method: "GET",
         dataType: "json",
         data: {id: person.id},
         success: function (res) {
@@ -120,6 +121,9 @@ $("#foot_col_mid_container").find(".item .label").click(function (e) {
 });
 
 let $job_chooser = $("#foot_col4_job");
+export function clearJobChooser() {
+    $job_chooser.text("选择岗位");
+}
 $job_chooser.click(function (e) {
     let x = $(this).offset().left + $(this).outerWidth()/2;
     let y = $(this).offset().top + $(this).outerHeight()/2;

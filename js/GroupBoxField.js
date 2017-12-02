@@ -1,5 +1,6 @@
 import * as G from "./include/Global";
 import * as PopBox from "./component/PopBox";
+import * as PKStage from "./PKStageField";
 let curGroup = null;
 export function getGroupID() {
     if(curGroup){
@@ -14,14 +15,18 @@ export function update() {
 }
 export function setGroup(group) {
     let $items_l = $("#detail_container_left").find(".row div:last-child");
-    let $items_r = $("#detail_container_right").find(".row div:last-child span");
+    let $container_right = $("#detail_container_right");
+    let $items_r = $container_right.find(".row div:last-child span");
+    let $problem_item = $container_right.find(".row:last-child div:last-child");
     //首先清空
+    PKStage.clearJobChooser();
     $items_l.each(function () {
         $(this).find("span").text("");
     });
     $items_r.each(function () {
         $(this).text("");
     });
+    $problem_item.empty();
     let $desc = $("#group_description");
     let $photo = $("#group_photo").find("img");
     $desc.text("");
@@ -50,7 +55,7 @@ export function setGroup(group) {
         $($items_l[6]).find("span.text-green").text(" / " + group.getFemaleNum());
     }
     //右边的评价
-    $.post("http://localhost:5000/team", {teamID: group.id}, function (data) {
+    $.get("http://localhost:5000/team", {id: group.id}, function (data) {
         console.log(data);
 
         if(data["一把手作用"])
@@ -70,15 +75,17 @@ export function setGroup(group) {
 
         if(data["存在问题"]) {
             data["存在问题"].labels.forEach((label) => {
-                $($items_r[3]).append(
-                    $("<div class='text-blue'/>")
+                $($problem_item).append(
+                    $("<div class='text-blue hover-white'/>")
                         .text(label.name)
-                        // .data("ref", label.ref)
+                        .css({
+                            "margin-bottom": "0.5rem"
+                        })
                         //问题标签点击显示来源
                         .click(function (e) {
                             let $content = $("<ul class='ref-list'/>");
                             label.ref.forEach((r) => {
-                                $content.append("<li/>").text(r.source.fileName);
+                                $content.append("<li/>").text(`${r.sentence} —— ${r.source.fileName}`);
                             });
                             PopBox.show(e.pageX, e.pageY, $content);
                             e.stopPropagation();
