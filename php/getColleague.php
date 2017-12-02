@@ -21,22 +21,32 @@ foreach ($experiences as $exp) {
     $condition1 = $exp['ZZSJ'] ? "(QSSJ IS NOT NULL AND QSSJ>\"{$exp['ZZSJ']}\")" : "0";
     $condition2 = $exp['QSSJ'] ? "(ZZSJ IS NOT NULL AND ZZSJ<\"${exp['QSSJ']}\")" : "0";
 
-    $db->select("grjl", "BH, XM, JLSQ", "NOT($condition1 OR $condition2) AND JLDD = \"{$exp['JLDD']}\"");
-    $colleges = [];
+    $db->select("grjl", "BH, XM, JLSQ", "NOT($condition1 OR $condition2) AND JLDD = \"{$exp['JLDD']}\"", "QSSJ");
+    $jobList = array();
+    //对当前地点，与其时间有交集的，所有人的经历
     while($row = $db->fetch_assoc()) {
+        //排除自己
         if($row['BH'] == $id) continue;
-        array_push($colleges, array(
-            "name" => $row['XM'],
-            "job" => $row['JLSQ']
+        $name = $row['XM'];
+        $job = $row['JLSQ'];
+        //统计期间所有职务
+        if(!isset($jobList[$name])) $jobList[$name] = [];
+        array_push($jobList[$name], $job);
+    }
+    $colleagues = [];
+    foreach ($jobList as $name => $jobs) {
+        array_push($colleagues, array(
+            "name" => $name,
+            "jobs" => $jobs
         ));
     }
-    if(count($colleges) != 0) {
-        $item = array(
+    if(count($jobList) != 0) {
+        $item = array (
             "begin_time" => $exp['QSSJ'],
             "end_time" => $exp['ZZSJ'],
             "place" => $exp['JLDD'],
             "job" => $exp['JLSQ'],
-            "colleagues" => $colleges
+            "colleagues" => $colleagues
         );
         array_push($res, $item);
     }

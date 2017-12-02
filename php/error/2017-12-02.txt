@@ -1,0 +1,35 @@
+错误SQL语句：
+SELECT * FROM gbryqd WHERE BH in (Array)
+客户IP:127.0.0.1
+时间 :2017-12-02 07:36:30
+
+错误SQL语句：
+SELECT * FROM gbryqd WHERE BH in ()
+客户IP:127.0.0.1
+时间 :2017-12-02 07:38:31
+
+错误SQL语句：
+SELECT * FROM gbryqd WHERE BH in ()
+客户IP:127.0.0.1
+时间 :2017-12-02 07:39:10
+
+错误SQL语句：
+SELECT * FROM gbryqd WHERE BH in ()
+客户IP:127.0.0.1
+时间 :2017-12-02 07:39:24
+
+错误SQL语句：
+SELECT * FROM gbryqd WHERE BH in ()
+客户IP:127.0.0.1
+时间 :2017-12-02 07:39:41
+
+SQL语句错误
+
+客户IP:127.0.0.1
+时间 :2017-12-02 08:55:50
+
+SQL语句错误
+
+客户IP:127.0.0.1
+时间 :2017-12-02 08:55:50
+

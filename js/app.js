@@ -4,7 +4,7 @@ import {getRandomInt, clipName, getNodeCenter} from "./HelperFuncitions";
 import {Person} from "./class/Person";
 import {Group} from "./class/Group";
 import {NormalTableController} from "./NormalTableController";
-import {UnfixedTableController} from "./UnfixedTableController";
+import * as RightTable from "./UnfixedTableController";
 import * as Charts from "./ChartField";
 import * as GroupBox from "./GroupBoxField";
 import * as PopBox from "./component/PopBox";
@@ -371,11 +371,6 @@ import {} from "./PersonDetailField";
 
 /** 初始数据填充 **/
 let table_left = new NormalTableController();
-let unfixedTableController1 = new UnfixedTableController($("#table_right1"));
-let unfixedTableController2 = new UnfixedTableController($("#table_right2"));
-let unfixedTableController3 = new UnfixedTableController($("#table_right3"));
-let unfixedTableController4 = new UnfixedTableController($("#table_right4"));
-let unfixedTableController5 = new UnfixedTableController($("#table_right5"));
 $(document).ready(function () {
     //人员表数据
     //左边表格
@@ -419,19 +414,21 @@ $(document).ready(function () {
         Charts.update();
     }, "json");
     //右边表格
-    function insertToTable(data, l, r, table) {
+    $.get("php/dp_leaderJson.php?BM=2", function (data) {
+        data = data[0].rows;
+        console.log(data);
         //对于每个单位
-        for(let x=l ; x<=r ; ++x) {
+        for(let x=0 ; x<data.length ; ++x) {
             //标题行
             let group = new Group(data[x].groupID, data[x].rowTitle, data[x].desc);
-            table.newLine();
-            table.addTitleCell(clipName(data[x].rowTitle, 4)).click(onClickCell).data("group", group);
+            RightTable.newLine();
+            RightTable.addTitleCell(clipName(data[x].rowTitle, 4)).click(onClickCell).data("group", group);
 
             //所有人
             for(let i=0 ; i<data[x].items.length ; ++i) {
                 let p_data = data[x].items[i];
                 let person = new Person(p_data);
-                let $cell = table.addCell(clipName(person.name, 3));
+                let $cell = RightTable.addCell(clipName(person.name, 3));
                 $cell.data("group", group);
                 initCell($cell);
 
@@ -447,19 +444,9 @@ $(document).ready(function () {
                 }
             }
             group.setOriginState();
-            table.applyLine();
-            table.finishBlock();
+            RightTable.applyLine();
+            RightTable.finishBlock();
         }
-    }
-
-    $.get("php/dp_leaderJson.php?BM=2", function (data) {
-        data = data[0].rows;
-        console.log(data);
-        insertToTable(data, 0, 11, unfixedTableController1);
-        insertToTable(data, 12, 32, unfixedTableController2);
-        insertToTable(data, 33, 49, unfixedTableController3);
-        insertToTable(data, 50, 66, unfixedTableController4);
-        insertToTable(data, 67, 76, unfixedTableController5);
         Charts.update();
     }, "json");
 });

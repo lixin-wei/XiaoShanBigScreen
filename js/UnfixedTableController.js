@@ -1,52 +1,60 @@
-export class UnfixedTableController {
-    constructor ($table, max_col = 7) {
-        this.$table = $table;
-        this.$lastLine = null;
-        this.max_col = max_col;
-        this.col = 0;
-        this.is_pad = false;
+
+let $tableSet = $("#mid_col2").find("div[id^=mid_col2] .table-container");
+let curTable = 0;
+let $lastLine = null;
+let row = 0, col = 0, MAX_ROW = 23, MAX_COL = 7;
+let isPad = false;
+export function applyLine () {
+    // console.log(`row: ${row }`);
+    if(curTable >= $tableSet.length) {
+        col = 0;
+        return;
     }
-    applyLine () {
-        if(this.$last_line) {
-            //补齐当前行
-            while(this.col < this.max_col) {
-                this.addDisabledCell();
-            }
-            this.$table.append(this.$last_line);
+    if($lastLine) {
+        //补齐当前行
+        while(col < MAX_COL) {
+            addDisabledCell();
         }
-        this.$last_line = null;
-        this.col = 0;
+        // console.log(`curTable: ${curTable}`);
+        $($tableSet[curTable]).append($lastLine);
     }
-    finishBlock () {
-        this.is_pad = false;
+    col = 0;
+    row++;
+    if(row === MAX_ROW) {
+        row = 0;
+        curTable++;
     }
-    newLine () {
-        this.applyLine();
-        this.$last_line = $(`<div class='table-row' />`);
-        if(this.is_pad) {
-            this.addEmptyCell();
-        }
+    $lastLine = null;
+}
+export function finishBlock () {
+    isPad = false;
+}
+export function newLine () {
+    if($lastLine) applyLine();
+    $lastLine = $(`<div class='table-row' />`);
+    if(isPad) {
+        addEmptyCell();
     }
-    addCellWithClass(text, class_str, col_weight = 1) {
-        if(this.col >= this.max_col) {
-            this.newLine();
-        }
-        this.col += col_weight;
-        let $cell = $(`<div class='${class_str}' />`).text(text);
-        this.$last_line.append($cell);
-        return $cell;
+}
+export function addCellWithClass(text, class_str, col_weight = 1) {
+    if(col >= MAX_COL) {
+        newLine();
     }
-    addCell(text) {
-        return this.addCellWithClass(text, "cell thin");
-    }
-    addTitleCell(text) {
-        this.is_pad = true;
-        return this.addCellWithClass(text, "cell thin title-row", 1);
-    }
-    addDisabledCell() {
-        return this.addCellWithClass("", "cell thin disabled");
-    }
-    addEmptyCell() {
-        return this.addCellWithClass("", "cell thin empty");
-    }
+    col += col_weight;
+    let $cell = $(`<div class='${class_str}' />`).text(text);
+    $lastLine.append($cell);
+    return $cell;
+}
+export function  addCell(text) {
+    return addCellWithClass(text, "cell thin");
+}
+export function  addTitleCell(text) {
+    isPad = true;
+    return addCellWithClass(text, "cell thin title-row", 1);
+}
+export function addDisabledCell() {
+    return addCellWithClass("", "cell thin disabled");
+}
+export function addEmptyCell() {
+    return addCellWithClass("", "cell thin empty");
 }

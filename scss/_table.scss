@@ -1,15 +1,13 @@
 @import "variable";
 // 表格相关
 .table-container {
-  display: flex;
-  flex-flow: column;
-  justify-content: space-between;
-  height: 100%;
+  .table-row {
+    margin-bottom: 3.5px;
+    display: flex;
+    justify-content: space-between;
+  }
 }
-.table-row {
-  display: flex;
-  justify-content: space-between;
-}
+
 .cell {
   width: $CELL_WIDTH;
   height: $CELL_HEIGHT;
