@@ -20,3 +20,6 @@ export let $active_stage = null;
 export let planMap = null;
 //整个职位表，用来建表格用
 export let positionStc = null;
+
+//调动记录
+export let transLog = [];

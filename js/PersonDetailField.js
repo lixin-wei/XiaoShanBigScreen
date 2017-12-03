@@ -103,6 +103,9 @@ $("#btn_family_net").click(function (e) {
             亲属网
         </div>
         <table>
+            <tr>
+                <td>称谓</td><td>姓名</td><td>现任职务</td>
+            </tr>
         </table>
     </div>
     `));
@@ -113,7 +116,7 @@ $("#btn_family_net").click(function (e) {
                 <tr>
                     <td>${data[0]}</td>
                     <td>${data[1]}</td>
-                    <td>${data[2]} ${data[3]}</td>
+                    <td>${data[2]}</td>
                 </tr>
             `);
             $content.find("table").append($tr);

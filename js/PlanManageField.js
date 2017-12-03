@@ -65,3 +65,45 @@ $("#plan_save").click(function (e) {
     });
     e.stopPropagation();
 });
+
+$("#plan_diff").click(function (e) {
+    let $content = $(`
+        <table>
+            <tr>
+                <td colspan="8">干部任免方案</td>
+            </tr>
+            <tr>
+                <td>编号</td>
+                <td>姓名</td>
+                <td>性别</td>
+                <td>出生年月</td>
+                <td>学历</td>
+                <td>政治面貌</td>
+                <td>现任职务</td>
+                <td>拟任免（提议）职务</td>
+            </tr>
+        </table>
+    `);
+    let i=1;
+    G.transLog.forEach((log) => {
+        let $tr = $(`
+            <tr>
+                <td>${i++}</td>
+                <td>${log.who.name}</td>
+                <td>${log.who.sex}</td>
+                <td>${log.who.birthday.format("YYYY-MM")}</td>
+                <td>${log.who.eduBkg}</td>
+                <td>${log.who.politicalStatus}</td>
+                <td>${log.from}</td>
+                <td>${log.to}</td>
+            </tr>
+        `);
+        $content.append($tr);
+    });
+    PopBox.show(e.pageX, e.pageY, $content, {
+        position: {x: "left", y: "bottom"},
+        css: {"max-width": "1200px"},
+        showClose: false
+    });
+    e.stopPropagation();
+});

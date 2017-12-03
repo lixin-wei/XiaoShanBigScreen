@@ -314,6 +314,12 @@ $(window).on("mouseup", function (e) {
                 $to.addClass("changed");
                 //加变动线
                 LineLayer.addLine(getNodeCenter($from), getNodeCenter($to));
+                //记录调动
+                G.transLog.push({
+                    from: $from.data("positionName"),
+                    to: $to.data("positionName"),
+                    who: G.floating_person
+                });
             }
             //设置姓名
             G.$active_cell.text(clipName(G.floating_person.name, 3));
@@ -410,6 +416,7 @@ $(document).ready(function () {
                         let p_data = personInfoMap[pID];
                         let $cell = table_left.addCell();
                         $cell.data("group", group);
+                        $cell.data("positionName", `${data[x].name} ${data[x].items[y].name}`);
                         if(pID !== null) {
                             p_data['groupID'] = groupID;
                             p_data['jobID'] = jobID;
@@ -448,6 +455,7 @@ $(document).ready(function () {
 
                         let $cell = RightTable.addCell();
                         $cell.data("group", group);
+                        $cell.data("positionName", `${data[x].name} ${data[x].items[y].name}`);
                         initCell($cell);
 
                         if(pID !== null) {
