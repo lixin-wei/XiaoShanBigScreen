@@ -398,7 +398,7 @@ $(document).ready(function () {
                 }
                 table_left.applyLine();
                 //各个街镇的行
-                for (let x=0 ; x<20 ; ++x) {
+                for (let x=0 ; x<data.length ; ++x) {
                     table_left.newLine();
                     let group = new Group(data[x].ID, data[x].name, data[x].desc);
                     //街镇标题

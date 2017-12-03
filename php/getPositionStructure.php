@@ -52,5 +52,7 @@ while($row = $db->fetch_assoc()) {
         "ID" => $row['position_id']
     ));
 }
+if($lastFlag == 1) array_push($res['fixed'], $r);
+else array_push($res['unfixed'], $r);
 
 echo json_encode($res);

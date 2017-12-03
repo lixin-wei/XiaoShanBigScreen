@@ -55,7 +55,7 @@ export function setGroup(group) {
         $($items_l[6]).find("span.text-green").text(" / " + group.getFemaleNum());
     }
     //右边的评价
-    $.get("http://localhost:5000/team", {ID: group.ID}, function (data) {
+    $.get("http://localhost:5000/team", {id: group.ID}, function (data) {
         console.log(data);
 
         if(data["一把手作用"])

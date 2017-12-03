@@ -54,7 +54,9 @@ class mysql {
         }
         return $this->result;
     }
- 
+    public function escape($string) {
+        return mysqli_real_escape_string($this->conn, $string);
+    }
     /*创建添加新的数据库*/
     public function create_database($database_name) {
         $database = $database_name;
