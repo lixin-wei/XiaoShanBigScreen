@@ -1,17 +1,21 @@
 .pop-box {
-  padding: 1.5rem;
+  padding: 1.5rem 2.5rem 0 1.5rem;
   border-radius: 5px;
   border: 1px solid rgba(255,255,255,0.5);
   background: rgba(0,0,0,0.7);
   filter: drop-shadow(0 0 15px #67aaff);
   color: white;
-  &.no-close {
-    padding: 0.5rem 0.7rem 0.7rem 0.7rem;
-  }
   .content {
     overflow-y: scroll;
     max-width: 700px;
     max-height: 550px;
+    margin-bottom: 1.5rem;
+  }
+  &.no-close {
+    padding: 0.5rem 0.7rem 0.7rem 0.7rem;
+    .content {
+      margin-bottom: 0;
+    }
   }
   i.fa-close {
     font-size: 20pt;

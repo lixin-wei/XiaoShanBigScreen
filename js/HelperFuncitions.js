@@ -3,7 +3,7 @@ export function getRandomInt(min, max) {
     max = Math.floor(max + 1);
     return Math.floor(Math.random() * (max - min)) + min; //[a,b]
 }
-export function clipName(str, len) {
+export function clipString(str, len) {
     if(!str) str = "";
     str = str.replace(/ /g, "");
     if(str.length <= len) return str;

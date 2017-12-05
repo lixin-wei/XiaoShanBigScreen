@@ -10,16 +10,23 @@ $IDListStr = implode(",", $IDList);
 
 //TODO: 现任职务改成动态生成
 $sql = <<<SQL
-SELECT 
-  BH as ID,
-  CSNY as birthday,
-  XW as eduBkg,
-  XM as name,
-  ZP as photo,
-  ZZMM as politicalStatus,
-  XB as sex
-FROM gbryqd 
-WHERE BH in ($IDListStr)
+SELECT
+	gbryqd.BH AS ID,
+	CSNY AS birthday,
+	XW AS eduBkg,
+	gbryqd.XM AS name,
+	ZP AS photo,
+	ZZMM AS politicalStatus,
+	XB AS sex,
+	MAX( grjl.QSSJ ) AS recentJobTransferDate, #从个人简历表里获取最近一次经历的时间，作为最近调度时间
+	FLAG AS flag
+FROM
+	gbryqd
+	LEFT JOIN grjl ON gbryqd.BH = grjl.BH 
+WHERE
+	gbryqd.BH in ($IDListStr)
+GROUP BY
+	ID
 SQL;
 
 
@@ -27,6 +34,7 @@ $db->query($sql);
 
 $res = array();
 while($row = $db->fetch_assoc()) {
+    $row['flag'] = intval($row['flag']);
     $res[$row['ID']] = $row;
 }
 

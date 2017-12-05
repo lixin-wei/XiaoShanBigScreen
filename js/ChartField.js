@@ -118,7 +118,7 @@ let option_chart_age = {
         orient: 'vertical',
         left: 'left',
         top: "middle",
-        data: ['1694.12之前','1965.1-1969.12',"1970.1-1974.12","1975.1-1979.12", "1980.01之后"],
+        data: ['1964.12之前','1965.1-1969.12',"1970.1-1974.12","1975.1-1979.12", "1980.01之后"],
         textStyle : {
             color: "white"
         }
@@ -130,11 +130,11 @@ let option_chart_age = {
             radius : '65%',
             center: ['75%', '40%'],
             data:[
-                {value:156, name:'1694.12之前'},
-                {value:238, name:'1965.1-1969.12'},
-                {value:185, name:'1970.1-1974.12'},
-                {value:143, name:'1975.1-1979.12'},
-                {value:59, name:'1980.01之后'},
+                {value:0, name:'1964.12之前'},
+                {value:0, name:'1965.1-1969.12'},
+                {value:0, name:'1970.1-1974.12'},
+                {value:0, name:'1975.1-1979.12'},
+                {value:0, name:'1980.01之后'},
             ],
             label : {
                 normal: {
@@ -232,7 +232,7 @@ export function addPerson(person) {
     //年龄统计
     let bir = person.birthday;
     data = option_chart_age.series[0].data;
-    if(bir.isBefore(moment("1694-12-01"))) {
+    if(bir.isBefore(moment("1964-12-01"))) {
         data[0].value++;
     }
     else if(bir.isBefore(moment("1969-12-01"))) {

@@ -1,7 +1,8 @@
 import * as G from "./include/Global";
 import * as PopBox from "./component/PopBox";
 import * as GroupBox from "./GroupBoxField";
-const index_list = ["工作业绩",  "个性特点",  "群众基础",  "分类考核",  "不足与风险",  "能力类型",  "专业特长",  "工作作风",  "适宜岗位"];
+import * as Helper from "./HelperFuncitions";
+const index_list = ["工作业绩",  "个性特点",  "群众基础",  "分类考核",  "能力类型",  "专业特长",  "工作作风",  "适宜岗位", "不足和风险点"];
 let $container = $("#foot_col4");
 export function setPerson(person, dir) {
     let $photo_col = $container.find(`#photo_col_${dir}`);
@@ -23,16 +24,29 @@ export function setPerson(person, dir) {
                 let index = index_list[i];
                 //设置指标名称，清空来源数据
                 $item.find(".label").text(index_list[i]).data(`ref_${dir}`, null);
+                //清空badge
+                $item.find(`.col-${dir}`).empty();
                 //如果有这个标签，填充指标标签
                 if(res.hasOwnProperty(index)) {
                     let labels = res[index].labels;
                     //给指标附上来源的数据
                     $item.find(".label").data(`ref_${dir}`, labels);
-                    for(let j = 0 ; j<labels.length ; ++j){
-                        let label = labels[j];
-                        let $badge = $("<span class='badge'/>");
-                        $badge.text(label.name);
-                        $item.find(`.col-${dir}`).append($badge);
+                    //如果是不足和风险，截一些字显示
+                    if(i === index_list.length - 1) {
+                        labels[0].ref.forEach((r) => {
+                            let $badge = $("<span class='badge'/>");
+                            $badge.text(Helper.clipString(r.sentence, 5));
+                            $item.find(`.col-${dir}`).append($badge);
+                        });
+                    }
+                    //否则生成一个个badge
+                    else {
+                        for(let j = 0 ; j<labels.length ; ++j){
+                            let label = labels[j];
+                            let $badge = $("<span class='badge'/>");
+                            $badge.text(label.name);
+                            $item.find(`.col-${dir}`).append($badge);
+                        }
                     }
                 }
             }

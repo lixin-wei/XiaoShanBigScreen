@@ -1,8 +1,9 @@
 import {planMap} from "./include/Global";
 
 window.$ = window.jQuery = require("jquery");
+let moment = require("moment");
 import * as G from "./include/Global";
-import {getRandomInt, clipName, getNodeCenter} from "./HelperFuncitions";
+import {getRandomInt, clipString, getNodeCenter} from "./HelperFuncitions";
 import {Person} from "./class/Person";
 import {Group} from "./class/Group";
 import {NormalTableController} from "./NormalTableController";
@@ -13,6 +14,7 @@ import * as PopBox from "./component/PopBox";
 import * as PKStage from "./PKStageField";
 
 import {} from "./PlanManageField";
+
 
 /** 变动线层 **/
 import * as LineLayer from "./LineLayer";
@@ -33,7 +35,7 @@ function focusOn($ele) {
 }
 function setPersonInfo(person) {
     console.log(`person_id = ${person.ID}`);
-    G.showing_person_id = person.ID;
+    G.setShowingPersonID(person.ID);
     G.$person_info_container.find(".photo img").attr("src", G.PERSON_PHOTO_ROOT + person.photo);
     G.$person_info_container.find(".name").text(person.name);
     G.$person_info_container.find(".info1").text(person.getInfo());
@@ -49,12 +51,18 @@ function setPersonInfo(person) {
         dataType: "json",
         data: {id: person.ID},
         success: function (res) {
-            let DELables = [], CAILabels = [];
+            let DELables = [], CAILabels = [], OrangeLabels = [];
             let DEKeys = ["政治品德", "工作作风", "个性特点", "群众基础"],
-                CAIKeys = ["能力类型", "专业特长", /*"工作业绩",*/ "分类考核"];
+                OrangeKeys = ["能力类型", "专业特长"], //用橙色显示的标签
+                CAIKeys = [/*"工作业绩",*/ "分类考核"];
             DEKeys.forEach((key) => {
                 if(res[key] && res[key].labels) {
                     res[key].labels.forEach((label) => DELables.push(label));
+                }
+            });
+            OrangeKeys.forEach((key) => {
+                if(res[key] && res[key].labels) {
+                    res[key].labels.forEach((label) => OrangeLabels.push(label));
                 }
             });
             CAIKeys.forEach((key) => {
@@ -79,11 +87,23 @@ function setPersonInfo(person) {
                         x++;
                     }
                 });
+                OrangeLabels.forEach((label) => {
+                    if(y < G.$cai_tree_label_list.length) {
+                        let i = getRandomInt(0, G.$cai_tree_label_list.length - 1);
+                        while(vis_b[i]) i = getRandomInt(0, G.$cai_tree_label_list.length - 1);
+                        //设置成橙色
+                        $(G.$cai_tree_label_list[i]).attr("class", "tree-label orange");
+                        $(G.$cai_tree_label_list[i]).css({"transform": "scale(1)"}).data("vis", true).data("ref", label.ref);
+                        $(G.$cai_tree_label_list[i]).find("div").text(label.name.substr(0, 4));
+                        y++;
+                    }
+                });
                 CAILabels.forEach((label) => {
                     if(y < G.$cai_tree_label_list.length) {
                         let i = getRandomInt(0, G.$cai_tree_label_list.length - 1);
                         while(vis_b[i]) i = getRandomInt(0, G.$cai_tree_label_list.length - 1);
-
+                        //设置成蓝色
+                        $(G.$cai_tree_label_list[i]).attr("class", "tree-label blue");
                         $(G.$cai_tree_label_list[i]).css({"transform": "scale(1)"}).data("vis", true).data("ref", label.ref);
                         $(G.$cai_tree_label_list[i]).find("div").text(label.name.substr(0, 4));
                         y++;
@@ -139,7 +159,7 @@ function goToList($box) {
 //info box 相关事件响应
 function onMouseMoveInfoBox(e) { //InfoBox的拖出事件
     console.log("move");
-    if(isMouseDown && !G.floating_person) {
+    if(isMouseDown && !G.getFloatingPerson()) {
         let maxQueueCnt = 0;
         G.$box_list.find(".info-box").each(function () {
             maxQueueCnt = Math.max(maxQueueCnt, $(this).queue());
@@ -150,7 +170,7 @@ function onMouseMoveInfoBox(e) { //InfoBox的拖出事件
                 top: $(this).offset().top - $(window).scrollTop(),
                 left: $(this).offset().left - $(window).scrollLeft(),
             }).addClass("float");
-            G.floating_person = $(this).data("person_obj");
+            G.setFloatingPerson($(this).data("person_obj"));
             click_x = e.pageX - $(this).offset().left;
             click_y = e.pageY - $(this).offset().top;
             allNextUp($(this));
@@ -166,25 +186,26 @@ function onClickInfoBox() { //InfoBox的点击事件
 
 //cell 的相关事件响应
 function onMouseEnterCell() {
-    G.$active_cell = $(this);
+    G.setActiveCell($(this));
 }
 function onMouseLeaveCell() {
-    G.$active_cell = null;
+    G.setActiveCell(null);
 }
 function onMouseMoveCell(e) { //cell中的box拖出事件
 
     /* 如果是拖出且当前格子有内容 */
-    if(isMouseDown && !G.floating_person && $(this).data("person")) {
+    if(isMouseDown && !G.getFloatingPerson() && $(this).data("person")) {
         //拿出这个box并显示
-        G.floating_person = $(this).data("person");
+        G.setFloatingPerson($(this).data("person"));
         $(this).data("person", null);
-        $(this).text("");
-        G.floating_person.$box.show();
+        //清空格子
+        $(this).text(G.CELL_EMPTY_ALPHA).removeClass("important");
+        G.getFloatingPerson().$box.show();
         //修改group
-        $(this).data("group").removeMember(G.floating_person.ID);
+        $(this).data("group").removeMember(G.getFloatingPerson().ID);
         GroupBox.update();
         //记录下从哪个格子拖出来的，高亮用
-        G.floating_person.$box.data("cell_from", $(this));
+        G.getFloatingPerson().$box.data("cell_from", $(this));
     }
 }
 function onRightClickCell(e) {
@@ -210,16 +231,16 @@ function onClickCell() {
 //PK台的相关事件
 $("#foot_col4").find(".photo-col .photo")
     .mousemove(function () {
-        G.$active_stage = $(this);
+        G.setActiveStage($(this));
     })
     .mouseout(function () {
-        G.$active_stage = null;
+        G.setActiveStage(null);
     })
     //PK台box拽出
     .mousedown(function () {
         if($(this).data("person")) {
-            G.floating_person = $(this).data("person");
-            G.floating_person.$box.show();
+            G.setFloatingPerson($(this).data("person"));
+            G.getFloatingPerson().$box.show();
             $(this).data("person", null);
 
             if($(this).parent().attr("id") === "photo_col_left")
@@ -288,26 +309,26 @@ $(window).contextmenu(function () {
     return false;
 });
 $(window).on("mouseup", function (e) {
-    if(G.floating_person) {
+    if(G.getFloatingPerson()) {
         //如果当前鼠标下有cell，则填充
-        if(G.$active_cell) {
-            if(G.$active_cell.data("person")) { //如果当前cell已经有内容了
+        if(G.getActiveCell()) {
+            if(G.getActiveCell().data("person")) { //如果当前cell已经有内容了
                 //修改group
-                G.$active_cell.data("group").removeMember(G.$active_cell.data("person").ID);
+                G.getActiveCell().data("group").removeMember(G.getActiveCell().data("person").ID);
                 GroupBox.update();
                 //让这个box回备选区去
-                if(G.$active_cell.hasClass("active")) {
+                if(G.getActiveCell().hasClass("active")) {
                     focusOn(null);
                 }
-                G.$active_cell.data("person").$box.css({
+                G.getActiveCell().data("person").$box.css({
                     top: e.pageY - $(window).scrollTop(),
                     left: e.pageX - $(window).scrollLeft()
                 });
-                goToList(G.$active_cell.data("person").$box);
-                G.$active_cell.data("person", null);
+                goToList(G.getActiveCell().data("person").$box);
+                G.getActiveCell().data("person", null);
             }
-            let $from = G.floating_person.$box.data("cell_from");
-            let $to = G.$active_cell;
+            let $from = G.getFloatingPerson().$box.data("cell_from");
+            let $to = G.getActiveCell();
             if($from && $to && !$to.is($from)) {
                 //设置高亮
                 $from.addClass("changed");
@@ -318,45 +339,49 @@ $(window).on("mouseup", function (e) {
                 G.transLog.push({
                     from: $from.data("positionName"),
                     to: $to.data("positionName"),
-                    who: G.floating_person
+                    who: G.getFloatingPerson()
                 });
             }
             //设置姓名
-            G.$active_cell.text(clipName(G.floating_person.name, 3));
+            G.getActiveCell().text(clipString(G.getFloatingPerson().name, 3));
             //把person附加到cell上
-            G.$active_cell.data("person", G.floating_person);
+            G.getActiveCell().data("person", G.getFloatingPerson());
             //设置group
-            G.$active_cell.data("group").addMember(G.$active_cell.data("person"));
+            G.getActiveCell().data("group").addMember(G.getActiveCell().data("person"));
+            //如果是市委干部，加个高亮
+            if(G.getFloatingPerson().flag === 1) {
+                G.getActiveCell().addClass("important");
+            }
             GroupBox.update();
             //隐藏box
-            G.floating_person.$box.hide();
+            G.getFloatingPerson().$box.hide();
 
         }
         //如果是拖到PK台
-        else if(G.$active_stage) {
+        else if(G.getActiveStage()) {
             //如果当前pk位已经有人了
-            if(G.$active_stage.data("person")) {
+            if(G.getActiveStage().data("person")) {
                 //让这个box回备选区去
-                goToList(G.$active_stage.data("person").$box);
-                G.$active_stage.data("person", null);
+                goToList(G.getActiveStage().data("person").$box);
+                G.getActiveStage().data("person", null);
             }
-            G.floating_person.$box.hide();
-            G.$active_stage.data("person", G.floating_person);
-            if(G.$active_stage.parent().attr("id") === "photo_col_left")
-                PKStage.setLeft(G.floating_person);
+            G.getFloatingPerson().$box.hide();
+            G.getActiveStage().data("person", G.getFloatingPerson());
+            if(G.getActiveStage().parent().attr("id") === "photo_col_left")
+                PKStage.setLeft(G.getFloatingPerson());
             else
-                PKStage.setRight(G.floating_person);
-            G.floating_person = null;
+                PKStage.setRight(G.getFloatingPerson());
+            G.setFloatingPerson(null);
 
         }
         else { //否则让box回去
-            goToList(G.floating_person.$box);
-            G.floating_person.$box.data("cell_from").addClass("changed");
-            let group = G.floating_person.$box.data("cell_from").data("group");
-            group.removeMember(G.floating_person.ID);
+            goToList(G.getFloatingPerson().$box);
+            G.getFloatingPerson().$box.data("cell_from").addClass("changed");
+            let group = G.getFloatingPerson().$box.data("cell_from").data("group");
+            group.removeMember(G.getFloatingPerson().ID);
             GroupBox.update();
         }
-        G.floating_person = null;
+        G.setFloatingPerson(null);
     }
 });
 $(window).on("mousedown", function () {
@@ -366,8 +391,8 @@ $(window).on("mouseup", function () {
     isMouseDown = false;
 });
 $(window).on("mousemove", function (e) { //box跟随鼠标移动
-    if (G.floating_person) {
-        G.floating_person.$box.css({
+    if (G.getFloatingPerson()) {
+        G.getFloatingPerson().$box.css({
             top: e.pageY - $(window).scrollTop() - click_y,
             left: e.pageX - $(window).scrollLeft() - click_x
         });
@@ -381,14 +406,14 @@ let table_left = new NormalTableController();
 $(document).ready(function () {
     //首先获取整个职位结构
     $.get("php/getPositionStructure", {}, function (positionStc) {
-        G.positionStc = positionStc;
+        // G.positionStc = positionStc;
         //然后获取到当前的plan
-        $.get("php/getPlan.php", {ID: "-1"}, function (map) {
+        $.get("php/getPlan.php", {ID: "-1"}, function (planMap) {
             // console.log(map);
-            G.planMap = map;
+            // G.planMap = planMap;
             //汇总所有人，得到信息表
             let personIDList = [];
-            Object.entries(G.planMap).forEach(([i, row]) => {
+            Object.entries(planMap).forEach(([i, row]) => {
                 Object.entries(row).forEach(([j, id]) => {
                     if(id !== null)personIDList.push(id);
                 })
@@ -412,19 +437,24 @@ $(document).ready(function () {
                     for (let y=0 ; y<18 ; ++y) {
                         if(y+1 === 5 || y+1 === 6 ) continue;
                         let groupID = data[x].ID, jobID = data[x].items[y].ID;
-                        let pID = G.planMap[groupID][jobID];
+                        let pID = planMap[groupID][jobID];
                         let p_data = personInfoMap[pID];
                         let $cell = table_left.addCell();
                         $cell.data("group", group);
                         $cell.data("positionName", `${data[x].name} ${data[x].items[y].name}`);
+
                         if(pID !== null) {
                             p_data['groupID'] = groupID;
                             p_data['jobID'] = jobID;
                             p_data['job'] = `${data[x].name} ${data[x].items[y].name}`;
                             let person = new Person(p_data);
+                            //如果是市委干部，特别颜色标注
+                            if(person.flag === 1) {
+                                $cell.addClass("important");
+                            }
                             Charts.addPerson(person);
                             group.addMember(person);
-                            $cell.text(clipName(person.name, 4));
+                            $cell.text(clipString(person.name, 4));
                             //生成一个box的node
                             //隐藏并丢到trash里
                             initBox(person.$box, $cell);
@@ -445,12 +475,12 @@ $(document).ready(function () {
                     //标题行
                     let group = new Group(data[x].ID, data[x].name, data[x].desc);
                     RightTable.newLine();
-                    RightTable.addTitleCell(clipName(data[x].name, 4)).click(onClickCell).data("group", group);
+                    RightTable.addTitleCell(clipString(data[x].name, 4)).click(onClickCell).data("group", group);
 
                     //所有人
                     for(let y=0 ; y<data[x].items.length ; ++y) {
                         let groupID = data[x].ID, jobID = data[x].items[y].ID;
-                        let pID = G.planMap[groupID][jobID];
+                        let pID = planMap[groupID][jobID];
                         let p_data = personInfoMap[pID];
 
                         let $cell = RightTable.addCell();
@@ -463,7 +493,11 @@ $(document).ready(function () {
                             p_data['jobID'] = jobID;
                             p_data['job'] = `${data[x].name} ${data[x].items[y].name}`;
                             let person = new Person(p_data);
-                            $cell.text(clipName(person.name, 3));
+                            //如果是市委干部，特别颜色标注
+                            if(person.flag === 1) {
+                                $cell.addClass("important");
+                            }
+                            $cell.text(clipString(person.name, 3));
                             group.addMember(person);
                             Charts.addPerson(person);
                             //生成一个box的node

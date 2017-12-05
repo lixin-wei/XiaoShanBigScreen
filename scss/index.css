@@ -106,7 +106,7 @@
 }
 
 .text-right {
-  text-align: right;
+  text-align: right !important;
 }
 
 .text-blue {
@@ -868,6 +868,9 @@ img {
 .cell.changed {
   background: #43baff6b !important;
 }
+.cell.important {
+  background: #7f14cac9 !important;
+}
 .cell.active-a, .cell.active-b {
   overflow: hidden;
 }
@@ -1133,20 +1136,24 @@ img {
 }
 
 .pop-box {
-  padding: 1.5rem;
+  padding: 1.5rem 2.5rem 0 1.5rem;
   border-radius: 5px;
   border: 1px solid rgba(255, 255, 255, 0.5);
   background: rgba(0, 0, 0, 0.7);
   filter: drop-shadow(0 0 15px #67aaff);
   color: white;
 }
-.pop-box.no-close {
-  padding: 0.5rem 0.7rem 0.7rem 0.7rem;
-}
 .pop-box .content {
   overflow-y: scroll;
   max-width: 700px;
   max-height: 550px;
+  margin-bottom: 1.5rem;
+}
+.pop-box.no-close {
+  padding: 0.5rem 0.7rem 0.7rem 0.7rem;
+}
+.pop-box.no-close .content {
+  margin-bottom: 0;
 }
 .pop-box i.fa-close {
   font-size: 20pt;

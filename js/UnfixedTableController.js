@@ -1,4 +1,4 @@
-
+import * as G from "./include/Global";
 let $tableSet = $("#mid_col2").find("div[ID^=mid_col2] .table-container");
 let curTable = 0;
 let $lastLine = null;
@@ -46,6 +46,9 @@ export function addCellWithClass(text, class_str, col_weight = 1) {
     return $cell;
 }
 export function  addCell(text) {
+    if(!text) {
+        text = G.CELL_EMPTY_ALPHA;
+    }
     return addCellWithClass(text, "cell thin");
 }
 export function  addTitleCell(text) {
@@ -57,4 +60,8 @@ export function addDisabledCell() {
 }
 export function addEmptyCell() {
     return addCellWithClass("", "cell thin empty");
+}
+
+export function addImportantCell() {
+    return addCellWithClass("", "cell thin important");
 }

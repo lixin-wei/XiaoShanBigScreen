@@ -3,7 +3,7 @@ import * as PopBox from "./component/PopBox";
 import * as PKStage from "./PKStageField";
 let curGroup = null;
 export function getGroupID() {
-    if(curGroup){
+    if(curGroup) {
         return curGroup.ID;
     }
     return null;
@@ -13,10 +13,11 @@ export function update() {
         setGroup(curGroup);
     }
 }
+
 export function setGroup(group) {
     let $items_l = $("#detail_container_left").find(".row div:last-child");
     let $container_right = $("#detail_container_right");
-    let $items_r = $container_right.find(".row div:last-child span");
+    let $items_r = $container_right.find(".row div:last-child div");
     let $problem_item = $container_right.find(".row:last-child div:last-child");
     //首先清空
     PKStage.clearJobChooser();
@@ -47,7 +48,7 @@ export function setGroup(group) {
     //修改后的值
     if(group.modify_times) {
         $($items_l[0]).find("span.text-green").text(" / " + group.getMemberNum());
-        // $($items[1]).find("div:last-child span.text-green").text("/" + group.getModifyDate());
+        $($items_l[1]).find("span.text-green").text("/" + group.getModifyDate());
         $($items_l[2]).find("span.text-green").text(" / " + group.getModifyTimes());
         $($items_l[3]).find("span.text-green").text(" / " + group.geAverageAge());
         $($items_l[4]).find("span.text-green").text(" / " + group.getBackMemberNum());
@@ -55,42 +56,58 @@ export function setGroup(group) {
         $($items_l[6]).find("span.text-green").text(" / " + group.getFemaleNum());
     }
     //右边的评价
+    function setPopUpBox($node, label) {
+        //问题标签点击显示来源
+        $node.click(function (e) {
+            let $content = $(`
+                <div>
+                    <div style="font-size: larger; color: #1a92d1; margin-bottom: 15px;">
+                        <i class="fa fa-files-o" style="margin-right: 7px;"></i>
+                        依据
+                    </div>
+                    <ul class='ref-list'/>
+                </div>
+            `);
+            let ok = false;
+            label.ref.forEach((r) => {
+                if(r.sentence && r.source.fileName) {
+                    $content.find("ul").append("<li/>").text(`${r.sentence} —— ${r.source.fileName}`);
+                    ok = true;
+                }
+            });
+            if(!ok) {
+                $content.find("ul").replaceWith("<div>无材料</div>");
+            }
+            PopBox.show(e.pageX, e.pageY, $content);
+            e.stopPropagation();
+        })
+    }
+
     $.get("http://localhost:5000/team", {id: group.ID}, function (data) {
         console.log(data);
 
-        if(data["一把手作用"])
-            $($items_r[0]).text(data["一把手作用"].labels[0].name);
-        else
-            $($items_r[0]).text("无材料");
+        let indexes = ["一把手作用", "团队协作", "整体战斗力"];
+        for(let i=0 ; i<indexes.length ; ++i) {
+            let index = indexes[i];
+            if(data[index]) {
+                let $node = $($items_r[i]), label = data[index].labels[0];
+                $node.text(label.name);
+                $node.off("click");
+                setPopUpBox($node, label);
+            }
+            else {
+                $($items_r[i]).text("无材料");
+            }
+        }
 
-        if(data["团队协作"])
-            $($items_r[1]).text(data["团队协作"].labels[0].name);
-        else
-            $($items_r[1]).text("无材料");
-
-        if(data["整体战斗力"])
-            $($items_r[2]).text(data["整体战斗力"].labels[0].name);
-        else
-            $($items_r[2]).text("无材料");
         $problem_item.empty();
         if(data["存在问题"]) {
             data["存在问题"].labels.forEach((label) => {
-                $($problem_item).append(
-                    $("<div class='text-blue hover-white'/>")
-                        .text(label.name)
-                        .css({
-                            "margin-bottom": "0.5rem"
-                        })
-                        //问题标签点击显示来源
-                        .click(function (e) {
-                            let $content = $("<ul class='ref-list'/>");
-                            label.ref.forEach((r) => {
-                                $content.append("<li/>").text(`${r.sentence} —— ${r.source.fileName}`);
-                            });
-                            PopBox.show(e.pageX, e.pageY, $content);
-                            e.stopPropagation();
-                        })
-                );
+                let $refItem = $("<div class='text-blue hover-white'/>").text(label.name).css({
+                        "margin-bottom": "0.5rem"
+                    });
+                setPopUpBox($refItem, label);
+                $($problem_item).append($refItem);
             });
         }
         else

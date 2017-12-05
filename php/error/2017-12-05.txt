@@ -1,0 +1,40 @@
+错误SQL语句：
+SELECT
+	gbryqd.BH AS ID,
+	CSNY AS birthday,
+	XW AS eduBkg,
+	gbryqd.XM AS NAME,
+	ZP AS photo,
+	ZZMM AS politicalStatus,
+	XB AS sex,
+	MAX( grjl.QSSJ ) AS recentJobTransferTime #从个人简历表里获取最近一次经历的时间，作为最近调度时间
+FROM
+	gbryqd
+	LEFT JOIN grjl ON gbryqd.BH = grjl.BH 
+WHERE
+	gbryqd.BH in (Array)
+GROUP BY
+	ID
+客户IP:127.0.0.1
+时间 :2017-12-05 05:41:58
+
+错误SQL语句：
+SELECT
+	gbryqd.BH AS ID,
+	CSNY AS birthday,
+	XW AS eduBkg,
+	gbryqd.XM AS NAME,
+	ZP AS photo,
+	ZZMM AS politicalStatus,
+	XB AS sex,
+	MAX( grjl.QSSJ ) AS recentJobTransferTime #从个人简历表里获取最近一次经历的时间，作为最近调度时间
+FROM
+	gbryqd
+	LEFT JOIN grjl ON gbryqd.BH = grjl.BH 
+WHERE
+	gbryqd.BH in (Array)
+GROUP BY
+	ID
+客户IP:127.0.0.1
+时间 :2017-12-05 05:42:17
+

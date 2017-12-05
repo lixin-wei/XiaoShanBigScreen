@@ -2,7 +2,7 @@ import * as G from "include/Global";
 import {NormalTableController} from "./NormalTableController";
 import * as RightTable from "./UnfixedTableController";
 import * as Charts from "./ChartField";
-import {clipName} from "./HelperFuncitions";
+import {clipString} from "./HelperFuncitions";
 
 /** 初始数据填充 **/
 let table_left = new NormalTableController();
@@ -51,7 +51,7 @@ $(document).ready(function () {
                             let person = new Person(p_data);
                             Charts.addPerson(person);
                             group.addMember(person);
-                            $cell.text(clipName(person.name, 4));
+                            $cell.text(clipString(person.name, 4));
                             //生成一个box的node
                             //隐藏并丢到trash里
                             initBox(person.$box, $cell);
@@ -72,7 +72,7 @@ $(document).ready(function () {
                     //标题行
                     let group = new Group(data[x].ID, data[x].name, data[x].desc);
                     RightTable.newLine();
-                    RightTable.addTitleCell(clipName(data[x].name, 4)).click(onClickCell).data("group", group);
+                    RightTable.addTitleCell(clipString(data[x].name, 4)).click(onClickCell).data("group", group);
 
                     //所有人
                     for(let y=0 ; y<data[x].items.length ; ++y) {
@@ -89,7 +89,7 @@ $(document).ready(function () {
                             p_data['jobID'] = jobID;
                             p_data['job'] = `${data[x].name} ${data[x].items[y].name}`;
                             let person = new Person(p_data);
-                            $cell.text(clipName(person.name, 3));
+                            $cell.text(clipString(person.name, 3));
                             group.addMember(person);
                             Charts.addPerson(person);
                             //生成一个box的node

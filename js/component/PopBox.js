@@ -21,7 +21,7 @@ export function show(x, y, $content, option = {
     css: {},
     showClose: true,
 }) {
-    this.remove();
+    remove();
     let $popBox = $($.parseHTML(`
             <div class="pop-box">
                 <div class="content beauty-scroll"></div>

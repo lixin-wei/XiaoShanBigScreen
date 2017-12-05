@@ -4,6 +4,7 @@ export class Group {
         this.ID = id || -1;
         this.name = name || "";
         this.desc = desc || "";
+        this.modifyDate = null;
         this.modify_times = 0;
         this.member = [];
     }
@@ -32,7 +33,16 @@ export class Group {
         return this.member.length;
     }
     getModifyDate() {
-        return moment().format("YYYY-MM-DD");
+        let ok = false;
+        let res = moment("0000-01-01");
+        this.member.forEach((p) => {
+            if(p.recentJobTransferDate !== undefined && p.recentJobTransferDate.isAfter(res)) {
+                res = p.recentJobTransferDate;
+                ok = true;
+            }
+        });
+        if(ok)return res.format("YYYY-MM");
+        else return "无数据";
     }
     getModifyTimes() {
         return this.modify_times;

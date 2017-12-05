@@ -4,6 +4,7 @@ let moment = require("moment");
 export class Person {
     constructor(data) {
         this.ID = data.ID || -1;
+        this.flag = data.flag || 0;
         this.birthday = moment(data.birthday) || moment("1800-00-00");
         this.eduBkg = data.eduBkg || "";
         this.job = data.job || "";
@@ -13,6 +14,9 @@ export class Person {
         this.politicalStatus = data.politicalStatus || "";
         this.positionID = data.positionID || "";
         this.sex = data.sex || "";
+        if(data.recentJobTransferDate) {
+            this.recentJobTransferDate = moment(data.recentJobTransferDate);
+        }
         this.$box = this.generateInfoBoxNode();
     }
     generateInfoBoxNode() {
@@ -42,6 +46,9 @@ export class Person {
         return $node;
     }
     getInfo() {
+        if(this.flag === 1) {
+            return "市委干部";
+        }
         return `${this.sex} ${this.birthday.format("YYYY-MM")} ${this.politicalStatus}`;
     }
     updateInfo() {
