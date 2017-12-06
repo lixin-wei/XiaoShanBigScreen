@@ -13,7 +13,6 @@ export class Group {
         this.origin_data = [
             this.getMemberNum(),
             this.getModifyDate(),
-            this.getModifyTimes(),
             this.geAverageAge(),
             this.getBackMemberNum(),
             this.getNonCPCNum(),
@@ -22,6 +21,8 @@ export class Group {
         this.modify_times = 0;
     }
     addMember(person) {
+        //去掉市委干部
+        if(person.flag === 1) return;
         this.member.push(person);
         this.modify_times++
     }

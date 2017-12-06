@@ -29,6 +29,7 @@
     height: 14px;
     margin-bottom: 1px;
     background: linear-gradient(90deg, #ffde00, #40b500);
+    transition: all 0.5s;
   }
   &.total-bar-revert {
     text-align: right;

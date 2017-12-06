@@ -1,0 +1,362 @@
+import * as G from "./include/Global";
+import * as GroupBox from "./GroupBoxField";
+import * as PopBox from "./component/PopBox";
+import * as LineLayer from "./LineLayer";
+import * as Helper from "./HelperFuncitions";
+import * as PKStage from "./PKStageField";
+import {Person} from "./class/Person";
+
+/** info-box拖动 **/
+let click_x = 0, click_y = 0;
+let isMouseDown = false;
+const BOX_HEIGHT = 150;
+const TRASH_X = G.$box_list.offset().left;
+const TRASH_Y = G.$box_list.offset().top;
+
+//box list的动画控制函数
+export function focusOn($ele) {
+    $(".cell, .info-box").removeClass("active");
+    if($ele) {
+        $ele.addClass("active");
+    }
+}
+export function setPersonInfo(person) {
+    console.log(`person_id = ${person.ID}`);
+    G.setShowingPersonID(person.ID);
+    G.$person_info_container.find(".photo img").attr("src", G.PERSON_PHOTO_ROOT + person.photo);
+    G.$person_info_container.find(".name").text(person.name);
+    G.$person_info_container.find(".info1").text(person.getInfo());
+    G.$person_info_container.find(".info2").text(person.job);
+
+    //先隐藏所有标签
+    G.$de_tree_label_list.add(G.$cai_tree_label_list).add(G.$lack_label).add(G.$achievement_label)
+        .css({"transform" : "scale(0)"}).data("vis", false);
+    $.ajax({
+        url: G.PERSON_INFO_API_URL,
+        crossDomain: true,
+        dataType: "json",
+        data: {id: person.ID},
+        success: function (res) {
+            let DELables = [], CAILabels = [], OrangeLabels = [];
+            let DEKeys = ["政治品德", "工作作风", "个性特点", "群众基础"],
+                OrangeKeys = ["能力类型", "专业特长"], //用橙色显示的标签
+                CAIKeys = [/*"工作业绩",*/ "分类考核"];
+            DEKeys.forEach((key) => {
+                if(res[key] && res[key].labels) {
+                    res[key].labels.forEach((label) => DELables.push(label));
+                }
+            });
+            OrangeKeys.forEach((key) => {
+                if(res[key] && res[key].labels) {
+                    res[key].labels.forEach((label) => OrangeLabels.push(label));
+                }
+            });
+            CAIKeys.forEach((key) => {
+                if(res[key] && res[key].labels) {
+                    res[key].labels.forEach((label) => CAILabels.push(label));
+                }
+            });
+            //给两棵树显示标签
+            setTimeout(function () {
+                G.$de_tree_label_list.css({"transform" : "scale(0)"}).data("vis", false);
+                G.$cai_tree_label_list.css({"transform" : "scale(0)"}).data("vis", false);
+                G.$lack_label.css({"transform" : "scale(0)"}).data("vis", false);
+                let x=0, y=0;
+                let vis_a = {}, vis_b = {};
+                DELables.forEach((label) => {
+                    if(x < G.$de_tree_label_list.length) {
+                        let i = Helper.getRandomInt(0, G.$de_tree_label_list.length - 1);
+                        while(vis_a[i]) i = Helper.getRandomInt(0, G.$de_tree_label_list.length - 1);
+
+                        $(G.$de_tree_label_list[i]).css({"transform": "scale(1)"}).data("vis", true).data("ref", label.ref);
+                        $(G.$de_tree_label_list[i]).find("div").text(label.name.substr(0, 4));
+                        x++;
+                    }
+                });
+                OrangeLabels.forEach((label) => {
+                    if(y < G.$cai_tree_label_list.length) {
+                        let i = Helper.getRandomInt(0, G.$cai_tree_label_list.length - 1);
+                        while(vis_b[i]) i = Helper.getRandomInt(0, G.$cai_tree_label_list.length - 1);
+                        //设置成橙色
+                        $(G.$cai_tree_label_list[i]).attr("class", "tree-label orange");
+                        $(G.$cai_tree_label_list[i]).css({"transform": "scale(1)"}).data("vis", true).data("ref", label.ref);
+                        $(G.$cai_tree_label_list[i]).find("div").text(label.name.substr(0, 4));
+                        y++;
+                    }
+                });
+                CAILabels.forEach((label) => {
+                    if(y < G.$cai_tree_label_list.length) {
+                        let i = Helper.getRandomInt(0, G.$cai_tree_label_list.length - 1);
+                        while(vis_b[i]) i = Helper.getRandomInt(0, G.$cai_tree_label_list.length - 1);
+                        //设置成蓝色
+                        $(G.$cai_tree_label_list[i]).attr("class", "tree-label blue");
+                        $(G.$cai_tree_label_list[i]).css({"transform": "scale(1)"}).data("vis", true).data("ref", label.ref);
+                        $(G.$cai_tree_label_list[i]).find("div").text(label.name.substr(0, 4));
+                        y++;
+                    }
+                });
+                console.log(DELables); console.log(CAILabels);
+                if(res["不足和风险点"] && res["不足和风险点"].labels.length) {
+                    let lack_list = res["不足和风险点"].labels[0].ref;
+                    let sentence_list = [];
+                    lack_list.forEach((ref) => {
+                        sentence_list.push({str: ref.sentence, source: ref.source.fileName});
+                    });
+                    G.$lack_label.data("ref", sentence_list);
+                    G.$lack_label.css({"transform": "scale(1)"}).data("vis", true);
+                }
+
+                if(res["工作业绩"] && res["工作业绩"].labels.length) {
+                    let list = res["工作业绩"].labels[0].ref;
+                    let sentence_list = [];
+                    list.forEach((ref) => {
+                        sentence_list.push({str: ref.sentence, source: ref.source.fileName});
+                    });
+                    G.$achievement_label.data("ref", sentence_list);
+                    G.$achievement_label.css({"transform": "scale(1)"}).data("vis", true);
+                }
+
+            }, 500);
+        }
+    });
+}
+export function allDown() {
+    //list里原来的项目下移
+    G.$box_list.find(".info-box").each(function () {
+        $(this).animate({
+            top: "+=" + BOX_HEIGHT
+        });
+    });
+}
+export function allNextUp($box) {
+    //list里在这个box之下的项目上移
+    $box.nextAll().each(function () {
+        $(this).animate({
+            top: "-=" + BOX_HEIGHT
+        });
+    });
+}
+export function goToList($box, offset = 0) {
+    $box.show();
+    allDown();
+    $box.animate({ //回到备选区位置
+        top: TRASH_Y - $(window).scrollTop(),
+        left: TRASH_X - $(window).scrollLeft(),
+    },function () { //放回容器内
+        $box.css({
+            top: 0,
+            left: 0,
+        });
+        $box.removeClass("float");
+        $box.prependTo(G.$box_list);
+    });
+}
+
+//info box 相关事件响应
+export function onMouseMoveInfoBox(e) { //InfoBox的拖出事件
+    if(isMouseDown && !G.getFloatingPerson()) {
+        let maxQueueCnt = 0;
+        G.$box_list.find(".info-box").each(function () {
+            maxQueueCnt = Math.max(maxQueueCnt, $(this).queue());
+        });
+        //等待动画队列完成，防止点太快出bug
+        if(maxQueueCnt === 0) {
+            $(this).css({
+                top: $(this).offset().top - $(window).scrollTop(),
+                left: $(this).offset().left - $(window).scrollLeft(),
+            }).addClass("float");
+            G.setFloatingPerson($(this).data("person_obj"));
+            click_x = e.pageX - $(this).offset().left;
+            click_y = e.pageY - $(this).offset().top;
+            allNextUp($(this));
+            $(this).appendTo(G.$box_trash);
+        }
+    }
+}
+export function onClickInfoBox() { //InfoBox的点击事件
+    console.log("click");
+    focusOn($(this));
+    setPersonInfo($(this).data("person_obj"));
+}
+
+//cell 的相关事件响应
+export function onMouseEnterCell() {
+    G.setActiveCell($(this));
+}
+export function onMouseLeaveCell() {
+    G.setActiveCell(null);
+}
+export function onMouseMoveCell(e) { //cell中的box拖出事件
+
+    /* 如果是拖出且当前格子有内容 */
+    if(isMouseDown && !G.getFloatingPerson() && $(this).data("person")) {
+        //拿出这个box并显示
+        G.setFloatingPerson($(this).data("person"));
+        $(this).data("person", null);
+        //清空格子
+        $(this).text(G.CELL_EMPTY_ALPHA).removeClass("important");
+        G.getFloatingPerson().$box.show();
+        //修改group
+        $(this).data("group").removeMember(G.getFloatingPerson().ID);
+        GroupBox.update();
+        //记录下从哪个格子拖出来的，高亮用
+        G.getFloatingPerson().$box.data("cell_from", $(this));
+    }
+}
+export function onRightClickCell(e) {
+    if(!$(this).data("person")) {
+        $(this).removeClass("changed");
+    }
+    return false;
+}
+export function onClickCell() {
+    if($(this).hasClass("title-row")) {
+        GroupBox.setGroup($(this).data("group"));
+    }
+    else {
+        let p = $(this).data("person");
+        if(p) {
+            focusOn($(this));
+            setPersonInfo(p);
+        }
+        console.log($(this).width());
+    }
+}
+
+//全局事件
+$(window).contextmenu(function () {
+    return false;
+});
+$(window).on("mouseup", function (e) {
+    if(G.getFloatingPerson()) {
+        //如果当前鼠标下有cell，则填充
+        if(G.getActiveCell()) {
+            if(G.getActiveCell().data("person")) { //如果当前cell已经有内容了
+                //修改group
+                G.getActiveCell().data("group").removeMember(G.getActiveCell().data("person").ID);
+                GroupBox.update();
+                //让这个box回备选区去
+                if(G.getActiveCell().hasClass("active")) {
+                    focusOn(null);
+                }
+                G.getActiveCell().data("person").$box.css({
+                    top: e.pageY - $(window).scrollTop(),
+                    left: e.pageX - $(window).scrollLeft()
+                });
+                goToList(G.getActiveCell().data("person").$box);
+                G.getActiveCell().data("person", null);
+            }
+            let $from = G.getFloatingPerson().$box.data("cell_from");
+            let $to = G.getActiveCell();
+            if($from && $to && !$to.is($from)) {
+                //设置高亮
+                $from.addClass("changed");
+                $to.addClass("changed");
+                //加变动线
+                LineLayer.addLine(Helper.getNodeCenter($from), Helper.getNodeCenter($to));
+                //记录调动
+                G.transLog.push({
+                    from: $from.data("positionName"),
+                    to: $to.data("positionName"),
+                    who: G.getFloatingPerson()
+                });
+            }
+            //设置姓名
+            G.getActiveCell().text(Helper.clipString(G.getFloatingPerson().name, 3));
+            //把person附加到cell上
+            G.getActiveCell().data("person", G.getFloatingPerson());
+            //设置group
+            G.getActiveCell().data("group").addMember(G.getActiveCell().data("person"));
+            //如果是市委干部，加个高亮
+            if(G.getFloatingPerson().flag === 1) {
+                G.getActiveCell().addClass("important");
+            }
+            GroupBox.update();
+            //隐藏box
+            G.getFloatingPerson().$box.hide();
+
+        }
+        //如果是拖到PK台
+        else if(G.getActiveStage()) {
+            //如果当前pk位已经有人了
+            if(G.getActiveStage().data("person")) {
+                //让这个box回备选区去
+                goToList(G.getActiveStage().data("person").$box);
+                G.getActiveStage().data("person", null);
+            }
+            G.getFloatingPerson().$box.hide();
+            G.getActiveStage().data("person", G.getFloatingPerson());
+            if(G.getActiveStage().parent().attr("id") === "photo_col_left")
+                PKStage.setLeft(G.getFloatingPerson());
+            else
+                PKStage.setRight(G.getFloatingPerson());
+            G.setFloatingPerson(null);
+
+        }
+        else { //否则让box回去
+            let fltPerson = G.getFloatingPerson();
+            goToList(fltPerson.$box);
+            let $cellFrom = fltPerson.$box.data("cell_from");
+            if($cellFrom) {
+                $cellFrom.addClass("changed");
+                let group = $cellFrom.data("group");
+                group.removeMember(fltPerson.ID);
+            }
+            GroupBox.update();
+        }
+        G.setFloatingPerson(null);
+    }
+});
+$(window).on("mousedown", function () {
+    isMouseDown = true;
+});
+$(window).on("mouseup", function () {
+    isMouseDown = false;
+});
+$(window).on("mousemove", function (e) { //box跟随鼠标移动
+    if (G.getFloatingPerson()) {
+        G.getFloatingPerson().$box.css({
+            top: e.pageY - $(window).scrollTop() - click_y,
+            left: e.pageX - $(window).scrollLeft() - click_x
+        });
+    }
+});
+
+
+//事件统一注册函数
+export function initCell($cell) {
+    $cell.click(onClickCell)
+        .mousemove(onMouseMoveCell)
+        .mouseleave(onMouseLeaveCell)
+        .mouseenter(onMouseEnterCell)
+        .contextmenu(onRightClickCell);
+}
+export function initBox($box, $bind_cell = null) {
+    $box.mousemove(onMouseMoveInfoBox)
+        .click(onClickInfoBox);
+    //先隐藏并丢到trash里
+    $box.hide().addClass("float");
+    G.$box_trash.append($box);
+    //设置初始位置与备选框平齐，以便有水平插入的动画效果
+    $box.css({
+        top: TRASH_Y - $(window).scrollTop(),
+        left: TRASH_X - $(window).scrollLeft() + $box.outerWidth() + 10,
+    });
+    if($bind_cell) {
+        $box.data("cell_from", $bind_cell);
+    }
+}
+
+export async function addNewPerson(ID, score = null) {
+    $.post("php/getPersonInfo.php", {IDList: [ID]}, function (map) {
+        G.personVis[ID] = true;
+        PopBox.remove();
+        let data = map[ID];
+        let p = new Person(data);
+        if(score) {
+            p.setScore(score);
+        }
+        initBox(p.$box);
+        goToList(p.$box);
+    }, "json");
+}

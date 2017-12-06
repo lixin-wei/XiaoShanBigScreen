@@ -121,6 +121,10 @@
   text-align: center;
 }
 
+.text-large {
+  font-size: large;
+}
+
 .nowrap {
   white-space: nowrap;
 }
@@ -1022,6 +1026,7 @@ img {
   height: 14px;
   margin-bottom: 1px;
   background: linear-gradient(90deg, #ffde00, #40b500);
+  transition: all 0.5s;
 }
 .total-bar.total-bar-revert {
   text-align: right;
@@ -1065,8 +1070,8 @@ img {
   background: #353740;
   padding: 3px 13px;
   border-radius: 8px;
-  margin: 0 3px;
-  white-space: nowrap;
+  margin: 3px 3px;
+  display: inline-block;
 }
 .badge.white {
   background: transparent;
@@ -1260,6 +1265,17 @@ canvas#line_layer {
 /* hover style just for information */
 label:hover:before {
   border: 2px solid #4778d9 !important;
+}
+
+.input {
+  border-radius: 3px;
+  border: 1px solid #25ade3ba;
+  background: transparent;
+  box-shadow: 0 0 16px #25ade3;
+  color: white;
+  padding: 0.5rem 0.8rem;
+  margin: 10px;
+  display: inline-block;
 }
 
 .file-list {

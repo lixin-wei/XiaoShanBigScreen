@@ -38,4 +38,9 @@ export class NormalTableController {
         this.$last_line.append($cell);
         return $cell;
     }
+    addEmptyCell() {
+        let $cell = $("<div class='cell empty' />");
+        this.$last_line.append($cell);
+        return $cell;
+    }
 }

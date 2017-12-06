@@ -50,8 +50,8 @@ $plan_name_box.click(function (e) {
 $("#plan_save").click(function (e) {
     let $content = $(`
         <div>
-            <p>
-                <label>方案名：<input /></label>
+            <p class="text-center">
+                <label>方案名：<input class="input text-large" /></label>
             </p>
             <div class="text-center">
                 <button class="btn blue">保存</button>
@@ -66,7 +66,7 @@ $("#plan_save").click(function (e) {
     });
     PopBox.show(e.pageX, e.pageY, $content, {
         position: {x: "center", y: "bottom"},
-        css: {width: "240px"},
+        css: {width: "330px"},
         showClose: false
     });
     e.stopPropagation();
@@ -80,7 +80,7 @@ $("#plan_diff").click(function (e) {
             </div>
             <table>
                 <tr>
-                    <td colspan="8">
+                    <td colspan="9">
                         干部任免方案 -- ${moment().format("YYYY-MM-DD")}
                     </td>
                 </tr>
@@ -93,6 +93,7 @@ $("#plan_diff").click(function (e) {
                     <td>政治面貌</td>
                     <td>现任职务</td>
                     <td>拟任免（提议）职务</td>
+                    <td>备注</td>
                 </tr>
             </table>
         </div>
@@ -111,6 +112,7 @@ $("#plan_diff").click(function (e) {
                 <td>${log.who.politicalStatus}</td>
                 <td>${log.from}</td>
                 <td>${log.to}</td>
+                <td></td>
             </tr>
         `);
         $content.find("table").append($tr);

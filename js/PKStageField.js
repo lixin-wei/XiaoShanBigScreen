@@ -4,6 +4,8 @@ import * as GroupBox from "./GroupBoxField";
 import * as Helper from "./HelperFuncitions";
 const index_list = ["工作业绩",  "个性特点",  "群众基础",  "分类考核",  "能力类型",  "专业特长",  "工作作风",  "适宜岗位", "不足和风险点"];
 let $container = $("#foot_col4");
+
+let leftPerson = null, rightPerson = null;
 export function setPerson(person, dir) {
     let $photo_col = $container.find(`#photo_col_${dir}`);
     $photo_col.find(".photo img").attr("src", G.PERSON_PHOTO_ROOT + person.photo);
@@ -11,6 +13,9 @@ export function setPerson(person, dir) {
     $(`#person_detail_${dir}`).text(`${person.sex} ${person.birthday.format("YYYY-MM")} ${person.politicalStatus} ${person.eduBkg}`);
     let $items = $("#foot_col_mid_container").find(".item");
     $items.find(`.col-${dir}`).empty();
+    clearJobChooser();
+    if(dir === "left") leftPerson = person;
+    else rightPerson = person;
     $.ajax({
         url: G.PERSON_INFO_API_URL,
         crossDomain: true,
@@ -33,10 +38,12 @@ export function setPerson(person, dir) {
                     $item.find(".label").data(`ref_${dir}`, labels);
                     //如果是不足和风险，截一些字显示
                     if(i === index_list.length - 1) {
-                        labels[0].ref.forEach((r) => {
+                        //控制在3个以内
+                        labels[0].ref.every((r, index) => {
                             let $badge = $("<span class='badge'/>");
                             $badge.text(Helper.clipString(r.sentence, 5));
                             $item.find(`.col-${dir}`).append($badge);
+                            return index<3;
                         });
                     }
                     //否则生成一个个badge
@@ -67,6 +74,8 @@ export function clearLeft() {
     let $items = $("#foot_col_mid_container").find(".item");
     $items.find(".col-left").empty();
     $items.find(".label").data("ref_left", null);
+    clearJobChooser();
+    leftPerson = null;
 }
 export function clearRight() {
     let $photo_col = $container.find("#photo_col_right");
@@ -75,7 +84,9 @@ export function clearRight() {
     $("#person_detail_right").text("");
     let $items = $("#foot_col_mid_container").find(".item");
     $items.find(".col-right").empty();
-    $items.find(".label").data("ref_right", null);
+    $items.find(".label").data("ref_right", null)
+    clearJobChooser();
+    rightPerson = null;
 }
 
 $("#foot_col_mid_container").find(".item .label").click(function (e) {
@@ -135,7 +146,12 @@ $("#foot_col_mid_container").find(".item .label").click(function (e) {
 });
 
 let $job_chooser = $("#foot_col4_job");
+export function clearBar() {
+    $("#total_bar_left").find(".total-bar-thumb").css({width: `0%`});
+    $("#total_bar_right").find(".total-bar-thumb").css({width: `0%`});
+}
 export function clearJobChooser() {
+    clearBar();
     $job_chooser.text("选择岗位");
 }
 $job_chooser.click(function (e) {
@@ -143,6 +159,14 @@ $job_chooser.click(function (e) {
     let y = $(this).offset().top + $(this).outerHeight()/2;
     if(GroupBox.getGroupID() === null) {
         let $content = $("<div class='text-center' />").text("请先选择领导班子");
+        PopBox.show(x, y, $content, {
+            position: {x: "center", y: "middle"},
+            css: {width: "300px"},
+            showClose: false
+        });
+    }
+    else if(!(leftPerson && rightPerson)) {
+        let $content = $("<div class='text-center' />").text("请在左右各放置一人");
         PopBox.show(x, y, $content, {
             position: {x: "center", y: "middle"},
             css: {width: "300px"},
@@ -157,6 +181,20 @@ $job_chooser.click(function (e) {
                 $li.click(function () {
                     $job_chooser.text(job.jobName);
                     PopBox.remove();
+                    //获取左右两个人的分数
+                    $.getJSON("http://localhost:5000/recmdScore", {teamID: GroupBox.getGroupID(), jobID: job.ID, personID: leftPerson.ID}, function (res) {
+                        let scoreLeft = res['score'];
+                        $.getJSON("http://localhost:5000/recmdScore", {teamID: GroupBox.getGroupID(), jobID: job.ID, personID: rightPerson.ID}, function (res) {
+                            clearBar();
+                            let scoreRight = res['score'];
+                            //设置PK比分条
+                            let maxScore = Math.max(scoreRight, scoreLeft);
+                            scoreLeft = (scoreLeft/maxScore).toFixed(2) * 100;
+                            scoreRight = (scoreRight/maxScore).toFixed(2) * 100;
+                            $("#total_bar_left").find(".total-bar-thumb").css({width: `${scoreLeft}%`});
+                            $("#total_bar_right").find(".total-bar-thumb").css({width: `${scoreRight}%`});
+                        });
+                    })
                 });
                 $content.append($li);
             });

@@ -8,6 +8,7 @@ export let $box_list = $("#mid_col3_body_list");
 export let $box_trash = $("#mid_col3_box_trash");
 export let $de_tree_label_list = $(".tree-label.purple");
 export let $cai_tree_label_list = $(".tree-label.blue, .tree-label.orange");
+export let $achievement_label = $("#tree_green_label_1");
 export let $lack_label = $("#tree_grey_label_1");
 export let $person_info_container = $("#foot_col3_photo_container");
 
@@ -50,6 +51,7 @@ export function getActiveStage() {
 export let planMap = null;
 //整个职位表，用来建表格用
 export let positionStc = null;
-
+//人ID的vis映射，标记当前表里是不是已经有这个人了
+export let personVis = {};
 //调动记录
 export let transLog = [];

@@ -33,7 +33,7 @@ export class Person {
                         </div>
                         <div class="last-row">
                             <button class="btn blue"><i class="fa fa-file-text"></i>个人资料卡</button>
-                            <div>
+                            <div style="display: none;">
                                 匹配度:
                                 <div class="percent-bar">
                                     <div class="thumb">50%</div>
@@ -44,6 +44,10 @@ export class Person {
         `);
         $node.data("person_obj", this);
         return $node;
+    }
+    setScore(score) {
+        this.$box.find("div.last-row div:last-child").show()
+            .find("div.percent-bar .thumb").css({width: `${score}%`}).text(`${score}%`);
     }
     getInfo() {
         if(this.flag === 1) {

@@ -2,8 +2,8 @@
   background: #353740;
   padding: 3px 13px;
   border-radius: 8px;
-  margin: 0 3px;
-  white-space: nowrap;
+  margin: 3px 3px;
+  display: inline-block;
   &.white {
     background: transparent;
     border: 1px solid white;

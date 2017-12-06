@@ -48,12 +48,11 @@ export function setGroup(group) {
     //修改后的值
     if(group.modify_times) {
         $($items_l[0]).find("span.text-green").text(" / " + group.getMemberNum());
-        $($items_l[1]).find("span.text-green").text("/" + group.getModifyDate());
-        $($items_l[2]).find("span.text-green").text(" / " + group.getModifyTimes());
-        $($items_l[3]).find("span.text-green").text(" / " + group.geAverageAge());
-        $($items_l[4]).find("span.text-green").text(" / " + group.getBackMemberNum());
-        $($items_l[5]).find("span.text-green").text(" / " + group.getNonCPCNum());
-        $($items_l[6]).find("span.text-green").text(" / " + group.getFemaleNum());
+        // $($items_l[1]).find("span.text-green").text("/" + group.getModifyDate());
+        $($items_l[2]).find("span.text-green").text(" / " + group.geAverageAge());
+        $($items_l[3]).find("span.text-green").text(" / " + group.getBackMemberNum());
+        $($items_l[4]).find("span.text-green").text(" / " + group.getNonCPCNum());
+        $($items_l[5]).find("span.text-green").text(" / " + group.getFemaleNum());
     }
     //右边的评价
     function setPopUpBox($node, label) {

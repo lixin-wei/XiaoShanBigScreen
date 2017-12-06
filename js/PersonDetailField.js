@@ -24,7 +24,33 @@ G.$de_tree_label_list.add(G.$cai_tree_label_list).click(function (e) {
     }
     e.stopPropagation();
 });
+
 G.$lack_label.click(function (e) {
+    if($(this).data("vis")) {
+        let x = e.pageX;
+        let y = e.pageY;
+        let ref = $(this).data("ref");
+        let $content = $($.parseHTML(`
+        <div>
+            <div style="font-size:larger ;color: #1a92d1; margin-bottom: 15px;">
+                <i class="fa fa-files-o" style="margin-right: 7px;"></i>
+                共${ref.length}条记录支持
+            </div>
+            <ul class="ref-list">
+            </ul>
+        </div>
+        `));
+        ref.forEach((r) => {
+            let $li = $("<li />").text(`${r.str} —— 《${r.source}》`);
+            $content.find("ul").append($li);
+        });
+        PopBox.show(x, y, $content);
+    }
+    e.stopPropagation();
+});
+
+
+G.$achievement_label.click(function (e) {
     if($(this).data("vis")) {
         let x = e.pageX;
         let y = e.pageY;
@@ -57,7 +83,7 @@ $("#btn_colleague").click(function (e) {
             <i class="fa fa-files-o" style="margin-right: 7px;"></i>
             历届同事
         </div>
-        <table style="line-height: 2.5rem;">
+        <table>
         </table>
     </div>
     `));
@@ -67,7 +93,7 @@ $("#btn_colleague").click(function (e) {
             let colleagues = "";
             for(let j=0 ; j<res[i].colleagues.length ; ++j) {
                 let p = res[i].colleagues[j];
-                if(j) colleagues += ", ";
+                // if(j) colleagues += ", ";
                 let jobStr = p.jobs.join("、");
                 colleagues += `<span class="badge white">${p.name}[${jobStr}]</span>`
             }
