@@ -2,6 +2,7 @@ import * as G from "./include/Global";
 import * as PopBox from "./component/PopBox";
 import * as GroupBox from "./GroupBoxField";
 import * as Helper from "./HelperFuncitions";
+import * as BMCtl from "./BoxMovementController";
 const index_list = ["工作业绩",  "个性特点",  "群众基础",  "分类考核",  "能力类型",  "专业特长",  "工作作风",  "适宜岗位", "不足和风险点"];
 let $container = $("#foot_col4");
 
@@ -147,8 +148,8 @@ $("#foot_col_mid_container").find(".item .label").click(function (e) {
 
 let $job_chooser = $("#foot_col4_job");
 export function clearBar() {
-    $("#total_bar_left").find(".total-bar-thumb").css({width: `0%`});
-    $("#total_bar_right").find(".total-bar-thumb").css({width: `0%`});
+    $("#total_bar_left").find(".total-bar-thumb").css({width: `0%`}).text("");
+    $("#total_bar_right").find(".total-bar-thumb").css({width: `0%`}).text("");
 }
 export function clearJobChooser() {
     clearBar();
@@ -188,11 +189,8 @@ $job_chooser.click(function (e) {
                             clearBar();
                             let scoreRight = res['score'];
                             //设置PK比分条
-                            let maxScore = Math.max(scoreRight, scoreLeft);
-                            scoreLeft = (scoreLeft/maxScore).toFixed(2) * 100;
-                            scoreRight = (scoreRight/maxScore).toFixed(2) * 100;
-                            $("#total_bar_left").find(".total-bar-thumb").css({width: `${scoreLeft}%`});
-                            $("#total_bar_right").find(".total-bar-thumb").css({width: `${scoreRight}%`});
+                            $("#total_bar_left").find(".total-bar-thumb").css({width: `${scoreLeft}%`}).text(`${scoreLeft}`);
+                            $("#total_bar_right").find(".total-bar-thumb").css({width: `${scoreRight}%`}).text(`${scoreRight}`);
                         });
                     })
                 });
@@ -207,5 +205,65 @@ $job_chooser.click(function (e) {
         }, "json");
     }
 
+    e.stopPropagation();
+});
+
+
+//PK台的相关事件
+$container.find(".photo-col .photo")
+    .mousemove(function () {
+        G.setActiveStage($(this));
+    })
+    .mouseout(function () {
+        G.setActiveStage(null);
+    })
+    //PK台box拽出
+    .mousedown(function () {
+        if($(this).data("person")) {
+            G.setFloatingPerson($(this).data("person"));
+            G.getFloatingPerson().$box.show();
+            $(this).data("person", null);
+
+            if($(this).parent().attr("id") === "photo_col_left")
+                clearLeft();
+            else
+                clearRight();
+        }
+    });
+let $stage_btn_left = $("#photo_col_left").find(".btn");
+let $stage_btn_right = $("#photo_col_right").find(".btn");
+//PK台的各种按钮
+$($stage_btn_left[0]).on("mousedown click", function (e) {
+    let $photo = $("#photo_col_left").find(".photo");
+    let person = $photo.data("person");
+    BMCtl.setPersonInfo(person);
+    e.stopPropagation();
+});
+//离开PK台，左
+$($stage_btn_left[1]).on("mousedown click", function (e) {
+    let $photo = $("#photo_col_left").find(".photo");
+    let person = $photo.data("person");
+    if(person) {
+        BMCtl.goToList(person.$box);
+        clearLeft();
+        $photo.data("person", null);
+    }
+    e.stopPropagation();
+});
+$($stage_btn_right[0]).on("mousedown click", function (e) {
+    let $photo = $("#photo_col_right").find(".photo");
+    let person = $photo.data("person");
+    BMCtl.setPersonInfo(person);
+    e.stopPropagation();
+});
+//离开PK台，右
+$($stage_btn_right[1]).on("mousedown click", function (e) {
+    let $photo = $("#photo_col_right").find(".photo");
+    let person = $photo.data("person");
+    if(person) {
+        BMCtl.goToList(person.$box);
+        clearRight();
+        $photo.data("person", null);
+    }
     e.stopPropagation();
 });

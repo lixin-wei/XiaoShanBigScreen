@@ -63,34 +63,15 @@ $("#btnMatch").click(function (e) {
                 let $li = $("<li/>").text(job.jobName);
                 $li.click(function () {
                     PopBox.remove();
-                    function sleep (time) {
-                        return new Promise((resolve) => setTimeout(resolve, time));
-                    }
                     $.getJSON("http://localhost:5000/recmdJob", {teamID: groupID, jobID: job.ID}, function (data) {
                         // console.log(data);
                         //先把所有资料卡里的匹配度隐藏
                         $(".info-box").find(".last-row div:last-child").hide();
-                        data = data.personList;
-                        //找出分数最大值，计算百分制分数
-                        let maxScore = 0;
-                        data.forEach((item) => {
-                            maxScore = Math.max(item.score, maxScore);
-                        });
-                        function insert(i) {
-                            let pID = data[i].id;
-                            // if(!G.personVis[pID]) {
-                                BMCtl.addNewPerson(data[i].id, (data[i].score / maxScore).toFixed(2) * 100);
-                            // }
-                            sleep(700).then(() => {
-                                if(i - 1 >= 0) {
-                                    insert(i - 1);
-                                }
-                            });
-                        }
-                        if(data.length) {
-                            //倒着来，分数高的最后放
-                            insert(data.length - 1);
-                        }
+                        //把整个备选框清空
+                        //TODO: 这个逻辑不太合理
+                        $("#mid_col3_body_list").empty();
+                        data = data.personList.slice(0, 10);
+                        BMCtl.addAGroupOfPersons(data);
                     })
                 });
                 $content.append($li);

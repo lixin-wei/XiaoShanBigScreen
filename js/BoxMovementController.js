@@ -8,11 +8,13 @@ import {Person} from "./class/Person";
 
 /** info-box拖动 **/
 let click_x = 0, click_y = 0;
+let clickPageX = 0, clickPageY = 0;
 let isMouseDown = false;
 const BOX_HEIGHT = 150;
+const BOX_WIDTH = 600;
 const TRASH_X = G.$box_list.offset().left;
 const TRASH_Y = G.$box_list.offset().top;
-
+let $boxTrash = $("#mid_col3_box_trash");
 //box list的动画控制函数
 export function focusOn($ele) {
     $(".cell, .info-box").removeClass("active");
@@ -120,11 +122,11 @@ export function setPersonInfo(person) {
         }
     });
 }
-export function allDown() {
+export function allDown(mul = 1) {
     //list里原来的项目下移
     G.$box_list.find(".info-box").each(function () {
         $(this).animate({
-            top: "+=" + BOX_HEIGHT
+            top: "+=" + BOX_HEIGHT*mul
         });
     });
 }
@@ -152,9 +154,59 @@ export function goToList($box, offset = 0) {
     });
 }
 
+export function goToListWithoutAllDown($box, offset = 0) {
+    $box.show();
+    // allDown();
+    $box.animate({ //回到备选区位置
+        top: TRASH_Y - $(window).scrollTop() + BOX_HEIGHT * offset,
+        left: TRASH_X - $(window).scrollLeft(),
+    },function () { //放回容器内
+        $box.css({
+            top: BOX_HEIGHT * offset,
+            left: 0,
+        });
+        $box.removeClass("float");
+        $box.appendTo(G.$box_list);
+    });
+}
+
+export function goOut($box) {
+    let person = $box.data("person_obj");
+    G.personVis[person.ID] = false;
+    let $cellFrom = $box.data("cell_from");
+    allNextUp($box);
+    //如果是从格子里拖过来的，且原来位置没人，让他回去
+    if($cellFrom && $cellFrom.data("person") === null) {
+        //移除相对布局，要加上原来的top
+        let originTop = parseInt($box.css("top").slice(0, -2));
+        $box.addClass("float").css({
+            left: TRASH_X - $(window).scrollLeft(),
+            top: TRASH_Y - $(window).scrollTop() + originTop
+        }).appendTo($boxTrash);
+        //然后移回格子去
+        $box.animate({
+            left: Helper.getNodeCenter($cellFrom).x - $(window).scrollLeft(),
+            top: Helper.getNodeCenter($cellFrom).y - $(window).scrollTop()
+        }, function () {
+            $cellFrom.data("person", person);
+            $cellFrom.text(person.name);
+            $box.hide();
+        });
+    }
+    //否则直接删掉
+    else {
+        $box.animate({
+            left: `+=${BOX_WIDTH}`
+        }, function () {
+            $box.remove();
+        });
+    }
+}
 //info box 相关事件响应
 export function onMouseMoveInfoBox(e) { //InfoBox的拖出事件
-    if(isMouseDown && !G.getFloatingPerson()) {
+
+    //加了个move时的位置判断，防止误触
+    if(isMouseDown && !G.getFloatingPerson() && !(e.pageX === clickPageX && e.pageY === clickPageY)) {
         let maxQueueCnt = 0;
         G.$box_list.find(".info-box").each(function () {
             maxQueueCnt = Math.max(maxQueueCnt, $(this).queue());
@@ -189,7 +241,7 @@ export function onMouseLeaveCell() {
 export function onMouseMoveCell(e) { //cell中的box拖出事件
 
     /* 如果是拖出且当前格子有内容 */
-    if(isMouseDown && !G.getFloatingPerson() && $(this).data("person")) {
+    if(isMouseDown && !G.getFloatingPerson() && $(this).data("person") && !(e.pageX === clickPageX && e.pageY === clickPageY)) {
         //拿出这个box并显示
         G.setFloatingPerson($(this).data("person"));
         $(this).data("person", null);
@@ -200,7 +252,7 @@ export function onMouseMoveCell(e) { //cell中的box拖出事件
         $(this).data("group").removeMember(G.getFloatingPerson().ID);
         GroupBox.update();
         //记录下从哪个格子拖出来的，高亮用
-        G.getFloatingPerson().$box.data("cell_from", $(this));
+        // G.getFloatingPerson().$box.data("cell_from", $(this));
     }
 }
 export function onRightClickCell(e) {
@@ -307,14 +359,18 @@ $(window).on("mouseup", function (e) {
         G.setFloatingPerson(null);
     }
 });
-$(window).on("mousedown", function () {
+$(window).on("mousedown", function (e) {
+    console.log("mouse down");
     isMouseDown = true;
+    clickPageX = e.pageX;
+    clickPageY = e.pageY;
 });
 $(window).on("mouseup", function () {
     isMouseDown = false;
 });
 $(window).on("mousemove", function (e) { //box跟随鼠标移动
     if (G.getFloatingPerson()) {
+        console.log("box move");
         G.getFloatingPerson().$box.css({
             top: e.pageY - $(window).scrollTop() - click_y,
             left: e.pageX - $(window).scrollLeft() - click_x
@@ -331,15 +387,20 @@ export function initCell($cell) {
         .mouseenter(onMouseEnterCell)
         .contextmenu(onRightClickCell);
 }
-export function initBox($box, $bind_cell = null) {
+export function initBox($box, $bind_cell = null, offset = 0) {
     $box.mousemove(onMouseMoveInfoBox)
         .click(onClickInfoBox);
+    $box.find(".close").click(function (e) {
+        console.log("close clicked");
+        goOut($box);
+        e.stopPropagation();
+    });
     //先隐藏并丢到trash里
     $box.hide().addClass("float");
     G.$box_trash.append($box);
     //设置初始位置与备选框平齐，以便有水平插入的动画效果
     $box.css({
-        top: TRASH_Y - $(window).scrollTop(),
+        top: TRASH_Y - $(window).scrollTop() + $box.outerHeight() * offset,
         left: TRASH_X - $(window).scrollLeft() + $box.outerWidth() + 10,
     });
     if($bind_cell) {
@@ -347,16 +408,47 @@ export function initBox($box, $bind_cell = null) {
     }
 }
 
-export async function addNewPerson(ID, score = null) {
+export function addNewPerson(ID, score = null) {
     $.post("php/getPersonInfo.php", {IDList: [ID]}, function (map) {
         G.personVis[ID] = true;
         PopBox.remove();
         let data = map[ID];
+        data['job'] = `${data['groupName'] || ""} ${data['jobName'] || ""}`;
         let p = new Person(data);
         if(score) {
             p.setScore(score);
         }
         initBox(p.$box);
         goToList(p.$box);
+    }, "json");
+}
+
+/*
+* [{
+*   ID: xx,
+*   score: xx
+* }]
+* */
+export function addAGroupOfPersons(PersonList) {
+    let IDList = [];
+    PersonList.forEach((p) => {
+        IDList.push(p.id);
+    });
+    $.post("php/getPersonInfo.php", {IDList: IDList}, function (map) {
+        let i = 0;
+        allDown(PersonList.length);
+        PersonList.forEach((item) => {
+            PopBox.remove();
+            let data = map[item.id];
+            data['job'] = `${data['groupName'] || ""} ${data['jobName'] || ""}`;
+            let p = new Person(map[item.id]);
+            if(item.score) {
+                p.setScore(item.score);
+            }
+            initBox(p.$box, null, i);
+            goToListWithoutAllDown(p.$box, i);
+            G.personVis[item.id] = true;
+            i++;
+        });
     }, "json");
 }

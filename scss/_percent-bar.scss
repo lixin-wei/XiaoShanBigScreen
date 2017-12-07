@@ -20,20 +20,22 @@
 
 //PK台里的大型百分比条
 .total-bar {
-  display: inline-block;
+  display: block;
   height: 20px;
   width: 360px;
   border: 1px solid #2c333d;
   .total-bar-thumb {
     display: inline-block;
-    height: 14px;
-    margin-bottom: 1px;
+    height: 100%;
+    text-align: right;
+    padding: 0 10px;
     background: linear-gradient(90deg, #ffde00, #40b500);
     transition: all 0.5s;
   }
   &.total-bar-revert {
     text-align: right;
     .total-bar-thumb {
+      text-align: left;
       background: linear-gradient(90deg, #40b500, #ffde00);
     }
   }

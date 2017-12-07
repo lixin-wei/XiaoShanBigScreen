@@ -14,19 +14,25 @@ SELECT
 	gbryqd.BH AS ID,
 	CSNY AS birthday,
 	XW AS eduBkg,
-	gbryqd.XM AS name,
+	gbryqd.XM AS `name`,
 	ZP AS photo,
 	ZZMM AS politicalStatus,
 	XB AS sex,
-	MAX( grjl.QSSJ ) AS recentJobTransferDate, #从个人简历表里获取最近一次经历的时间，作为最近调度时间
-	FLAG AS flag
+	MAX( grjl.QSSJ ) AS recentJobTransferDate,
+#从个人简历表里获取最近一次经历的时间，作为最近调度时间
+	FLAG AS flag,
+	bmzw.zw_BMMC AS groupName,
+	bmzw.zw_Name AS jobName,
+	bmzw.zw_BMID AS teamID,
+	bmzw.zw_Order AS jobID 
 FROM
 	gbryqd
-	LEFT JOIN grjl ON gbryqd.BH = grjl.BH 
+	LEFT JOIN grjl ON gbryqd.BH = grjl.BH
+	LEFT JOIN bmzw ON gbryqd.BH = bmzw.zw_PersonID 
 WHERE
-	gbryqd.BH in ($IDListStr)
+	gbryqd.BH IN ( $IDListStr ) 
 GROUP BY
-	ID
+	gbryqd.BH, bmzw.zw_BMID, bmzw.zw_Order, bmzw.zw_BMMC, bmzw.zw_Name
 SQL;
 
 
