@@ -52,7 +52,7 @@ export class Person {
     }
     getInfo() {
         if(this.flag === 1) {
-            return "市委干部";
+            return "市管干部";
         }
         return `${this.sex} ${this.birthday.format("YYYY-MM")} ${this.politicalStatus}`;
     }

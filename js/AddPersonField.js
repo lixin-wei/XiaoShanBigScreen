@@ -2,6 +2,7 @@ import * as G from "./include/Global";
 import * as PopBox from "./component/PopBox";
 import * as GroupBox from "./GroupBoxField";
 import * as BMCtl from "./BoxMovementController";
+import * as Helper from "./HelperFuncitions";
 import {Person} from "./class/Person";
 
 window.$ = window.jQuery = require("jquery");
@@ -63,7 +64,7 @@ $("#btnMatch").click(function (e) {
                 let $li = $("<li/>").text(job.jobName);
                 $li.click(function () {
                     PopBox.remove();
-                    $.getJSON("http://localhost:5000/recmdJob", {teamID: groupID, jobID: job.ID}, function (data) {
+                    $.getJSON(G.PYTHON_SERVER_ROOT + "recmdJob", {teamID: groupID, jobID: job.ID}, function (data) {
                         // console.log(data);
                         //先把所有资料卡里的匹配度隐藏
                         $(".info-box").find(".last-row div:last-child").hide();

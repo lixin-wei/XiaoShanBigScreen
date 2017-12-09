@@ -18,7 +18,7 @@ export function setPerson(person, dir) {
     if(dir === "left") leftPerson = person;
     else rightPerson = person;
     $.ajax({
-        url: G.PERSON_INFO_API_URL,
+        url: G.PYTHON_SERVER_ROOT + "summary",
         crossDomain: true,
         method: "GET",
         dataType: "json",
@@ -183,9 +183,9 @@ $job_chooser.click(function (e) {
                     $job_chooser.text(job.jobName);
                     PopBox.remove();
                     //获取左右两个人的分数
-                    $.getJSON("http://localhost:5000/recmdScore", {teamID: GroupBox.getGroupID(), jobID: job.ID, personID: leftPerson.ID}, function (res) {
+                    $.getJSON(G.PYTHON_SERVER_ROOT + "recmdScore", {teamID: GroupBox.getGroupID(), jobID: job.ID, personID: leftPerson.ID}, function (res) {
                         let scoreLeft = res['score'];
-                        $.getJSON("http://localhost:5000/recmdScore", {teamID: GroupBox.getGroupID(), jobID: job.ID, personID: rightPerson.ID}, function (res) {
+                        $.getJSON(G.PYTHON_SERVER_ROOT + "recmdScore", {teamID: GroupBox.getGroupID(), jobID: job.ID, personID: rightPerson.ID}, function (res) {
                             clearBar();
                             let scoreRight = res['score'];
                             //设置PK比分条
@@ -221,6 +221,7 @@ $container.find(".photo-col .photo")
     .mousedown(function () {
         if($(this).data("person")) {
             G.setFloatingPerson($(this).data("person"));
+            BMCtl.setIsTrackingMouse(true);
             G.getFloatingPerson().$box.show();
             $(this).data("person", null);
 

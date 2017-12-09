@@ -82,7 +82,7 @@ export function setGroup(group) {
         })
     }
 
-    $.get("http://localhost:5000/team", {id: group.ID}, function (data) {
+    $.get(G.PYTHON_SERVER_ROOT + "team", {id: group.ID}, function (data) {
         console.log(data);
 
         let indexes = ["一把手作用", "团队协作", "整体战斗力"];

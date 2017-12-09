@@ -6,15 +6,24 @@ import * as Helper from "./HelperFuncitions";
 import * as PKStage from "./PKStageField";
 import {Person} from "./class/Person";
 
+
 /** info-box拖动 **/
 let click_x = 0, click_y = 0;
 let clickPageX = 0, clickPageY = 0;
 let isMouseDown = false;
+export let isTrackingMouse = false; //是否随鼠标移动，主要给goToList用，防止动画中途被鼠标拖走了
+export function setIsTrackingMouse(val) {
+    isTrackingMouse = val;
+}
+let $intendCell = null; //用户点下去的那个cell，打算想拖
 const BOX_HEIGHT = 150;
 const BOX_WIDTH = 600;
 const TRASH_X = G.$box_list.offset().left;
 const TRASH_Y = G.$box_list.offset().top;
 let $boxTrash = $("#mid_col3_box_trash");
+function isIntentToDragFrom(x, y) {
+    return Helper.MhtDis(x, y, clickPageX, clickPageY) > 4;
+}
 //box list的动画控制函数
 export function focusOn($ele) {
     $(".cell, .info-box").removeClass("active");
@@ -34,7 +43,7 @@ export function setPersonInfo(person) {
     G.$de_tree_label_list.add(G.$cai_tree_label_list).add(G.$lack_label).add(G.$achievement_label)
         .css({"transform" : "scale(0)"}).data("vis", false);
     $.ajax({
-        url: G.PERSON_INFO_API_URL,
+        url: G.PYTHON_SERVER_ROOT + "summary",
         crossDomain: true,
         dataType: "json",
         data: {id: person.ID},
@@ -138,19 +147,20 @@ export function allNextUp($box) {
         });
     });
 }
-export function goToList($box, offset = 0) {
+export function goToList($box, callback = ()=>{}) {
     $box.show();
     allDown();
     $box.animate({ //回到备选区位置
         top: TRASH_Y - $(window).scrollTop(),
         left: TRASH_X - $(window).scrollLeft(),
-    },function () { //放回容器内
+    }, function () { //放回容器内
         $box.css({
             top: 0,
             left: 0,
         });
         $box.removeClass("float");
         $box.prependTo(G.$box_list);
+        callback();
     });
 }
 
@@ -206,7 +216,7 @@ export function goOut($box) {
 export function onMouseMoveInfoBox(e) { //InfoBox的拖出事件
 
     //加了个move时的位置判断，防止误触
-    if(isMouseDown && !G.getFloatingPerson() && !(e.pageX === clickPageX && e.pageY === clickPageY)) {
+    if(isMouseDown && !G.getFloatingPerson() && isIntentToDragFrom(e.pageX, e.pageY)) {
         let maxQueueCnt = 0;
         G.$box_list.find(".info-box").each(function () {
             maxQueueCnt = Math.max(maxQueueCnt, $(this).queue());
@@ -218,6 +228,7 @@ export function onMouseMoveInfoBox(e) { //InfoBox的拖出事件
                 left: $(this).offset().left - $(window).scrollLeft(),
             }).addClass("float");
             G.setFloatingPerson($(this).data("person_obj"));
+            isTrackingMouse = true;
             click_x = e.pageX - $(this).offset().left;
             click_y = e.pageY - $(this).offset().top;
             allNextUp($(this));
@@ -240,20 +251,6 @@ export function onMouseLeaveCell() {
 }
 export function onMouseMoveCell(e) { //cell中的box拖出事件
 
-    /* 如果是拖出且当前格子有内容 */
-    if(isMouseDown && !G.getFloatingPerson() && $(this).data("person") && !(e.pageX === clickPageX && e.pageY === clickPageY)) {
-        //拿出这个box并显示
-        G.setFloatingPerson($(this).data("person"));
-        $(this).data("person", null);
-        //清空格子
-        $(this).text(G.CELL_EMPTY_ALPHA).removeClass("important");
-        G.getFloatingPerson().$box.show();
-        //修改group
-        $(this).data("group").removeMember(G.getFloatingPerson().ID);
-        GroupBox.update();
-        //记录下从哪个格子拖出来的，高亮用
-        // G.getFloatingPerson().$box.data("cell_from", $(this));
-    }
 }
 export function onRightClickCell(e) {
     if(!$(this).data("person")) {
@@ -274,20 +271,26 @@ export function onClickCell() {
         console.log($(this).width());
     }
 }
+export function onMouseDownCell() {
+    $intendCell = $(this);
+}
 
 //全局事件
 $(window).contextmenu(function () {
     return false;
 });
 $(window).on("mouseup", function (e) {
-    if(G.getFloatingPerson()) {
+    if(G.getFloatingPerson() && isTrackingMouse) {
         //如果当前鼠标下有cell，则填充
         if(G.getActiveCell()) {
+            //如果是挤占式的，floatingPerson的清空要在动画完成后，hasGone用以标记
+            let hasGone = false;
             if(G.getActiveCell().data("person")) { //如果当前cell已经有内容了
                 //修改group
                 G.getActiveCell().data("group").removeMember(G.getActiveCell().data("person").ID);
                 GroupBox.update();
                 //让这个box回备选区去
+                hasGone = true;
                 if(G.getActiveCell().hasClass("active")) {
                     focusOn(null);
                 }
@@ -295,7 +298,9 @@ $(window).on("mouseup", function (e) {
                     top: e.pageY - $(window).scrollTop(),
                     left: e.pageX - $(window).scrollLeft()
                 });
-                goToList(G.getActiveCell().data("person").$box);
+                goToList(G.getActiveCell().data("person").$box, function () {
+                    G.setFloatingPerson(null);
+                });
                 G.getActiveCell().data("person", null);
             }
             let $from = G.getFloatingPerson().$box.data("cell_from");
@@ -326,14 +331,20 @@ $(window).on("mouseup", function (e) {
             GroupBox.update();
             //隐藏box
             G.getFloatingPerson().$box.hide();
-
+            if(!hasGone) {
+                G.setFloatingPerson(null);
+            }
         }
         //如果是拖到PK台
         else if(G.getActiveStage()) {
+            let hasGone = false;
             //如果当前pk位已经有人了
             if(G.getActiveStage().data("person")) {
                 //让这个box回备选区去
-                goToList(G.getActiveStage().data("person").$box);
+                hasGone = true;
+                goToList(G.getActiveStage().data("person").$box, function () {
+                    G.setFloatingPerson(null);
+                });
                 G.getActiveStage().data("person", null);
             }
             G.getFloatingPerson().$box.hide();
@@ -342,12 +353,17 @@ $(window).on("mouseup", function (e) {
                 PKStage.setLeft(G.getFloatingPerson());
             else
                 PKStage.setRight(G.getFloatingPerson());
-            G.setFloatingPerson(null);
+            if(!hasGone) {
+                G.setFloatingPerson(null);
+            }
+            isTrackingMouse = false;
 
         }
         else { //否则让box回去
             let fltPerson = G.getFloatingPerson();
-            goToList(fltPerson.$box);
+            goToList(fltPerson.$box, function () {
+                G.setFloatingPerson(null);
+            });
             let $cellFrom = fltPerson.$box.data("cell_from");
             if($cellFrom) {
                 $cellFrom.addClass("changed");
@@ -356,25 +372,46 @@ $(window).on("mouseup", function (e) {
             }
             GroupBox.update();
         }
-        G.setFloatingPerson(null);
     }
 });
 $(window).on("mousedown", function (e) {
-    console.log("mouse down");
+    // console.log("mouse down");
     isMouseDown = true;
     clickPageX = e.pageX;
     clickPageY = e.pageY;
 });
 $(window).on("mouseup", function () {
     isMouseDown = false;
+    isTrackingMouse = false;
+    $intendCell = null;
 });
-$(window).on("mousemove", function (e) { //box跟随鼠标移动
-    if (G.getFloatingPerson()) {
-        console.log("box move");
+$(window).on("mousemove", function (e) {
+
+    //box跟随鼠标移动
+    if (G.getFloatingPerson() && isTrackingMouse) {
+        // console.log("box move");
         G.getFloatingPerson().$box.css({
             top: e.pageY - $(window).scrollTop() - click_y,
             left: e.pageX - $(window).scrollLeft() - click_x
         });
+    }
+
+    //从cell拽出box
+    // console.log(`intendCell: ${$intendCell !== null}, floatingPerson: ${!G.getFloatingPerson()}, inIntend: ${isIntentToDragFrom(e.pageX, e.pageY)}`);
+    /* 如果是拖出且当前格子有内容 */
+    if($intendCell && !G.getFloatingPerson() && $intendCell.data("person") && isIntentToDragFrom(e.pageX, e.pageY)) {
+        //拿出这个box并显示
+        G.setFloatingPerson($intendCell.data("person"));
+        $intendCell.data("person", null);
+        isTrackingMouse = true;
+        //清空格子
+        $intendCell.text(G.CELL_EMPTY_ALPHA).removeClass("important");
+        G.getFloatingPerson().$box.show();
+        //修改group
+        $intendCell.data("group").removeMember(G.getFloatingPerson().ID);
+        GroupBox.update();
+        //记录下从哪个格子拖出来的，高亮用
+        // G.getFloatingPerson().$box.data("cell_from", $intendCell);
     }
 });
 
@@ -385,13 +422,14 @@ export function initCell($cell) {
         .mousemove(onMouseMoveCell)
         .mouseleave(onMouseLeaveCell)
         .mouseenter(onMouseEnterCell)
-        .contextmenu(onRightClickCell);
+        .contextmenu(onRightClickCell)
+        .mousedown(onMouseDownCell);
 }
 export function initBox($box, $bind_cell = null, offset = 0) {
     $box.mousemove(onMouseMoveInfoBox)
         .click(onClickInfoBox);
     $box.find(".close").click(function (e) {
-        console.log("close clicked");
+        // console.log("close clicked");
         goOut($box);
         e.stopPropagation();
     });

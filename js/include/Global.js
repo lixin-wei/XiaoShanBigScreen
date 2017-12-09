@@ -1,7 +1,7 @@
 window.$ = window.jQuery = require("jquery");
 export const PERSON_PHOTO_ROOT = "images/photos/";
 export const STREET_PHOTO_ROOT = "images/street/";
-export const PERSON_INFO_API_URL = "http://localhost:5000/summary";
+export const PYTHON_SERVER_ROOT = "http://localhost:5000/";
 export const CELL_EMPTY_ALPHA = "+";
 
 export let $box_list = $("#mid_col3_body_list");

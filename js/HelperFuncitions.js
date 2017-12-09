@@ -16,3 +16,11 @@ export function getNodeCenter($node) {
     res.y = $node.offset().top + $node.outerHeight()/2;
     return res;
 }
+
+//曼哈顿距离
+/**
+ * @return {number}
+ */
+export function MhtDis(x1, y1, x2, y2) {
+    return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+}
