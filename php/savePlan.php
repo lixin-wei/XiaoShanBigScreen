@@ -7,5 +7,8 @@ $db = new mysql();
 
 $json = $db->escape($_POST['json']);
 $planName = $db->escape($_POST['planName']);
+if(!$planName) {
+    $planName = "未命名";
+}
 $sql = "INSERT INTO bigscreen_plan(name, json, date) VALUES ('$planName', '$json', now())";
 $db->query($sql);

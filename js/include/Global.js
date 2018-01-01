@@ -47,11 +47,3 @@ export function setActiveStage($stage) {
 export function getActiveStage() {
     return $active_stage
 }
-//计划表，[班子ID][职位ID] -> 人ID
-export let planMap = null;
-//整个职位表，用来建表格用
-export let positionStc = null;
-//人ID的vis映射，标记当前表里是不是已经有这个人了
-export let personVis = {};
-//调动记录
-export let transLog = [];

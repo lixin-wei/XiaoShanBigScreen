@@ -65,3 +65,11 @@ export function addEmptyCell() {
 export function addImportantCell() {
     return addCellWithClass("", "cell thin important");
 }
+
+export function clear() {
+    $tableSet.empty();
+    curTable = 0;
+    row = 0;
+    col = 0;
+    $lastLine = null;
+}

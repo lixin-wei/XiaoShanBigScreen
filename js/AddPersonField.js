@@ -2,6 +2,7 @@ import * as G from "./include/Global";
 import * as PopBox from "./component/PopBox";
 import * as GroupBox from "./GroupBoxField";
 import * as BMCtl from "./BoxMovementController";
+import * as Data from "./DataController";
 import * as Helper from "./HelperFuncitions";
 import {Person} from "./class/Person";
 
@@ -25,7 +26,7 @@ $("#btnAddPerson").click(function (e) {
                 //搜出人名，加到列表里
                 res.forEach((person) => {
                     //已经在表里的人不允许添加
-                    if(!G.personVis[person.ID]) {
+                    if(!Data.personVis[person.ID]) {
                         let $li = $('<li class="hover-white" />').text(`${person.name} ${person.sex} ${person.birthday}`);
                         //点击人名项，添加相应的box
                         $li.click(function () {

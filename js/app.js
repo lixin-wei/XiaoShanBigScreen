@@ -1,19 +1,14 @@
 window.$ = window.jQuery = require("jquery");
 let moment = require("moment");
 import * as G from "./include/Global";
-import * as PKStage from "./PKStageField";
-
 import {} from "./PlanManageField";
 import {} from "./AddPersonField";
-
-
-
 
 /** 气泡框相关 **/
 import {} from "./PersonDetailField";
 
 /** 数据填充 **/
-import {} from "./DataFiller";
+import {} from "./DataController";
 
 /** 初始化 **/
 $(document).ready(function () {

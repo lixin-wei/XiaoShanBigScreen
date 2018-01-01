@@ -5,7 +5,8 @@ class Point {
     }
 }
 class Line {
-    constructor(p1, p2) {
+    constructor(ID, p1, p2) {
+        this.ID = ID;
         this.p1 = p1 || new Point();
         this.p2 = p2 || new Point();
     }
@@ -17,11 +18,16 @@ let ox = 0;
 let oy = 0;
 let dashOffset = 0;
 let line_list = [];
+let tot = 0;
+let stop = false;
 draw();
 export function hide() {
     canvas.style.opacity = "0";
+    stop = true;
 }
 export function show() {
+    stop = false;
+    draw();
     canvas.style.opacity = "1";
 }
 export function resizeCanvas(h, w) {
@@ -33,7 +39,11 @@ export function setOrigin(x, y) {
     oy = y;
 }
 export function addLine(p1, p2) {
-    line_list.push(new Line(p1, p2));
+    line_list.push(new Line(tot, p1, p2));
+    return tot++;
+}
+export function removeLine(ID) {
+    line_list = line_list.filter((line) => {return line.ID !== ID})
 }
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -91,7 +101,7 @@ function draw() {
         }
         ctx.restore();
     });
-    requestAnimationFrame(() => {draw()});
+    if(!stop) requestAnimationFrame(() => {draw()});
 }
 
 

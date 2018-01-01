@@ -4,6 +4,8 @@ import * as PopBox from "./component/PopBox";
 import * as LineLayer from "./LineLayer";
 import * as Helper from "./HelperFuncitions";
 import * as PKStage from "./PKStageField";
+import * as Data from "./DataController";
+import * as Plan from "./PlanManageField";
 import {Person} from "./class/Person";
 
 
@@ -182,7 +184,7 @@ export function goToListWithoutAllDown($box, offset = 0) {
 
 export function goOut($box) {
     let person = $box.data("person_obj");
-    G.personVis[person.ID] = false;
+    Data.personVis[person.ID] = false;
     let $cellFrom = $box.data("cell_from");
     allNextUp($box);
     //如果是从格子里拖过来的，且原来位置没人，让他回去
@@ -281,6 +283,7 @@ $(window).contextmenu(function () {
 });
 $(window).on("mouseup", function (e) {
     if(G.getFloatingPerson() && isTrackingMouse) {
+        Plan.change();
         //如果当前鼠标下有cell，则填充
         if(G.getActiveCell()) {
             //如果是挤占式的，floatingPerson的清空要在动画完成后，hasGone用以标记
@@ -305,19 +308,25 @@ $(window).on("mouseup", function (e) {
             }
             let $from = G.getFloatingPerson().$box.data("cell_from");
             let $to = G.getActiveCell();
+            //去除已有的变动线
+            if(G.getFloatingPerson().lineID !== undefined) {
+                LineLayer.removeLine(G.getFloatingPerson().lineID);
+            }
             if($from && $to && !$to.is($from)) {
                 //设置高亮
                 $from.addClass("changed");
                 $to.addClass("changed");
                 //加变动线
-                LineLayer.addLine(Helper.getNodeCenter($from), Helper.getNodeCenter($to));
-                //记录调动
-                G.transLog.push({
-                    from: $from.data("positionName"),
-                    to: $to.data("positionName"),
-                    who: G.getFloatingPerson()
-                });
+                G.getFloatingPerson().lineID = LineLayer.addLine(Helper.getNodeCenter($from), Helper.getNodeCenter($to));
             }
+            //记录调动
+            Data.transLog.push({
+                from: $from.data("positionName"),
+                to: $to.data("positionName"),
+                who: G.getFloatingPerson()
+            });
+            //更新plan，设置当前格子的，原格子的null在拖出来的时候设置
+            Data.updatePlan($to.data("group").ID, $to.data("jobID"), G.getFloatingPerson().ID);
             //设置姓名
             G.getActiveCell().text(Helper.clipString(G.getFloatingPerson().name, 3));
             //把person附加到cell上
@@ -359,7 +368,7 @@ $(window).on("mouseup", function (e) {
             isTrackingMouse = false;
 
         }
-        else { //否则让box回去
+        else { //否则让box回trash去
             let fltPerson = G.getFloatingPerson();
             goToList(fltPerson.$box, function () {
                 G.setFloatingPerson(null);
@@ -400,15 +409,21 @@ $(window).on("mousemove", function (e) {
     // console.log(`intendCell: ${$intendCell !== null}, floatingPerson: ${!G.getFloatingPerson()}, inIntend: ${isIntentToDragFrom(e.pageX, e.pageY)}`);
     /* 如果是拖出且当前格子有内容 */
     if($intendCell && !G.getFloatingPerson() && $intendCell.data("person") && isIntentToDragFrom(e.pageX, e.pageY)) {
+        Plan.change();
+
+        let person = $intendCell.data("person");
+        let group = $intendCell.data("group");
+        //修改plan
+        Data.updatePlan(group.ID, $intendCell.data("jobID"), null);
         //拿出这个box并显示
-        G.setFloatingPerson($intendCell.data("person"));
+        G.setFloatingPerson(person);
         $intendCell.data("person", null);
         isTrackingMouse = true;
         //清空格子
         $intendCell.text(G.CELL_EMPTY_ALPHA).removeClass("important");
-        G.getFloatingPerson().$box.show();
+        person.$box.show();
         //修改group
-        $intendCell.data("group").removeMember(G.getFloatingPerson().ID);
+        group.removeMember(person.ID);
         GroupBox.update();
         //记录下从哪个格子拖出来的，高亮用
         // G.getFloatingPerson().$box.data("cell_from", $intendCell);
@@ -448,7 +463,7 @@ export function initBox($box, $bind_cell = null, offset = 0) {
 
 export function addNewPerson(ID, score = null) {
     $.post("php/getPersonInfo.php", {IDList: [ID]}, function (map) {
-        G.personVis[ID] = true;
+        Data.personVis[ID] = true;
         PopBox.remove();
         let data = map[ID];
         data['job'] = `${data['groupName'] || ""} ${data['jobName'] || ""}`;
@@ -485,7 +500,7 @@ export function addAGroupOfPersons(PersonList) {
             }
             initBox(p.$box, null, i);
             goToListWithoutAllDown(p.$box, i);
-            G.personVis[item.id] = true;
+            Data.personVis[item.id] = true;
             i++;
         });
     }, "json");

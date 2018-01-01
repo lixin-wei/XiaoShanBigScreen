@@ -1,5 +1,5 @@
 import * as G from "./include/Global";
-
+import * as Data from "./DataController";
 window.$ = window.jQuery = require("jquery");
 jQuery.fn.getHTML = function(s) {
     return (s)
@@ -12,6 +12,13 @@ import * as PopBox from "./component/PopBox";
 
 let $plan_name_box = $("#plan_name");
 
+export function setPlanName(text) {
+    $plan_name_box.text("当前方案：" + text);
+}
+
+export function change() {
+    setPlanName("*新方案（未保存）");
+}
 function openList() {
     let box_top = $plan_name_box.offset().top + $plan_name_box.outerHeight();
     let box_left = $plan_name_box.offset().left + $plan_name_box.outerWidth()/2;
@@ -22,16 +29,19 @@ function openList() {
     `);
     $.get("php/getPlanList.php", {}, function (data) {
         data.forEach((item) => {
-            $content.append($("<li/>").text(`${item.name}(${item.date})`));
-        });
-        $content.find("li").mousemove(function () {
-            $(this).addClass("active");
-        }).mouseout(function () {
-            $(this).removeClass("active");
+            let $li = $("<li/>").text(`${item.name}(${item.date})`);
+            $li.click(function () {
+                $.getJSON("php/getPlan.php", {ID: item.ID}, function (res) {
+                    Data.switchPlan(res);
+                    PopBox.remove();
+                    setPlanName(item.name);
+                });
+            });
+            $content.append($li);
         });
         PopBox.show(box_left, box_top, $content, {
             position: {x: "center", y: "bottom"},
-            css: {"max-width": "540px"},
+            css: {"max-width": "800px"},
             showClose: false
         });
     }, "json");
@@ -60,8 +70,9 @@ $("#plan_save").click(function (e) {
     `);
     $content.find("div button").click(function () {
         let planName = $content.find("p input").val();
-        $.post("php/savePlan", {planName: planName, json: JSON.stringify(G.planMap)}, () => {
+        $.post("php/savePlan", {planName: planName, json: JSON.stringify(Data.planMap)}, () => {
             PopBox.remove();
+            setPlanName(planName);
         });
     });
     PopBox.show(e.pageX, e.pageY, $content, {
@@ -99,7 +110,7 @@ $("#plan_diff").click(function (e) {
         </div>
     `);
     let i=1;
-    G.transLog.forEach((log) => {
+    Data.transLog.forEach((log) => {
         let birthday = log.who.birthday.format("YYYY-MM")
         if(!log.who.birthday.isValid()) birthday = "";
         let $tr = $(`
