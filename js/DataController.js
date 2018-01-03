@@ -8,6 +8,7 @@ import * as BMCtl from "./BoxMovementController";
 import * as Helper from "./HelperFuncitions";
 import * as Loading from "./Loadind";
 import * as Plan from "./PlanManageField";
+import * as LineLayer from "./LineLayer";
 
 
 /** plan数据部分 **/
@@ -18,8 +19,6 @@ export let personInfo = {}; // personID => Person
 export let cellMap = {};
 //整个职位表，用来建表格用
 export let positionStc = null;
-//人ID的vis映射，标记当前表里是不是已经有这个人了
-export let personVis = {};
 //调动记录
 export let transLog = [];
 
@@ -29,66 +28,87 @@ export function updatePlan(groupID, posID, personID) {
 }
 
 export function getPlanDiff() {
-    //先统计出原计划(personID) => [[groupID, jobID], ...]的映射
+    //原计划也就是数据库中目前应用的计划
     let transLog = [];
-    let  oriJobs = {};
+    let oriJobs = {};
+    let newJobs = {};
+    let IDSet = new Set();
+    //统计出原计划(personID) => [[groupID, jobID], ...]的映射
     Object.entries(originPlan).forEach(([i, row]) => {
-        Object.entries(row).forEach(([j, id]) => {
-            if(id !== null) {
-                if(oriJobs[id] === undefined) oriJobs[id] = [];
-                oriJobs[id].push([i, j]);
+        Object.entries(row).forEach(([j, ID]) => {
+            if(ID !== null) {
+                IDSet.add(ID);
+                if(oriJobs[ID] === undefined) oriJobs[ID] = [];
+                oriJobs[ID].push([i, j]);
             }
         })
     });
     //对于现计划的每一个人，如果他在原计划中没有，则是新加进来的，否则如果位置不一样，就加一条调动记录
-    let newJobs = {};
-    let cirIDSet = new Set();
     Object.entries(curPlan).forEach(([i, row]) => {
         Object.entries(row).forEach(([j, ID]) => {
             if(ID !== null) {
-                cirIDSet.add(ID);
-                //如果原计划中没有，说明是新加进来的
-                if(oriJobs[ID] === undefined) {
-                    let $cell = cellMap[i][j];
-                    transLog.push({
-                        from: "无",
-                        to: $cell.data("positionName"),
-                        who: personInfo[ID]
-                    })
+                IDSet.add(ID);
+                //遍历所有原计划职务，只要有一个匹配，说明这个职位没变，把这个职位从oriJobs中删除
+                //最后剩下的都是变动过的职位
+                let hasFound = false;
+                if(oriJobs[ID]) for(let x of oriJobs[ID]) {
+                    if(x.equals([i,j])) {
+                        hasFound = true;
+                        break;
+                    }
                 }
-                //如果原计划中有
-                else {
-                    //遍历所有原计划职务，只要有一个匹配，说明这个职位没变，把这个职位从oriJobs中删除
-                    //最后剩下的都是变动过的职位
-                    let hasFound = false;
-                    for(let x of oriJobs[ID]) {
-                        if(x.equals([i,j])) {
-                            hasFound = true;
-                            break;
-                        }
-                    }
-                    oriJobs[ID] = oriJobs[ID].filter((x) => !x.equals([i,j]));
-                    //如果没找到，记录下这个职位
-                    if(hasFound === false) {
-                        if(newJobs[ID] === undefined) newJobs[ID] = [];
-                        newJobs[ID].push([i,j]);
-                    }
+                oriJobs[ID] = oriJobs[ID].filter((x) => !x.equals([i,j]));
+                //如果没找到，记录下这个职位
+                if(newJobs[ID] === undefined) newJobs[ID] = [];
+                if(hasFound === false) {
+                    newJobs[ID].push([i,j]);
                 }
             }
         })
     });
+    for(let ID of IDSet) {
+        if(oriJobs[ID] === undefined) oriJobs[ID] = [];
+        if(newJobs[ID] === undefined) newJobs[ID] = [];
+    }
     //最后剩下的都是变过的职位，直接一个对一个调度即可
-    for(let ID of cirIDSet) {
-        for(let i=0 ; i<oriJobs[ID].length ; ++i) {
+    //如果新职位多，from设成null，旧职位多，to设成null
+    for(let ID of IDSet) {
+        let mid = Math.min(oriJobs[ID].length, newJobs[ID].length);
+        //先把公共部分一对一调度
+        for(let i=0 ; i<mid ; ++i) {
             let ori = oriJobs[ID][i];
             let cur = newJobs[ID][i];
             let $from = cellMap[ori[0]][ori[1]];
             let $to = cellMap[cur[0]][cur[1]];
             transLog.push({
-                from: $from.data("positionName"),
-                to: $to.data("positionName"),
+                $from: $from,
+                $to: $to,
                 who: personInfo[ID]
             })
+        }
+        //然后如果旧职位有多，看作撤职
+        if(oriJobs[ID].length > newJobs[ID].length) {
+            for(let i = mid ; i < oriJobs[ID].length ; ++i) {
+                let ori = oriJobs[ID][i];
+                let $from = cellMap[ori[0]][ori[1]];
+                transLog.push({
+                    $from: $from,
+                    $to: null,
+                    who: personInfo[ID]
+                })
+            }
+        }
+        //新职位有多，看作新任免
+        else if(oriJobs[ID].length < newJobs[ID].length) {
+            for(let i = mid ; i < newJobs[ID].length ; ++i) {
+                let cur = newJobs[ID][i];
+                let $to = cellMap[cur[0]][cur[1]];
+                transLog.push({
+                    $from: null,
+                    $to: $to,
+                    who: personInfo[ID]
+                })
+            }
         }
     }
     return transLog;
@@ -101,11 +121,13 @@ export function switchPlan(plan) {
     Loading.setInfo("加载中");
     Loading.show();
     transLog = [];
-    personVis = {};
     cellMap = {};
     jobQueue = [];
     LeftTable.clear();
     RightTable.clear();
+    Charts.clear();
+    LineLayer.clear();
+
 
     // console.log(map);
     curPlan = plan;
@@ -155,7 +177,6 @@ export function switchPlan(plan) {
                     cellMap[groupID][jobID] = $cell;
 
                     if(pID !== null) {
-                        personVis[pID] = true;
                         p_data['groupID'] = groupID;
                         p_data['jobID'] = jobID;
                         p_data['job'] = `${data_l[x].name} ${data_l[x].items[y].name}`;
@@ -208,7 +229,6 @@ export function switchPlan(plan) {
                     cellMap[groupID][jobID] = $cell;
 
                     if(pID !== null) {
-                        personVis[pID] = true;
                         p_data['groupID'] = groupID;
                         p_data['jobID'] = jobID;
                         p_data['job'] = `${data_r[x].name} ${data_r[x].items[y].name}`;
@@ -239,6 +259,19 @@ export function switchPlan(plan) {
             if(i >= jobQueue.length) {
                 Charts.update();
                 Loading.hide();
+                //重新绘制调度线，高亮格子
+                let transLog = getPlanDiff();
+                for(let log of transLog) {
+                    if(log.$from && log.$to) {
+                        LineLayer.addLine(Helper.getNodeCenter(log.$from), Helper.getNodeCenter(log.$to));
+                    }
+                    if(log.$from) {
+                        log.$from.addClass("changed");
+                    }
+                    if(log.$to) {
+                        log.$to.addClass("changed");
+                    }
+                }
                 return;
             }
             Loading.setInfo(`渲染数据中${i+1}/${jobQueue.length}`);

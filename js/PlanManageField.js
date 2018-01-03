@@ -30,6 +30,7 @@ function openList() {
     $.get("php/getPlanList.php", {}, function (data) {
         data.forEach((item) => {
             let $li = $("<li/>").text(`${item.name}(${item.date})`);
+            //切换方案
             $li.click(function () {
                 $.getJSON("php/getPlan.php", {ID: item.ID}, function (res) {
                     Data.switchPlan(res);
@@ -114,6 +115,13 @@ $("#plan_diff").click(function (e) {
     transLog.forEach((log) => {
         let birthday = log.who.birthday.format("YYYY-MM")
         if(!log.who.birthday.isValid()) birthday = "";
+        let fromStr = "无", toStr ="无";
+        if(log.$from) {
+            fromStr = log.$from.data("positionName");
+        }
+        if(log.$to) {
+            toStr = log.$to.data("positionName");
+        }
         let $tr = $(`
             <tr>
                 <td>${i++}</td>
@@ -122,8 +130,8 @@ $("#plan_diff").click(function (e) {
                 <td>${birthday}</td>
                 <td>${log.who.eduBkg}</td>
                 <td>${log.who.politicalStatus}</td>
-                <td>${log.from}</td>
-                <td>${log.to}</td>
+                <td>${fromStr}</td>
+                <td>${toStr}</td>
                 <td></td>
             </tr>
         `);

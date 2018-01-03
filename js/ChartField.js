@@ -203,6 +203,24 @@ export function update() {
     chart_age.setOption(option_chart_age);
     chart_grp.setOption(option_chart_grp);
 }
+export function clear() {
+    option_chart_sex.series[0].data[0].value = 0;
+    option_chart_sex.series[0].data[1].value = 0;
+
+    option_chart_edu.series[0].data[0].value = 0;
+    option_chart_edu.series[0].data[1].value = 0;
+    option_chart_edu.series[0].data[2].value = 0;
+    option_chart_edu.series[0].data[3].value = 0;
+
+    option_chart_age.series[0].data[0].value = 0;
+    option_chart_age.series[0].data[1].value = 0;
+    option_chart_age.series[0].data[2].value = 0;
+    option_chart_age.series[0].data[3].value = 0;
+    option_chart_age.series[0].data[4].value = 0;
+
+    option_chart_grp.series[0].data[0].value = 0;
+    option_chart_grp.series[0].data[1].value = 0;
+}
 update();
 
 export function addPerson(person) {

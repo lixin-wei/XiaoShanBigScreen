@@ -184,7 +184,6 @@ export function goToListWithoutAllDown($box, offset = 0) {
 
 export function goOut($box) {
     let person = $box.data("person_obj");
-    Data.personVis[person.ID] = false;
     let $cellFrom = $box.data("cell_from");
     allNextUp($box);
     //如果是从格子里拖过来的，且原来位置没人，让他回去
@@ -312,19 +311,13 @@ $(window).on("mouseup", function (e) {
             if(G.getFloatingPerson().lineID !== undefined) {
                 LineLayer.removeLine(G.getFloatingPerson().lineID);
             }
+            //设置高亮
+            if($from)$from.addClass("changed");
+            if($to)$to.addClass("changed");
             if($from && $to && !$to.is($from)) {
-                //设置高亮
-                $from.addClass("changed");
-                $to.addClass("changed");
                 //加变动线
                 G.getFloatingPerson().lineID = LineLayer.addLine(Helper.getNodeCenter($from), Helper.getNodeCenter($to));
             }
-            //记录调动
-            // Data.transLog.push({
-            //     from: $from.data("positionName"),
-            //     to: $to.data("positionName"),
-            //     who: G.getFloatingPerson()
-            // });
             //更新plan，设置当前格子的，原格子的null在拖出来的时候设置
             Data.updatePlan($to.data("group").ID, $to.data("jobID"), G.getFloatingPerson().ID);
             //设置姓名
@@ -463,7 +456,6 @@ export function initBox($box, $bind_cell = null, offset = 0) {
 
 export function addNewPerson(ID, score = null) {
     $.post("php/getPersonInfo.php", {IDList: [ID]}, function (map) {
-        Data.personVis[ID] = true;
         PopBox.remove();
         let data = map[ID];
         data['job'] = `${data['groupName'] || ""} ${data['jobName'] || ""}`;
@@ -500,7 +492,6 @@ export function addAGroupOfPersons(PersonList) {
             }
             initBox(p.$box, null, i);
             goToListWithoutAllDown(p.$box, i);
-            Data.personVis[item.id] = true;
             i++;
         });
     }, "json");

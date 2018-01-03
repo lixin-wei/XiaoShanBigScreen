@@ -30,6 +30,9 @@ export function show() {
     draw();
     canvas.style.opacity = "1";
 }
+export function clear() {
+    line_list = []
+}
 export function resizeCanvas(h, w) {
     canvas.height = h;
     canvas.width = w;
