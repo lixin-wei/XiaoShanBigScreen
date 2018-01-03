@@ -320,11 +320,11 @@ $(window).on("mouseup", function (e) {
                 G.getFloatingPerson().lineID = LineLayer.addLine(Helper.getNodeCenter($from), Helper.getNodeCenter($to));
             }
             //记录调动
-            Data.transLog.push({
-                from: $from.data("positionName"),
-                to: $to.data("positionName"),
-                who: G.getFloatingPerson()
-            });
+            // Data.transLog.push({
+            //     from: $from.data("positionName"),
+            //     to: $to.data("positionName"),
+            //     who: G.getFloatingPerson()
+            // });
             //更新plan，设置当前格子的，原格子的null在拖出来的时候设置
             Data.updatePlan($to.data("group").ID, $to.data("jobID"), G.getFloatingPerson().ID);
             //设置姓名

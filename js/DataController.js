@@ -12,7 +12,10 @@ import * as Plan from "./PlanManageField";
 
 /** plan数据部分 **/
 //计划表，[班子ID][职位ID] -> 人ID
-export let planMap = null;
+export let curPlan = null;
+export let originPlan = null;
+export let personInfo = {}; // personID => Person
+export let cellMap = {};
 //整个职位表，用来建表格用
 export let positionStc = null;
 //人ID的vis映射，标记当前表里是不是已经有这个人了
@@ -21,8 +24,74 @@ export let personVis = {};
 export let transLog = [];
 
 export function updatePlan(groupID, posID, personID) {
-    planMap[groupID][posID] = personID;
+    curPlan[groupID][posID] = personID;
     console.log(`update plan: (${groupID}, ${posID}) -> ${personID}`);
+}
+
+export function getPlanDiff() {
+    //先统计出原计划(personID) => [[groupID, jobID], ...]的映射
+    let transLog = [];
+    let  oriJobs = {};
+    Object.entries(originPlan).forEach(([i, row]) => {
+        Object.entries(row).forEach(([j, id]) => {
+            if(id !== null) {
+                if(oriJobs[id] === undefined) oriJobs[id] = [];
+                oriJobs[id].push([i, j]);
+            }
+        })
+    });
+    //对于现计划的每一个人，如果他在原计划中没有，则是新加进来的，否则如果位置不一样，就加一条调动记录
+    let newJobs = {};
+    let cirIDSet = new Set();
+    Object.entries(curPlan).forEach(([i, row]) => {
+        Object.entries(row).forEach(([j, ID]) => {
+            if(ID !== null) {
+                cirIDSet.add(ID);
+                //如果原计划中没有，说明是新加进来的
+                if(oriJobs[ID] === undefined) {
+                    let $cell = cellMap[i][j];
+                    transLog.push({
+                        from: "无",
+                        to: $cell.data("positionName"),
+                        who: personInfo[ID]
+                    })
+                }
+                //如果原计划中有
+                else {
+                    //遍历所有原计划职务，只要有一个匹配，说明这个职位没变，把这个职位从oriJobs中删除
+                    //最后剩下的都是变动过的职位
+                    let hasFound = false;
+                    for(let x of oriJobs[ID]) {
+                        if(x.equals([i,j])) {
+                            hasFound = true;
+                            break;
+                        }
+                    }
+                    oriJobs[ID] = oriJobs[ID].filter((x) => !x.equals([i,j]));
+                    //如果没找到，记录下这个职位
+                    if(hasFound === false) {
+                        if(newJobs[ID] === undefined) newJobs[ID] = [];
+                        newJobs[ID].push([i,j]);
+                    }
+                }
+            }
+        })
+    });
+    //最后剩下的都是变过的职位，直接一个对一个调度即可
+    for(let ID of cirIDSet) {
+        for(let i=0 ; i<oriJobs[ID].length ; ++i) {
+            let ori = oriJobs[ID][i];
+            let cur = newJobs[ID][i];
+            let $from = cellMap[ori[0]][ori[1]];
+            let $to = cellMap[cur[0]][cur[1]];
+            transLog.push({
+                from: $from.data("positionName"),
+                to: $to.data("positionName"),
+                who: personInfo[ID]
+            })
+        }
+    }
+    return transLog;
 }
 
 /** 初始数据填充 **/
@@ -33,12 +102,13 @@ export function switchPlan(plan) {
     Loading.show();
     transLog = [];
     personVis = {};
+    cellMap = {};
     jobQueue = [];
     LeftTable.clear();
     RightTable.clear();
 
     // console.log(map);
-    planMap = plan;
+    curPlan = plan;
     //汇总所有人，得到信息表
     let personIDList = [];
     Object.entries(plan).forEach(([i, row]) => {
@@ -80,13 +150,17 @@ export function switchPlan(plan) {
                     $cell.data("group", group);
                     $cell.data("jobID", jobID);
                     $cell.data("positionName", `${data_l[x].name} ${data_l[x].items[y].name}`);
+                    //存住(groupID, jobID) => $cell的映射，供后期查找用
+                    if(!cellMap[groupID])cellMap[groupID] = {};
+                    cellMap[groupID][jobID] = $cell;
 
                     if(pID !== null) {
                         personVis[pID] = true;
                         p_data['groupID'] = groupID;
                         p_data['jobID'] = jobID;
                         p_data['job'] = `${data_l[x].name} ${data_l[x].items[y].name}`;
-                        let person = new Person(p_data);
+                        let person = new Person(p_data)
+                        personInfo[pID] = person;
                         //如果是市委干部，特别颜色标注，且不计入图表的统计
                         if(person.flag === 1) {
                             $cell.addClass("important");
@@ -129,6 +203,9 @@ export function switchPlan(plan) {
                     $cell.data("jobID", jobID);
                     $cell.data("positionName", `${data_r[x].name} ${data_r[x].items[y].name}`);
                     BMCtl.initCell($cell);
+                    //存住(groupID, jobID) => $cell的映射，供后期查找用
+                    if(!cellMap[groupID])cellMap[groupID] = {};
+                    cellMap[groupID][jobID] = $cell;
 
                     if(pID !== null) {
                         personVis[pID] = true;
@@ -136,6 +213,7 @@ export function switchPlan(plan) {
                         p_data['jobID'] = jobID;
                         p_data['job'] = `${data_r[x].name} ${data_r[x].items[y].name}`;
                         let person = new Person(p_data);
+                        personInfo[pID] = person;
                         //如果是市委干部，特别颜色标注，且不计入图表的统计
                         if(person.flag === 1) {
                             $cell.addClass("important");
@@ -182,6 +260,8 @@ $(document).ready(function () {
         //然后获取到当前的plan
         Loading.setInfo("获取调度计划中");
         $.get("php/getPlan.php", {ID: "-1"}, function (planMap) {
+            //拷贝一份当作原计划表，供以后比较用
+            originPlan = jQuery.extend(true, {}, planMap);
             switchPlan(planMap)
         }, "json");
     }, "json");

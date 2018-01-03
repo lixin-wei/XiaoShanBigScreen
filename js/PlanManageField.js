@@ -70,7 +70,7 @@ $("#plan_save").click(function (e) {
     `);
     $content.find("div button").click(function () {
         let planName = $content.find("p input").val();
-        $.post("php/savePlan", {planName: planName, json: JSON.stringify(Data.planMap)}, () => {
+        $.post("php/savePlan", {planName: planName, json: JSON.stringify(Data.curPlan)}, () => {
             PopBox.remove();
             setPlanName(planName);
         });
@@ -110,7 +110,8 @@ $("#plan_diff").click(function (e) {
         </div>
     `);
     let i=1;
-    Data.transLog.forEach((log) => {
+    let transLog = Data.getPlanDiff();
+    transLog.forEach((log) => {
         let birthday = log.who.birthday.format("YYYY-MM")
         if(!log.who.birthday.isValid()) birthday = "";
         let $tr = $(`
