@@ -1179,6 +1179,7 @@ img {
   background: rgba(0, 0, 0, 0.7);
   filter: drop-shadow(0 0 15px #67aaff);
   color: white;
+  position: fixed;
 }
 .pop-box .content {
   overflow-y: scroll;

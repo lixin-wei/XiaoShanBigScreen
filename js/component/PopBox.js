@@ -5,6 +5,7 @@ const ANIMATION_DUR = 200;
 export function isOpen() {
     return $active_pop_box !== null;
 }
+
 export function remove() {
     if($active_pop_box) {
         let $temp = $active_pop_box;
@@ -77,7 +78,6 @@ export function show(x, y, $content, option = {
     absolute_top = box_top;
     //然后显示
     $popBox.css({
-        position: "fixed",
         top: box_top - $(window).scrollTop(),
         left: box_left - $(window).scrollLeft()
     }).slideDown(ANIMATION_DUR);

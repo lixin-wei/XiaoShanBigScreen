@@ -1,5 +1,6 @@
 import * as G from "./include/Global";
 import * as Data from "./DataController";
+import {ConfirmBox} from "./component/ConfirmBox";
 window.$ = window.jQuery = require("jquery");
 jQuery.fn.getHTML = function(s) {
     return (s)
@@ -9,15 +10,18 @@ jQuery.fn.getHTML = function(s) {
 let moment = require("moment");
 import * as PopBox from "./component/PopBox";
 
-
+const CONFIRM_TEXT = "方案尚未保存，是否继续？";
 let $plan_name_box = $("#plan_name");
-let curPlanName = null, curPlanID = null;
+let curPlanName = null, curPlanID = null, hasChanged = false;
+let isBlocking = false; //当确认框弹出时设成true，防止重复弹出
+
 export function setPlanName(text) {
     $plan_name_box.text("当前方案：" + text);
 }
 
 //每次修改就调用
 export function notifyChange() {
+    hasChanged = true;
     //如果在默认方案上修改，是一个新方案
     if (curPlanName === null) {
         setPlanName("*新方案(未保存)");
@@ -28,6 +32,8 @@ export function notifyChange() {
 }
 
 function openList() {
+    if(isBlocking)return;
+
     let box_top = $plan_name_box.offset().top + $plan_name_box.outerHeight();
     let box_left = $plan_name_box.offset().left + $plan_name_box.outerWidth()/2;
 
@@ -40,21 +46,52 @@ function openList() {
         </div>
     `);
     $content.find("button").click(function (e) {
+        function okEvent() {
+            Data.setToDefaultPlan();
+        }
+
         PopBox.remove();
-        Data.setToDefaultPlan();
+        if(hasChanged) {
+            isBlocking = true;
+            new ConfirmBox(e.pageX, e.pageY, CONFIRM_TEXT, function () {
+                okEvent();
+                isBlocking = false;
+            }, function () {
+                isBlocking = false;
+            });
+        }
+        else {
+            okEvent();
+        }
     });
     $.get("php/getPlanList.php", {}, function (data) {
         data.forEach((item) => {
             let $li = $("<li/>").html(`${item.name} <span class="text-grey text-mid">(${item.date})</span>`);
             //切换方案
-            $li.click(function () {
-                $.getJSON("php/getPlan.php", {ID: item.ID}, function (res) {
-                    Data.switchPlan(res);
-                    PopBox.remove();
-                    setPlanName(item.name);
-                    curPlanName = item.name;
-                    curPlanID = item.ID;
-                });
+            $li.click(function (e) {
+                function okEvent() {
+                    $.getJSON("php/getPlan.php", {ID: item.ID}, function (res) {
+                        Data.switchPlan(res);
+                        setPlanName(item.name);
+                        curPlanName = item.name;
+                        curPlanID = item.ID;
+                        hasChanged = false;
+                    });
+                }
+                
+                PopBox.remove();
+                if(hasChanged) {
+                    isBlocking = true;
+                    new ConfirmBox(e.pageX, e.pageY, CONFIRM_TEXT, function () {
+                        okEvent();
+                        isBlocking = false;
+                    }, function () {
+                        isBlocking = false;
+                    });
+                }
+                else {
+                    okEvent();
+                }
             });
             $content.find("ul").append($li);
         });
@@ -99,6 +136,7 @@ function openSaveAsBox(e) {
             setPlanName(planName);
             curPlanName = planName;
             curPlanID = parseInt(insertID);
+            hasChanged = false;
         });
     });
     PopBox.show(e.pageX, e.pageY, $content, {
@@ -113,6 +151,7 @@ $("#plan_save").click(function (e) {
         $.post("php/updatePlan", {planID: curPlanID, json: JSON.stringify(Data.curPlan)}, () => {
             PopBox.remove();
             setPlanName(curPlanName);
+            hasChanged = false;
         });
     }
     else {
