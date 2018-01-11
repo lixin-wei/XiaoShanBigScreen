@@ -3,3 +3,4 @@ node_modules
 images/mans/*
 images/photos/*
 images/street/*
+npm-debug.log

@@ -127,7 +127,8 @@ export function switchPlan(plan) {
     RightTable.clear();
     Charts.clear();
     LineLayer.clear();
-
+    $("#mid_col3_body_list").empty();
+    $("#mid_col3_box_trash").empty();
 
     // console.log(map);
     curPlan = plan;
@@ -283,19 +284,23 @@ export function switchPlan(plan) {
         run(0);
     }, "json")
 }
-$(document).ready(function () {
+
+export function setToDefaultPlan() {
+    Loading.show();
     Plan.setPlanName("现任方案");
+    Loading.setInfo("获取调度计划中");
+    $.get("php/getPlan.php", {ID: "-1"}, function (planMap) {
+        //拷贝一份当作原计划表，供以后比较用
+        originPlan = jQuery.extend(true, {}, planMap);
+        switchPlan(planMap)
+    }, "json");
+}
+$(document).ready(function () {
     Loading.show();
     //首先获取整个职位结构
     Loading.setInfo("获取职位结构中");
     $.get("php/getPositionStructure", {}, function (stcData) {
         positionStc = stcData;
-        //然后获取到当前的plan
-        Loading.setInfo("获取调度计划中");
-        $.get("php/getPlan.php", {ID: "-1"}, function (planMap) {
-            //拷贝一份当作原计划表，供以后比较用
-            originPlan = jQuery.extend(true, {}, planMap);
-            switchPlan(planMap)
-        }, "json");
+        setToDefaultPlan();
     }, "json");
 });

@@ -11,38 +11,59 @@ import * as PopBox from "./component/PopBox";
 
 
 let $plan_name_box = $("#plan_name");
-
+let curPlanName = null, curPlanID = null;
 export function setPlanName(text) {
     $plan_name_box.text("当前方案：" + text);
 }
 
-export function change() {
-    setPlanName("*新方案（未保存）");
+//每次修改就调用
+export function notifyChange() {
+    //如果在默认方案上修改，是一个新方案
+    if (curPlanName === null) {
+        setPlanName("*新方案(未保存)");
+    }
+    else { //否则是更改一个现有方案S
+        setPlanName(`*${curPlanName}(修改未保存)`);
+    }
 }
+
 function openList() {
     let box_top = $plan_name_box.offset().top + $plan_name_box.outerHeight();
     let box_left = $plan_name_box.offset().left + $plan_name_box.outerWidth()/2;
 
     let $content = $(`
-        <ul class="file-list">
-        </ul>
+        <div>
+            <button class="btn green block text-large">还原默认方案</button>
+            <hr>
+            <ul class="file-list">
+            </ul>        
+        </div>
     `);
+    $content.find("button").click(function (e) {
+        PopBox.remove();
+        Data.setToDefaultPlan();
+    });
     $.get("php/getPlanList.php", {}, function (data) {
         data.forEach((item) => {
-            let $li = $("<li/>").text(`${item.name}(${item.date})`);
+            let $li = $("<li/>").html(`${item.name} <span class="text-grey text-mid">(${item.date})</span>`);
             //切换方案
             $li.click(function () {
                 $.getJSON("php/getPlan.php", {ID: item.ID}, function (res) {
                     Data.switchPlan(res);
                     PopBox.remove();
                     setPlanName(item.name);
+                    curPlanName = item.name;
+                    curPlanID = item.ID;
                 });
             });
-            $content.append($li);
+            $content.find("ul").append($li);
         });
+        if(data.length === 0) {
+            $content.find("ul").text("暂无方案");
+        }
         PopBox.show(box_left, box_top, $content, {
             position: {x: "center", y: "bottom"},
-            css: {"max-width": "800px"},
+            css: {"max-width": "800px", "min-width": "300px"},
             showClose: false
         });
     }, "json");
@@ -54,11 +75,13 @@ $plan_name_box.mousemove(function () {
 }).mouseout(function () {
     $(this).removeClass("active");
 });
+
 $plan_name_box.click(function (e) {
     openList();
     e.stopPropagation();
 });
-$("#plan_save").click(function (e) {
+
+function openSaveAsBox(e) {
     let $content = $(`
         <div>
             <p class="text-center">
@@ -71,9 +94,11 @@ $("#plan_save").click(function (e) {
     `);
     $content.find("div button").click(function () {
         let planName = $content.find("p input").val();
-        $.post("php/savePlan", {planName: planName, json: JSON.stringify(Data.curPlan)}, () => {
+        $.post("php/savePlan", {planName: planName, json: JSON.stringify(Data.curPlan)}, (insertID) => {
             PopBox.remove();
             setPlanName(planName);
+            curPlanName = planName;
+            curPlanID = parseInt(insertID);
         });
     });
     PopBox.show(e.pageX, e.pageY, $content, {
@@ -81,6 +106,23 @@ $("#plan_save").click(function (e) {
         css: {width: "330px"},
         showClose: false
     });
+}
+
+$("#plan_save").click(function (e) {
+    if (curPlanID !== null) {
+        $.post("php/updatePlan", {planID: curPlanID, json: JSON.stringify(Data.curPlan)}, () => {
+            PopBox.remove();
+            setPlanName(curPlanName);
+        });
+    }
+    else {
+        openSaveAsBox(e);
+    }
+    e.stopPropagation();
+});
+
+$("#plan_save_as").click(function (e) {
+    openSaveAsBox(e);
     e.stopPropagation();
 });
 
@@ -137,17 +179,18 @@ $("#plan_diff").click(function (e) {
         `);
         $content.find("table").append($tr);
     });
+    if (transLog.length === 0) {
+        $content = $(`<div class="text-large text-center">暂无调动记录</div>`);
+    }
     $content.find("div button").click(function () {
         let output = $content.find("table").getHTML();
-        let OpenWindow = window.open("content.html", "mywin", '');
-        OpenWindow.dataFromParent = output; // dataFromParent is a variable in child.html
-        OpenWindow.onload = function () {
-            OpenWindow.init();
-        }
+        let newWindow = window.open();
+        let styleSheet = "<style>table td {border: 1px solid black; text-align: center;}</style>"
+        newWindow.document.write(styleSheet + output);
     });
     PopBox.show(e.pageX, e.pageY, $content, {
         position: {x: "center", y: "bottom"},
-        css: {"max-width": "1200px"},
+        css: {"max-width": "1200px", "min-width": "600px"},
         showClose: false
     });
     e.stopPropagation();

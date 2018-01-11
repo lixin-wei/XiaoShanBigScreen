@@ -282,7 +282,7 @@ $(window).contextmenu(function () {
 });
 $(window).on("mouseup", function (e) {
     if(G.getFloatingPerson() && isTrackingMouse) {
-        Plan.change();
+        Plan.notifyChange();
         //如果当前鼠标下有cell，则填充
         if(G.getActiveCell()) {
             //如果是挤占式的，floatingPerson的清空要在动画完成后，hasGone用以标记
@@ -326,9 +326,11 @@ $(window).on("mouseup", function (e) {
             G.getActiveCell().data("person", G.getFloatingPerson());
             //设置group
             G.getActiveCell().data("group").addMember(G.getActiveCell().data("person"));
-            //如果是市委干部，加个高亮
-            if(G.getFloatingPerson().flag === 1) {
+            if(G.getFloatingPerson().flag === 1) { //如果是市委干部，加个高亮
                 G.getActiveCell().addClass("important");
+            }
+            else { //否则把高亮移除
+                G.getActiveCell().removeClass("important");
             }
             GroupBox.update();
             //隐藏box
@@ -402,7 +404,7 @@ $(window).on("mousemove", function (e) {
     // console.log(`intendCell: ${$intendCell !== null}, floatingPerson: ${!G.getFloatingPerson()}, inIntend: ${isIntentToDragFrom(e.pageX, e.pageY)}`);
     /* 如果是拖出且当前格子有内容 */
     if($intendCell && !G.getFloatingPerson() && $intendCell.data("person") && isIntentToDragFrom(e.pageX, e.pageY)) {
-        Plan.change();
+        Plan.notifyChange();
 
         let person = $intendCell.data("person");
         let group = $intendCell.data("group");

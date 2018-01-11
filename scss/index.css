@@ -117,8 +117,20 @@
   color: #01d406;
 }
 
+.text-grey {
+  color: #aaa;
+}
+
 .text-center {
   text-align: center;
+}
+
+.text-small {
+  font-size: small;
+}
+
+.text-mid {
+  font-size: medium;
 }
 
 .text-large {
@@ -954,6 +966,10 @@ img {
   color: white;
   background: #222;
   border: 1px solid black;
+}
+.btn.block {
+  display: block;
+  width: 100%;
 }
 .btn.blue {
   background: linear-gradient(#2a76ef, #081f3c);

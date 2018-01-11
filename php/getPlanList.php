@@ -5,7 +5,7 @@ include_once "./mysqlAll.php";//调用数据库处理函数
 //获取所有plan
 $db = new mysql();
 
-$sql = "SELECT ID, name, json, date FROM bigscreen_plan";
+$sql = "SELECT ID, name, json, date FROM bigscreen_plan ORDER BY date DESC";
 
 $res = [];
 $db->query($sql);

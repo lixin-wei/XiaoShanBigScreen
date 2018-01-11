@@ -12,3 +12,5 @@ if(!$planName) {
 }
 $sql = "INSERT INTO bigscreen_plan(name, json, date) VALUES ('$planName', '$json', now())";
 $db->query($sql);
+
+echo $db->insert_id();
