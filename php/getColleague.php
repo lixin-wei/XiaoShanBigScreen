@@ -9,9 +9,15 @@ $id = intval($_GET['ID']);
 $db->select("grjl", "QSSJ, ZZSJ, JLDD, JLSQ", "BH = $id", "QSSJ");
 $experiences = [];
 while($row = $db->fetch_assoc()) {
-    //去掉在校经历
-    if(strpos($row['JLSQ'], "学习") === false && strpos($row['JLSQ'], "培训") === false && strpos($row['JLSQ'], "学生") === false)
+    //去掉在校经历和在家待业
+    if(
+        strpos($row['JLSQ'], "学习") === false
+        && strpos($row['JLSQ'], "培训") === false
+        && strpos($row['JLSQ'], "学生") === false
+        && strpos($row['JLDD'], "在家") === false
+    ) {
         array_push($experiences, $row);
+    }
 }
 
 
