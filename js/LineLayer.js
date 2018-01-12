@@ -26,6 +26,7 @@ export function hide() {
     stop = true;
 }
 export function show() {
+    if(stop === false) return;
     stop = false;
     draw();
     canvas.style.opacity = "1";

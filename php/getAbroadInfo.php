@@ -5,6 +5,7 @@ $id = intval($_GET['ID']);
 $db->select("grygsxbg_yscgqk", "QSRQ, ZZRQ, SDGJ, SY", "BH = $id");
 
 $res = [];
+
 while($row = $db->fetch_row()) {
     array_push($res, $row);
 }

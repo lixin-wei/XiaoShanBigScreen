@@ -1,5 +1,7 @@
 import * as G from "./include/Global";
 import * as Data from "./DataController";
+import * as Loading from "./Loadind";
+import * as LineLayer from "./LineLayer";
 import {ConfirmBox} from "./component/ConfirmBox";
 window.$ = window.jQuery = require("jquery");
 jQuery.fn.getHTML = function(s) {
@@ -15,6 +17,17 @@ let $plan_name_box = $("#plan_name");
 let curPlanName = null, curPlanID = null, hasChanged = false;
 let isBlocking = false; //当确认框弹出时设成true，防止重复弹出
 
+
+//禁用和解禁所有按钮
+function blockButtons() {
+    isBlocking = true;
+    $("#head_right_button_group").find("button").attr("disabled", "true");
+}
+
+function unblockButtons() {
+    isBlocking = false;
+    $("#head_right_button_group").find("button").removeAttr("disabled");
+}
 export function setPlanName(text) {
     $plan_name_box.text("当前方案：" + text);
 }
@@ -33,13 +46,12 @@ export function notifyChange() {
 
 function openList() {
     if(isBlocking)return;
-
     let box_top = $plan_name_box.offset().top + $plan_name_box.outerHeight();
     let box_left = $plan_name_box.offset().left + $plan_name_box.outerWidth()/2;
 
     let $content = $(`
         <div>
-            <button class="btn green block text-large">还原默认方案</button>
+            <button class="btn green block text-large">还原到现任方案</button>
             <hr>
             <ul class="file-list">
             </ul>        
@@ -47,17 +59,18 @@ function openList() {
     `);
     $content.find("button").click(function (e) {
         function okEvent() {
+            curPlanID = null;
             Data.setToDefaultPlan();
         }
 
         PopBox.remove();
         if(hasChanged) {
-            isBlocking = true;
+            blockButtons();
             new ConfirmBox(e.pageX, e.pageY, CONFIRM_TEXT, function () {
                 okEvent();
-                isBlocking = false;
+                unblockButtons();
             }, function () {
-                isBlocking = false;
+                unblockButtons();
             });
         }
         else {
@@ -81,12 +94,12 @@ function openList() {
                 
                 PopBox.remove();
                 if(hasChanged) {
-                    isBlocking = true;
+                    blockButtons();
                     new ConfirmBox(e.pageX, e.pageY, CONFIRM_TEXT, function () {
                         okEvent();
-                        isBlocking = false;
+                        unblockButtons();
                     }, function () {
-                        isBlocking = false;
+                        unblockButtons();
                     });
                 }
                 else {
@@ -119,31 +132,33 @@ $plan_name_box.click(function (e) {
 });
 
 function openSaveAsBox(e) {
-    let $content = $(`
-        <div>
-            <p class="text-center">
-                <label>方案名：<input class="input text-large" /></label>
-            </p>
-            <div class="text-center">
-                <button class="btn blue">保存</button>
+    if(!isBlocking) {
+        let $content = $(`
+            <div>
+                <p class="text-center">
+                    <label>方案名：<input class="input text-large" /></label>
+                </p>
+                <div class="text-center">
+                    <button class="btn blue">保存</button>
+                </div>
             </div>
-        </div>
-    `);
-    $content.find("div button").click(function () {
-        let planName = $content.find("p input").val();
-        $.post("php/savePlan", {planName: planName, json: JSON.stringify(Data.curPlan)}, (insertID) => {
-            PopBox.remove();
-            setPlanName(planName);
-            curPlanName = planName;
-            curPlanID = parseInt(insertID);
-            hasChanged = false;
+        `);
+        $content.find("div button").click(function () {
+            let planName = $content.find("p input").val();
+            $.post("php/savePlan", {planName: planName, json: JSON.stringify(Data.curPlan)}, (insertID) => {
+                PopBox.remove();
+                setPlanName(planName);
+                curPlanName = planName;
+                curPlanID = parseInt(insertID);
+                hasChanged = false;
+            });
         });
-    });
-    PopBox.show(e.pageX, e.pageY, $content, {
-        position: {x: "center", y: "bottom"},
-        css: {width: "330px"},
-        showClose: false
-    });
+        PopBox.show(e.pageX, e.pageY, $content, {
+            position: {x: "center", y: "bottom"},
+            css: {width: "330px"},
+            showClose: false
+        });
+    }
 }
 
 $("#plan_save").click(function (e) {
@@ -232,5 +247,37 @@ $("#plan_diff").click(function (e) {
         css: {"max-width": "1200px", "min-width": "600px"},
         showClose: false
     });
+    e.stopPropagation();
+});
+
+$("#plan_apply").click(function (e) {
+    if(!isBlocking) {
+        blockButtons();
+        new ConfirmBox(e.pageX, e.pageY + 100, "此操作是修改性操作，将会修改数据库中的现任方案，无法撤销。<br/>应用以后，所有的调度线、任免方案，都会以这份计划为基准来重新计算，是否继续？", function () {
+            Loading.setInfo("写入数据中");
+            Loading.show();
+            LineLayer.hide();
+            $.post("php/applyPlan.php", {plan: JSON.stringify(Data.curPlan)}, function (res) {
+                if(res["result"]) {
+                    Loading.setInfo("更新成功");
+                    setTimeout(() => {
+                        hasChanged = false;
+                        curPlanID = null;
+                        Data.setToDefaultPlan();
+                    }, 700);
+                }
+                else {
+                    Loading.setInfo("更新失败");
+                    setTimeout(() => {
+                        LineLayer.show();
+                        Loading.hide();
+                    }, 700);
+                }
+            }, "json");
+            unblockButtons();
+        }, function () {
+            unblockButtons();
+        });
+    }
     e.stopPropagation();
 });

@@ -4,7 +4,7 @@ const ANIMATION_DUR = 200;
 export class ConfirmBox {
     constructor (x, y, text, callbackOK = () => {}, callbackCancel = () => {}) {
         this.$node = $(`
-            <div class="pop-box">
+            <div class="pop-box" style="max-width: 370px;">
                 <div class="content beauty-scroll text-center">${text}</div>
                 <div class="button-row">
                     <button class="btn green">确定</button>
@@ -33,18 +33,21 @@ export class ConfirmBox {
             e.stopPropagation();
         });
         let that = this;
-        //窗口滚动跟随
-        $(window).scroll(function () {
-            that.$node.css({
-                top: that.absolute_top - $(window).scrollTop(),
-                left: that.absolute_left - $(window).scrollLeft()
-            });
-        });
-        //全屏点击移除，也相当于点击了取消
-        $(window).click(function (e) {
+        /** 有BUG，暂时取消 **/
+        // 窗口滚动跟随
+        // this.windowScrollHandler = function () {
+        //     that.$node.css({
+        //         top: that.absolute_top - $(window).scrollTop(),
+        //         left: that.absolute_left - $(window).scrollLeft()
+        //     });
+        // };
+        // $(window).bind("scroll", this.windowScrollHandler);
+        // 全屏点击移除，也相当于点击了取消
+        this.windowClickHandler = function () {
             callbackCancel();
             that.remove();
-        });
+        };
+        $(window).bind("click", this.windowClickHandler);
 
         //然后显示
         this.$node.css({
@@ -73,6 +76,8 @@ export class ConfirmBox {
             $temp.slideUp(ANIMATION_DUR, function () {
                 $temp.remove();
             });
+            $(window)
+                .unbind("click", this.windowClickHandler);
         }
     }
 

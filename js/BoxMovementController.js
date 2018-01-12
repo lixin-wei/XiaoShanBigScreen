@@ -281,22 +281,31 @@ $(window).contextmenu(function () {
     return false;
 });
 $(window).on("mouseup", function (e) {
+    function removePersonLine(person) {
+        //去除已有的变动线
+        if(person.lineID !== undefined) {
+            LineLayer.removeLine(person.lineID);
+        }
+    }
     if(G.getFloatingPerson() && isTrackingMouse) {
         Plan.notifyChange();
         //如果当前鼠标下有cell，则填充
         if(G.getActiveCell()) {
             //如果是挤占式的，floatingPerson的清空要在动画完成后，hasGone用以标记
             let hasGone = false;
-            if(G.getActiveCell().data("person")) { //如果当前cell已经有内容了
+            let activeCell = G.getActiveCell();
+            if(activeCell.data("person")) { //如果当前cell已经有内容了
+                let personToGo = activeCell.data("person");
                 //修改group
-                G.getActiveCell().data("group").removeMember(G.getActiveCell().data("person").ID);
+                activeCell.data("group").removeMember(G.getActiveCell().data("person").ID);
                 GroupBox.update();
                 //让这个box回备选区去
+                removePersonLine(personToGo);
                 hasGone = true;
-                if(G.getActiveCell().hasClass("active")) {
+                if(activeCell.hasClass("active")) {
                     focusOn(null);
                 }
-                G.getActiveCell().data("person").$box.css({
+                personToGo.$box.css({
                     top: e.pageY - $(window).scrollTop(),
                     left: e.pageX - $(window).scrollLeft()
                 });
@@ -308,9 +317,7 @@ $(window).on("mouseup", function (e) {
             let $from = G.getFloatingPerson().$box.data("cell_from");
             let $to = G.getActiveCell();
             //去除已有的变动线
-            if(G.getFloatingPerson().lineID !== undefined) {
-                LineLayer.removeLine(G.getFloatingPerson().lineID);
-            }
+            removePersonLine(G.getFloatingPerson());
             //设置高亮
             if($from)$from.addClass("changed");
             if($to)$to.addClass("changed");
@@ -344,6 +351,7 @@ $(window).on("mouseup", function (e) {
             let hasGone = false;
             //如果当前pk位已经有人了
             if(G.getActiveStage().data("person")) {
+                removePersonLine(G.getActiveStage().data("person"));
                 //让这个box回备选区去
                 hasGone = true;
                 goToList(G.getActiveStage().data("person").$box, function () {
@@ -351,6 +359,7 @@ $(window).on("mouseup", function (e) {
                 });
                 G.getActiveStage().data("person", null);
             }
+            removePersonLine(G.getFloatingPerson());
             G.getFloatingPerson().$box.hide();
             G.getActiveStage().data("person", G.getFloatingPerson());
             if(G.getActiveStage().parent().attr("id") === "photo_col_left")
@@ -365,6 +374,7 @@ $(window).on("mouseup", function (e) {
         }
         else { //否则让box回trash去
             let fltPerson = G.getFloatingPerson();
+            removePersonLine(fltPerson);
             goToList(fltPerson.$box, function () {
                 G.setFloatingPerson(null);
             });

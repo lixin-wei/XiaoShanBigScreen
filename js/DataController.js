@@ -181,7 +181,7 @@ export function switchPlan(plan) {
                         p_data['groupID'] = groupID;
                         p_data['jobID'] = jobID;
                         p_data['job'] = `${data_l[x].name} ${data_l[x].items[y].name}`;
-                        let person = new Person(p_data)
+                        let person = new Person(p_data);
                         personInfo[pID] = person;
                         //如果是市委干部，特别颜色标注，且不计入图表的统计
                         if(person.flag === 1) {
@@ -273,6 +273,7 @@ export function switchPlan(plan) {
                         log.$to.addClass("changed");
                     }
                 }
+                LineLayer.show();
                 return;
             }
             Loading.setInfo(`渲染数据中${i+1}/${jobQueue.length}`);

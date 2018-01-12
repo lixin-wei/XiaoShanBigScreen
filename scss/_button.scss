@@ -19,6 +19,9 @@
     display: block;
     width: 100%;
   }
+  &[disabled] {
+    background: linear-gradient(#aaaaaa, #333333) !important;
+  }
   &.blue {
     @include btn_color(#2a76ef, #081f3c);
   }
