@@ -145,9 +145,9 @@ export function switchPlan(plan) {
         let data_l = positionStc['fixed'];
         LeftTable.newLine();
         LeftTable.addColTitleCell("---");
-        for (let i=0 ; i<18 ; ++i) {
-            if(i+1 === 5 || i+1 === 6 ) continue;
-            LeftTable.addColTitleCell(data_l[0]['items'][i]['name']);
+        let titles = ["书记","镇长","人大主席","副书记","纪委书记","组织","宣传统战","文教","经济","城建","农业","人武","派出所长","不定","副主席","副主席"];
+        for (let i=0 ; i<16 ; ++i) {
+            LeftTable.addColTitleCell(titles[i]);
         }
         LeftTable.applyLine();
         //各个街镇的行
@@ -157,8 +157,7 @@ export function switchPlan(plan) {
                 let group = new Group(data_l[x].ID, data_l[x].name, data_l[x].desc);
                 //街镇标题
                 LeftTable.addRowTitleCell(data_l[x].name).click(BMCtl.onClickCell).data("group", group);
-                for (let y=0 ; y<18 ; ++y) {
-                    if(y+1 === 5 || y+1 === 6 ) continue;
+                for (let y=0 ; y<16 ; ++y) {
                     let groupID = data_l[x].ID, jobID = data_l[x].items[y].ID;
                     let pID = plan[groupID][jobID];
                     let p_data = personInfoMap[pID];

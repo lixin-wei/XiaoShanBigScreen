@@ -273,3 +273,54 @@ export function addPerson(person) {
         option_chart_grp.series[0].data[1].value++;
     }
 }
+
+export function removePerson(person) {
+    let data = option_chart_sex.series[0].data;
+    //性别统计
+    if(person.sex === "男") {
+        data[0].value--;
+    }
+    else {
+        data[1].value--;
+    }
+    //教育背景统计
+    let edu = person.eduBkg;
+    data = option_chart_edu.series[0].data;
+    if(edu.indexOf("博士") !== -1) {
+        data[0].value--;
+    }
+    else if(edu.indexOf("硕士") !== -1 || edu.indexOf("研究生") !== -1) {
+        data[1].value--;
+    }
+    else if(edu.indexOf("学士") !== -1 || edu.indexOf("大学") !== -1) {
+        data[2].value--;
+    }
+    else {
+        data[3].value--;
+    }
+    //年龄统计
+    let bir = person.birthday;
+    data = option_chart_age.series[0].data;
+    if(bir.isBefore(moment("1964-12-01"))) {
+        data[0].value--;
+    }
+    else if(bir.isBefore(moment("1969-12-01"))) {
+        data[1].value--;
+    }
+    else if(bir.isBefore(moment("1974-12-01"))) {
+        data[2].value--;
+    }
+    else if(bir.isBefore(moment("1979-12-01"))) {
+        data[3].value--;
+    }
+    else {
+        data[4].value--;
+    }
+    //党派统计
+    if(person.politicalStatus === "中共党员") {
+        option_chart_grp.series[0].data[0].value--;
+    }
+    else {
+        option_chart_grp.series[0].data[1].value--;
+    }
+}

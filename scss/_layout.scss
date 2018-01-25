@@ -259,6 +259,8 @@ img {
       @mixin no_break() {
         white-space: nowrap;
         text-overflow: ellipsis;
+        max-width: 100%;
+        overflow: hidden;
       }
       .name {
         font-size: 27px;

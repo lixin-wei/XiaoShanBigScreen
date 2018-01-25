@@ -4,6 +4,7 @@ include_once "./mysqlAll.php";//调用数据库处理函数
 
 //获取当前整个干部职务的结构
 $db = new mysql();
+$db2 = new mysql();
 
 $res = array(
     "fixed" => [],
@@ -12,15 +13,15 @@ $res = array(
 
 $sql = <<<SQL
 SELECT
-	zw_BMID AS group_id,
-	zw_BMMC as group_name,
-	zw_Order AS position_id,
-	zw_Name AS position_name,
+	BMID AS group_id,
+	BM_NAME AS group_name,
+	GZID AS position_id,
 	bm.BM_FLAG AS group_flag,
 	bm.BM_DESC AS `desc`
 FROM
-	bmzw
-	LEFT JOIN bm ON bm.BM_ID = bmzw.zw_BMID
+	bmjg
+	LEFT JOIN bm ON bm.BM_ID = bmjg.BMID
+WHERE bmjg.ISSHOW = 1
 ORDER BY
 	group_id,
 	position_id
@@ -47,8 +48,14 @@ while($row = $db->fetch_assoc()) {
         );
     }
     //新position
+    //拼接当前格子所有职位
+    $db2->query("SELECT ZW_NAME FROM bmzw WHERE BMID = {$row['group_id']} AND GZID = {$row['position_id']}");
+    $position_name = "";
+    while($rr = $db2->fetch_assoc()) {
+        $position_name .= $rr['ZW_NAME'] . " ";
+    }
     array_push($r['items'], array(
-        "name" => $row['position_name'],
+        "name" => $position_name,
         "ID" => $row['position_id']
     ));
 }

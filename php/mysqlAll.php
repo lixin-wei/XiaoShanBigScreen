@@ -408,6 +408,8 @@ class mysql {
             exit();
         }
     }
- 
+    function getLastSQL() {
+        return $this->sql;
+    }
 }
 ?>

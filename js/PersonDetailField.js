@@ -88,6 +88,7 @@ $("#btn_colleague").click(function (e) {
     </div>
     `));
     $.get("php/getColleague.php", {ID: G.getShowingPersonID()}, function (res) {
+        res = res['res'];
         for(let i=0 ; i<res.length ; ++i) {
             let data = res[i];
             let colleagues = "";

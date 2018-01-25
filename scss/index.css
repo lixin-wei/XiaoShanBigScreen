@@ -420,16 +420,22 @@ img {
   font-size: 27px;
   white-space: nowrap;
   text-overflow: ellipsis;
+  max-width: 100%;
+  overflow: hidden;
 }
 #foot #foot_col3 #foot_col3_photo_container .info1 {
   font-size: 20px;
   white-space: nowrap;
   text-overflow: ellipsis;
+  max-width: 100%;
+  overflow: hidden;
 }
 #foot #foot_col3 #foot_col3_photo_container .info2 {
   font-size: 20px;
   white-space: nowrap;
   text-overflow: ellipsis;
+  max-width: 100%;
+  overflow: hidden;
 }
 #foot #foot_col3 #foot_col3_photo_container .btn {
   width: 102px;

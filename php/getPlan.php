@@ -9,11 +9,11 @@ $map = array();
 if($planID == -1) {
     $sql = <<<SQL
     SELECT
-        zw_BMID AS group_id,
-        zw_Order AS position_id,
-        zw_PersonID AS person_id
+        BMID AS group_id,
+        GZID AS position_id,
+        BH AS person_id
     FROM
-        bmzw
+        bmjg
     ORDER BY
         group_id,
         position_id

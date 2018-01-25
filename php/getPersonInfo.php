@@ -19,18 +19,19 @@ SELECT
 	XB AS sex,
 	MAX( grjl.QSSJ ) AS recentJobTransferDate, #从个人简历表里获取最近一次经历的时间，作为最近调度时间
 	FLAG AS flag,
-	bmzw.zw_BMMC AS groupName,
-	bmzw.zw_Name AS jobName,
-	bmzw.zw_BMID AS teamID,
-	bmzw.zw_Order AS jobID 
+	bm.BM_NAME AS groupName,
+	#bmjg.zw_Name AS jobName,
+	bmjg.BMID AS teamID,
+	bmjg.GZID AS jobID 
 FROM
 	gbryqd
 	LEFT JOIN grjl ON gbryqd.BH = grjl.BH
-	LEFT JOIN bmzw ON gbryqd.BH = bmzw.zw_PersonID 
+	LEFT JOIN bmjg ON gbryqd.BH = bmjg.BH
+	LEFT JOIN bm ON bmjg.BMID = bm.BM_ID
 WHERE
 	gbryqd.BH IN ( $IDListStr ) 
 GROUP BY
-	gbryqd.BH, bmzw.zw_BMID, bmzw.zw_Order, bmzw.zw_BMMC, bmzw.zw_Name
+	gbryqd.BH, bmjg.BMID, bmjg.GZID, bm.BM_NAME
 SQL;
 
 

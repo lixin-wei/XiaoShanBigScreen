@@ -22,12 +22,21 @@ while($row = $db->fetch_assoc()) {
 
 
 $res = [];
+$sql_set = [];
 //对于每条经历，找出时间区间内的所有同事
 foreach ($experiences as $exp) {
     $condition1 = $exp['ZZSJ'] ? "(QSSJ IS NOT NULL AND QSSJ>\"{$exp['ZZSJ']}\")" : "0";
     $condition2 = $exp['QSSJ'] ? "(ZZSJ IS NOT NULL AND ZZSJ<\"${exp['QSSJ']}\")" : "0";
 
-    $db->select("grjl", "BH, XM, JLSQ", "NOT($condition1 OR $condition2) AND JLDD = \"{$exp['JLDD']}\"", "QSSJ");
+    $sql = <<<SQL
+        SELECT grjl.BH, gbryqd.XM, JLSQ
+        FROM grjl
+        LEFT JOIN gbryqd ON grjl.BH = gbryqd.BH
+        WHERE NOT($condition1 OR $condition2) AND JLDD = '{$exp['JLDD']}'
+        ORDER BY QSSJ
+SQL;
+    $db->query($sql);
+    array_push($sql_set, $db->getLastSQL());
     $jobList = array();
     //对当前地点，与其时间有交集的，所有人的经历
     while($row = $db->fetch_assoc()) {
@@ -58,4 +67,9 @@ foreach ($experiences as $exp) {
     }
 }
 
-echo json_encode($res);
+$return = array(
+    "res" => $res,
+    //"debug" => $experiences,
+    //"debug2" => $sql_set
+);
+echo json_encode($return);

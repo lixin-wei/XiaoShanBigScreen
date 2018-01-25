@@ -1,6 +1,7 @@
 import * as G from "./include/Global";
 import * as GroupBox from "./GroupBoxField";
 import * as PopBox from "./component/PopBox";
+import * as Charts from "./ChartField";
 import * as LineLayer from "./LineLayer";
 import * as Helper from "./HelperFuncitions";
 import * as PKStage from "./PKStageField";
@@ -327,6 +328,9 @@ $(window).on("mouseup", function (e) {
             }
             //更新plan，设置当前格子的，原格子的null在拖出来的时候设置
             Data.updatePlan($to.data("group").ID, $to.data("jobID"), G.getFloatingPerson().ID);
+            //图表中移除这个人
+            Charts.removePerson(G.getFloatingPerson());
+            Charts.update();
             //设置姓名
             G.getActiveCell().text(Helper.clipString(G.getFloatingPerson().name, 3));
             //把person附加到cell上
@@ -420,6 +424,9 @@ $(window).on("mousemove", function (e) {
         let group = $intendCell.data("group");
         //修改plan
         Data.updatePlan(group.ID, $intendCell.data("jobID"), null);
+        //图表中移除这个人
+        Charts.removePerson(person);
+        Charts.update();
         //拿出这个box并显示
         G.setFloatingPerson(person);
         $intendCell.data("person", null);
