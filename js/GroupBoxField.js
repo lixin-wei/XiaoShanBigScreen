@@ -95,7 +95,7 @@ export function setGroup(group) {
                 setPopUpBox($node, label);
             }
             else {
-                $($items_r[i]).text("无材料");
+                $($items_r[i]).text("无材料").off("click");
             }
         }
 
@@ -113,4 +113,3 @@ export function setGroup(group) {
             $($problem_item).append($("<div class='text-blue hover-white'/>").text("无材料"));
     }, "json");
 }
-

@@ -2,7 +2,7 @@
 class mysql {
     private $db_host="localhost"; //数据库主机
     private $db_user = "root"; //数据库用户名
-    private $db_pwd = ""; //数据库用户名密码
+    private $db_pwd = "root"; //数据库用户名密码
     private $db_database = "xsdb"; //数据库名
     private $conn; //数据库连接标识;
     private $result; //执行query命令的结果资源标识

@@ -62,16 +62,26 @@ $("#btnMatch").click(function (e) {
                 let $li = $("<li/>").text(job.jobName);
                 $li.click(function () {
                     PopBox.remove();
-                    $.getJSON(G.PYTHON_SERVER_ROOT + "recmdJob", {teamID: groupID, jobID: job.ID}, function (data) {
-                        // console.log(data);
-                        //先把所有资料卡里的匹配度隐藏
-                        $(".info-box").find(".last-row div:last-child").hide();
-                        //把整个备选框清空
-                        //TODO: 这个逻辑不太合理
-                        $("#mid_col3_body_list").empty();
-                        data = data.personList.slice(0, 10);
-                        BMCtl.addAGroupOfPersons(data);
-                    })
+                    $.getJSON("php/getCadre.php", {BMID: groupID, GZID: job.ID}, function (json) {
+                        console.log(JSON.stringify(json));
+                        $.ajax({
+                            url: G.PYTHON_SERVER_ROOT + "postMatching",
+                            type: "post",
+                            dataType: "json",
+                            crossDomain: true,
+                            data: {requirement: JSON.stringify(json)},
+                            success: function(data){
+                                // console.log(data);
+                                //先把所有资料卡里的匹配度隐藏
+                                $(".info-box").find(".last-row div:last-child").hide();
+                                //把整个备选框清空
+                                //TODO: 这个逻辑不太合理
+                                $("#mid_col3_body_list").empty();
+                                data = data.personList.slice(0, 10);
+                                BMCtl.addAGroupOfPersons(data);
+                            }
+                        });
+                    });
                 });
                 $content.append($li);
             });

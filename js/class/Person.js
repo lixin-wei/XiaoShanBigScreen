@@ -24,7 +24,7 @@ export class Person {
         let $node = $(`
                     <div class="info-box">
                         <div class="photo">
-                            <img src="${G.PERSON_PHOTO_ROOT + this.photo}" />
+                            <img data-src="${G.PERSON_PHOTO_ROOT + this.photo}" />
                         </div>
                         <div class="name">${this.name}</div>
                         <div class="job">${this.job}</div>
@@ -45,6 +45,13 @@ export class Person {
         `);
         $node.data("person_obj", this);
         return $node;
+    }
+    loadImg() {
+        let $img = this.$box.find("img");
+        if($img.attr("data-src")) {
+            $img.attr("src", $img.attr("data-src"));
+            $img.removeAttr("data-src");
+        }
     }
     setScore(score) {
         this.$box.find("div.last-row div:last-child").show()

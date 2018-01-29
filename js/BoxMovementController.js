@@ -81,6 +81,7 @@ export function setPersonInfo(person) {
                     if(x < G.$de_tree_label_list.length) {
                         let i = Helper.getRandomInt(0, G.$de_tree_label_list.length - 1);
                         while(vis_a[i]) i = Helper.getRandomInt(0, G.$de_tree_label_list.length - 1);
+                        vis_a[i] = true;
 
                         $(G.$de_tree_label_list[i]).css({"transform": "scale(1)"}).data("vis", true).data("ref", label.ref);
                         $(G.$de_tree_label_list[i]).find("div").text(label.name.substr(0, 4));
@@ -91,6 +92,8 @@ export function setPersonInfo(person) {
                     if(y < G.$cai_tree_label_list.length) {
                         let i = Helper.getRandomInt(0, G.$cai_tree_label_list.length - 1);
                         while(vis_b[i]) i = Helper.getRandomInt(0, G.$cai_tree_label_list.length - 1);
+                        vis_b[i] = true;
+
                         //设置成橙色
                         $(G.$cai_tree_label_list[i]).attr("class", "tree-label orange");
                         $(G.$cai_tree_label_list[i]).css({"transform": "scale(1)"}).data("vis", true).data("ref", label.ref);
@@ -300,6 +303,8 @@ $(window).on("mouseup", function (e) {
                 //修改group
                 activeCell.data("group").removeMember(G.getActiveCell().data("person").ID);
                 GroupBox.update();
+                //显示之前懒加载一下照片
+                personToGo.loadImg();
                 //让这个box回备选区去
                 removePersonLine(personToGo);
                 hasGone = true;
@@ -422,6 +427,8 @@ $(window).on("mousemove", function (e) {
 
         let person = $intendCell.data("person");
         let group = $intendCell.data("group");
+        //图片lazy加载，拖出时加载
+        person.loadImg();
         //修改plan
         Data.updatePlan(group.ID, $intendCell.data("jobID"), null);
         //图表中移除这个人
@@ -479,6 +486,8 @@ export function addNewPerson(ID, score = null) {
         let data = map[ID];
         data['job'] = `${data['groupName'] || ""} ${data['jobName'] || ""}`;
         let p = new Person(data);
+        //图片懒加载，新加入人时加载
+        p.loadImg();
         if(score) {
             p.setScore(score);
         }
@@ -494,6 +503,7 @@ export function addNewPerson(ID, score = null) {
 * }]
 * */
 export function addAGroupOfPersons(PersonList) {
+    if(PersonList.length === 0)return;
     let IDList = [];
     PersonList.forEach((p) => {
         IDList.push(p.id);
@@ -506,6 +516,7 @@ export function addAGroupOfPersons(PersonList) {
             let data = map[item.id];
             data['job'] = `${data['groupName'] || ""} ${data['jobName'] || ""}`;
             let p = new Person(map[item.id]);
+            p.loadImg();
             if(item.score) {
                 p.setScore(item.score);
             }

@@ -60,6 +60,8 @@ function openList() {
     $content.find("button").click(function (e) {
         function okEvent() {
             curPlanID = null;
+            hasChanged = false;
+            curPlanName = null;
             Data.setToDefaultPlan();
         }
 
@@ -243,7 +245,7 @@ $("#plan_diff").click(function (e) {
         newWindow.document.write(styleSheet + output);
     });
     PopBox.show(e.pageX, e.pageY, $content, {
-        position: {x: "center", y: "bottom"},
+        position: {x: "left", y: "bottom"},
         css: {"max-width": "1200px", "min-width": "600px"},
         showClose: false
     });
@@ -253,7 +255,7 @@ $("#plan_diff").click(function (e) {
 $("#plan_apply").click(function (e) {
     if(!isBlocking) {
         blockButtons();
-        new ConfirmBox(e.pageX, e.pageY + 100, "此操作是修改性操作，将会修改数据库中的现任方案，无法撤销。<br/>应用以后，所有的调度线、任免方案，都会以这份计划为基准来重新计算，是否继续？", function () {
+        new ConfirmBox(e.pageX - 150, e.pageY + 100, "此操作是修改性操作，将会修改数据库中的现任方案，无法撤销。<br/>应用以后，所有的调度线、任免方案，都会以这份计划为基准来重新计算，是否继续？", function () {
             Loading.setInfo("写入数据中");
             Loading.show();
             LineLayer.hide();

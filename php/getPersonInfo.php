@@ -3,12 +3,13 @@ include_once "./mysqlAll.php";//调用数据库处理函数
 
 
 //var_dump($_POST);
-$IDList = $_POST['IDList'];
-$db = new mysql();
+if(isset($_POST['IDList'])) {
+    $IDList = $_POST['IDList'];
+    $db = new mysql();
 
-$IDListStr = implode(",", $IDList);
+    $IDListStr = implode(",", $IDList);
 
-$sql = <<<SQL
+    $sql = <<<SQL
 SELECT
 	gbryqd.BH AS ID,
 	CSNY AS birthday,
@@ -22,7 +23,7 @@ SELECT
 	bm.BM_NAME AS groupName,
 	#bmjg.zw_Name AS jobName,
 	bmjg.BMID AS teamID,
-	bmjg.GZID AS jobID 
+	bmjg.GZID AS jobID
 FROM
 	gbryqd
 	LEFT JOIN grjl ON gbryqd.BH = grjl.BH
@@ -33,14 +34,17 @@ WHERE
 GROUP BY
 	gbryqd.BH, bmjg.BMID, bmjg.GZID, bm.BM_NAME
 SQL;
+    $db->query($sql);
 
+    $res = array();
+    while($row = $db->fetch_assoc()) {
+        $row['flag'] = intval($row['flag']);
+        $res[$row['ID']] = $row;
+    }
 
-$db->query($sql);
+    echo json_encode($res);
 
-$res = array();
-while($row = $db->fetch_assoc()) {
-    $row['flag'] = intval($row['flag']);
-    $res[$row['ID']] = $row;
 }
-
-echo json_encode($res);
+else {
+    echo json_encode(array());
+}
