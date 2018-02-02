@@ -265,6 +265,7 @@ $("#plan_apply").click(function (e) {
                     setTimeout(() => {
                         hasChanged = false;
                         curPlanID = null;
+                        curPlanName = null;
                         Data.setToDefaultPlan();
                     }, 700);
                 }

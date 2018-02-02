@@ -7,7 +7,7 @@ $res = [];
 if(isset($_GET['name'])) {
     $name = $db->escape(trim($_GET['name']));
     if($name) {
-        $db->select("gbryqd", "BH as ID, XM as name, XB as sex, CSNY as birthday", "XM is not null and flag != 1 AND XM like '%$name%'", "", FALSE);
+        $db->select("gbryqd", "BH as ID, XM as name, XB as sex, CSNY as birthday", "XM is not null and (flag != 1 OR flag IS NULL) AND XM like '%$name%'", "", FALSE);
 
         while($row = $db->fetch_assoc()) {
             array_push($res, $row);

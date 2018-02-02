@@ -13,17 +13,17 @@ $sql_set = [];
 foreach ($plan as $i => $row) {
     foreach ($row as $j => $pid) {
         if($pid == null) $pid = "NULL";
-        $sql = "UPDATE bmzw set zw_PersonID = $pid WHERE zw_BMID = $i AND zw_Order = $j";
+        $sql = "UPDATE bmjg set BH = $pid WHERE BMID = $i AND GZID = $j";
         array_push($sql_set, $sql);
-        if($db->query($sql) === false) {
-            $has_error = true;
-        }
+        $db->query($sql);
+        if($db->has_error())break;
         $ok = true;
     }
+    if($db->has_error())break;
 }
 
 $res = array(
-    "result" => !$has_error && $ok,
+    "result" => !$db->has_error() && $ok,
     //"debug_plan" => $plan,
     //"debug_sql" => $sql_set
 );

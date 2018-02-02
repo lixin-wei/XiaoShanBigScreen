@@ -11,7 +11,9 @@ export function setPerson(person, dir) {
     let $photo_col = $container.find(`#photo_col_${dir}`);
     $photo_col.find(".photo img").attr("src", G.PERSON_PHOTO_ROOT + person.photo);
     $photo_col.find(".photo-col-name").text(person.name);
-    $(`#person_detail_${dir}`).text(`${person.sex} ${person.birthday.format("YYYY-MM")} ${person.politicalStatus} ${person.eduBkg}`);
+    let birthdayStr = "";
+    if(person.birthday.isValid())birthdayStr = person.birthday.format("YYYY-MM");
+    $(`#person_detail_${dir}`).text(`${person.sex} ${birthdayStr} ${person.politicalStatus} ${person.eduBkg}`);
     let $items = $("#foot_col_mid_container").find(".item");
     $items.find(`.col-${dir}`).empty();
     clearJobChooser();
@@ -183,16 +185,22 @@ $job_chooser.click(function (e) {
                     $job_chooser.text(job.jobName);
                     PopBox.remove();
                     //获取左右两个人的分数
-                    $.getJSON(G.PYTHON_SERVER_ROOT + "recmdScore", {teamID: GroupBox.getGroupID(), jobID: job.ID, personID: leftPerson.ID}, function (res) {
-                        let scoreLeft = res['score'];
-                        $.getJSON(G.PYTHON_SERVER_ROOT + "recmdScore", {teamID: GroupBox.getGroupID(), jobID: job.ID, personID: rightPerson.ID}, function (res) {
-                            clearBar();
-                            let scoreRight = res['score'];
-                            //设置PK比分条
-                            $("#total_bar_left").find(".total-bar-thumb").css({width: `${scoreLeft}%`}).text(`${scoreLeft}`);
-                            $("#total_bar_right").find(".total-bar-thumb").css({width: `${scoreRight}%`}).text(`${scoreRight}`);
-                        });
-                    })
+                    $.getJSON("php/getCadreWlx.php",  {BMID: GroupBox.getGroupID(), GZID: job.ID}, function (json) {
+                        json['干部编号'] = parseInt(leftPerson.ID);
+                        console.log(json);
+                        $.post(G.PYTHON_SERVER_ROOT + "postScore", {requirement: JSON.stringify(json)}, function (res) {
+                            let scoreLeft = res['score'].toFixed(2);
+                            json['干部编号'] = parseInt(rightPerson.ID);
+                            console.log(json);
+                            $.post(G.PYTHON_SERVER_ROOT + "postScore", {requirement: JSON.stringify(json)}, function (res) {
+                                clearBar();
+                                let scoreRight = res['score'].toFixed(2);
+                                //设置PK比分条
+                                $("#total_bar_left").find(".total-bar-thumb").css({width: `${scoreLeft}%`}).text(`${scoreLeft}`);
+                                $("#total_bar_right").find(".total-bar-thumb").css({width: `${scoreRight}%`}).text(`${scoreRight}`);
+                            }, "json");
+                        }, "json");
+                    });
                 });
                 $content.append($li);
             });
@@ -234,14 +242,14 @@ $container.find(".photo-col .photo")
 let $stage_btn_left = $("#photo_col_left").find(".btn");
 let $stage_btn_right = $("#photo_col_right").find(".btn");
 //PK台的各种按钮
-$($stage_btn_left[0]).on("mousedown click", function (e) {
+$($stage_btn_left[0]).on("click", function (e) {
     let $photo = $("#photo_col_left").find(".photo");
     let person = $photo.data("person");
     BMCtl.setPersonInfo(person);
     e.stopPropagation();
 });
 //离开PK台，左
-$($stage_btn_left[1]).on("mousedown click", function (e) {
+$($stage_btn_left[1]).on("click", function (e) {
     let $photo = $("#photo_col_left").find(".photo");
     let person = $photo.data("person");
     if(person) {

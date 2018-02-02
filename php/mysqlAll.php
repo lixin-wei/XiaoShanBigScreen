@@ -171,7 +171,8 @@ class mysql {
             if (!empty ($url))
                 $this->Get_admin_msg($url, '添加成功！');
         }
-		echo "INSERT INTO $table ($columnName) VALUES ($value)";
+		//if(!$url)
+		//echo "INSERT INTO $table ($columnName) VALUES ($value)";
     }
  
     //简化修改update
@@ -214,7 +215,13 @@ class mysql {
     public function db_affected_rows() {
         return mysql_affected_rows();
     }
- 
+
+    public function has_error() {
+        if($this->conn->error) {
+            return true;
+        }
+        return false;
+    }
     //输出显示sql语句
     public function show_error($message = "", $sql = "") {
         if (!$sql) {

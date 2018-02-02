@@ -275,6 +275,7 @@ export function addPerson(person) {
 }
 
 export function removePerson(person) {
+    console.log(`remove a person`);
     let data = option_chart_sex.series[0].data;
     //性别统计
     if(person.sex === "男") {

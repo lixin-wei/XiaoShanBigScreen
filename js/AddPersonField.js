@@ -62,8 +62,8 @@ $("#btnMatch").click(function (e) {
                 let $li = $("<li/>").text(job.jobName);
                 $li.click(function () {
                     PopBox.remove();
-                    $.getJSON("php/getCadre.php", {BMID: groupID, GZID: job.ID}, function (json) {
-                        console.log(JSON.stringify(json));
+                    $.getJSON("php/getCadreWlx.php", {BMID: groupID, GZID: job.ID}, function (json) {
+                        // console.log(JSON.stringify(json));
                         $.ajax({
                             url: G.PYTHON_SERVER_ROOT + "postMatching",
                             type: "post",

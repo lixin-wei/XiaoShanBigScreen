@@ -35,6 +35,7 @@ export function focusOn($ele) {
     }
 }
 export function setPersonInfo(person) {
+    PopBox.remove();
     console.log(`person_id = ${person.ID}`);
     G.setShowingPersonID(person.ID);
     G.$person_info_container.find(".photo img").attr("src", G.PERSON_PHOTO_ROOT + person.photo);
@@ -333,8 +334,8 @@ $(window).on("mouseup", function (e) {
             }
             //更新plan，设置当前格子的，原格子的null在拖出来的时候设置
             Data.updatePlan($to.data("group").ID, $to.data("jobID"), G.getFloatingPerson().ID);
-            //图表中移除这个人
-            Charts.removePerson(G.getFloatingPerson());
+            //图表中加入这个人
+            Charts.addPerson(G.getFloatingPerson());
             Charts.update();
             //设置姓名
             G.getActiveCell().text(Helper.clipString(G.getFloatingPerson().name, 3));
@@ -482,12 +483,14 @@ export function initBox($box, $bind_cell = null, offset = 0) {
 
 export function addNewPerson(ID, score = null) {
     $.post("php/getPersonInfo.php", {IDList: [ID]}, function (map) {
+        Data.updatePersonInfo(map);
         PopBox.remove();
         let data = map[ID];
         data['job'] = `${data['groupName'] || ""} ${data['jobName'] || ""}`;
         let p = new Person(data);
         //图片懒加载，新加入人时加载
         p.loadImg();
+        Data.updatePersonInfo(ID, p);
         if(score) {
             p.setScore(score);
         }
@@ -517,6 +520,7 @@ export function addAGroupOfPersons(PersonList) {
             data['job'] = `${data['groupName'] || ""} ${data['jobName'] || ""}`;
             let p = new Person(map[item.id]);
             p.loadImg();
+            Data.updatePersonInfo(item.id, p);
             if(item.score) {
                 p.setScore(item.score);
             }

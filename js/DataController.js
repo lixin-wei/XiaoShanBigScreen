@@ -22,6 +22,9 @@ export let positionStc = null;
 //调动记录
 export let transLog = [];
 
+export function updatePersonInfo(ID, person) {
+    personInfo[ID] = person;
+}
 export function updatePlan(groupID, posID, personID) {
     curPlan[groupID][posID] = personID;
     console.log(`update plan: (${groupID}, ${posID}) -> ${personID}`);
@@ -205,7 +208,7 @@ export function switchPlan(plan) {
         //右表
         //对于每个单位
         let data_r = positionStc['unfixed'];
-        console.log(data_r);
+        //console.log(data_r);
         for(let x=0 ; x<data_r.length ; ++x) {
             jobQueue.push(function () {
                 //标题行
@@ -263,9 +266,10 @@ export function switchPlan(plan) {
                 let transLog = getPlanDiff();
                 for(let log of transLog) {
                     if(log.$from && log.$to) {
-                        LineLayer.addLine(Helper.getNodeCenter(log.$from), Helper.getNodeCenter(log.$to));
+                        log.who.lineID = LineLayer.addLine(Helper.getNodeCenter(log.$from), Helper.getNodeCenter(log.$to));
                     }
                     if(log.$from) {
+                        log.who.$box.data("cell_from", log.$from);
                         log.$from.addClass("changed");
                     }
                     if(log.$to) {

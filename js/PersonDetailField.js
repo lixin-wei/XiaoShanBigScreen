@@ -74,7 +74,16 @@ G.$achievement_label.click(function (e) {
     e.stopPropagation();
 });
 
+
+let $btn_group = $("#foot_col3_photo_container").find("button");
+function disableAllButton() {
+    $btn_group.addClass("disabled").attr("disabled", "true");
+}
+function enableAllButton() {
+    $btn_group.removeClass("disabled").removeAttr("disabled");
+}
 $("#btn_colleague").click(function (e) {
+    disableAllButton();
     let x = e.pageX;
     let y = e.pageY;
     let $content = $($.parseHTML(`
@@ -84,10 +93,14 @@ $("#btn_colleague").click(function (e) {
             历届同事
         </div>
         <table>
+            <tr>
+                <td>时间</td><td>地点[职务]</td><td>同事及其职务</td>
+            </tr>
         </table>
     </div>
     `));
     $.get("php/getColleague.php", {ID: G.getShowingPersonID()}, function (res) {
+        enableAllButton();
         res = res['res'];
         for(let i=0 ; i<res.length ; ++i) {
             let data = res[i];
@@ -121,6 +134,7 @@ $("#btn_colleague").click(function (e) {
     e.stopPropagation();
 });
 $("#btn_family_net").click(function (e) {
+    disableAllButton();
     let x = e.pageX;
     let y = e.pageY;
     let $content = $($.parseHTML(`
@@ -137,6 +151,7 @@ $("#btn_family_net").click(function (e) {
     </div>
     `));
     $.get("php/getFamilyNet.php", {ID: G.getShowingPersonID()}, function (res) {
+        enableAllButton();
         for(let i=0 ; i<res.length ; ++i) {
             let data = res[i];
             let $tr = $(`
@@ -157,6 +172,7 @@ $("#btn_family_net").click(function (e) {
     e.stopPropagation();
 });
 $("#btn_abroad").click(function (e) {
+    disableAllButton();
     let x = e.pageX;
     let y = e.pageY;
     let $content = $($.parseHTML(`
@@ -173,6 +189,7 @@ $("#btn_abroad").click(function (e) {
     </div>
     `));
     $.get("php/getAbroadInfo.php", {ID: G.getShowingPersonID()}, function (res) {
+        enableAllButton();
         for(let i=0 ; i<res.length ; ++i) {
             let data = res[i];
             let $tr = $(`
@@ -194,6 +211,7 @@ $("#btn_abroad").click(function (e) {
 });
 
 $("#btn_house_info").click(function (e) {
+    disableAllButton();
     let x = e.pageX;
     let y = e.pageY;
     let $content = $($.parseHTML(`
@@ -210,6 +228,7 @@ $("#btn_house_info").click(function (e) {
     </div>
     `));
     $.get("php/getHouseInfo.php", {ID: G.getShowingPersonID()}, function (res) {
+        enableAllButton();
         for(let i=0 ; i<res['house'].length ; ++i) {
             let data = res['house'][i];
             let $tr = $(`

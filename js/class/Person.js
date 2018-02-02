@@ -33,7 +33,7 @@ export class Person {
                             <i class="fa fa-close"></i>
                         </div>
                         <div class="last-row">
-                            <button class="btn blue"><i class="fa fa-file-text"></i>个人资料卡</button>
+                            <button class="btn blue"><i class="fa fa-file-text"></i>个人资料</button>
                             <div style="display: none;">
                                 匹配度:
                                 <div class="percent-bar">
@@ -54,6 +54,7 @@ export class Person {
         }
     }
     setScore(score) {
+        score = score.toFixed(2);
         this.$box.find("div.last-row div:last-child").show()
             .find("div.percent-bar .thumb").css({width: `${score}%`}).text(`${score}%`);
     }

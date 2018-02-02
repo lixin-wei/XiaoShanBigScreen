@@ -30,7 +30,7 @@ FROM
 	LEFT JOIN bmjg ON gbryqd.BH = bmjg.BH
 	LEFT JOIN bm ON bmjg.BMID = bm.BM_ID
 WHERE
-	gbryqd.BH IN ( $IDListStr ) 
+	gbryqd.BH IN ( $IDListStr )
 GROUP BY
 	gbryqd.BH, bmjg.BMID, bmjg.GZID, bm.BM_NAME
 SQL;
