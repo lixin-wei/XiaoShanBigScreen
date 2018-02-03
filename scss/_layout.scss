@@ -27,7 +27,7 @@ img {
   -webkit-user-drag: none;
 }
 #main_container {
-  background: url("../images/bkg.jpg");
+  background: url("../images/bkg2.jpg");
   width: 4000px;
   height: 1200px;
   display: flex;
@@ -49,6 +49,14 @@ img {
   position: relative;
   //background: red;
   //opacity:0.5;
+  #system_title {
+    display: inline-block;
+    position: absolute;
+    top: 12px;
+    left: 156px;
+    color: white;
+    font-size: 24pt;
+  }
   #head_right_button_group {
     position: absolute;
     right: 15px;
@@ -491,15 +499,34 @@ img {
       left: 229px;
       text-align: right;
     }
+    #score_left {
+      position: absolute;
+      top: 9px;
+      left: 228px;
+      text-align: left;
+      width: 300px;
+    }
+
     #total_bar_right {
       position: absolute;
       top: 32px;
       right: 137px;
+      text-align: left;
+    }
+    #score_right {
+      position: absolute;
+      top: 9px;
+      right: 137px;
+      text-align: right;
+      width: 300px;
     }
     #img_pk {
       position: absolute;
       top: 23px;
       left: 603px;
+      &:hover {
+        filter: drop-shadow(0 0 20px white);
+      }
     }
     //中部列，包含信息对比的百分比条
     #foot_col_mid_container {

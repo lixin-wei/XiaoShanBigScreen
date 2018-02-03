@@ -92,6 +92,48 @@ export function clearRight() {
     rightPerson = null;
 }
 
+function jsonToUl(json) {
+    let html = "";
+    $.each(json, function (index, item) {
+        //console.log(item);
+        html += `<h4>${index}</h4>`;
+        html += `<p>${JSON.stringify(item)}</p>`
+    });
+    return html;
+}
+$("#img_pk").click(function(e) {
+    let x = e.pageX;
+    let y = e.pageY;
+    let person_l = $("#photo_col_left").find(".photo").data("person");
+    let person_r = $("#photo_col_right").find(".photo").data("person");
+    let name_l = "---", name_r = "---";
+    if(person_l) name_l = person_l.name;
+    if(person_r) name_r = person_r.name;
+    let $content = $($.parseHTML(`
+        <table>
+            <tr>
+                <td width="25%">${name_l}</td>
+                <td width="50%" colspan="2">详细得分</td>
+                <td width="25%">${name_r}</td>            
+            </tr>
+            <tr>
+                <td colspan="2" width="50%" style="text-align: left"></td>
+                <td colspan="2" width="50%" style="text-align: left"></td>
+            </tr>
+        </table>
+    `));
+    let scoreDetailL = $(this).data("scoreDetailL"), scoreDetailR = $(this).data("scoreDetailR");
+    let $cell_left = $content.find("tr:last-child").find("td:first-child");
+    let $cell_right = $content.find("tr:last-child").find("td:last-child");
+    if(scoreDetailL)
+        $cell_left.html(jsonToUl(scoreDetailL));
+    if(scoreDetailR)
+        $cell_right.html(jsonToUl(scoreDetailR));
+    PopBox.show(x, y, $content, {
+        position: {x: "center", y: "top"}
+    });
+    e.stopPropagation();
+});
 $("#foot_col_mid_container").find(".item .label").click(function (e) {
     let x = e.pageX;
     let y = e.pageY;
@@ -151,6 +193,7 @@ $("#foot_col_mid_container").find(".item .label").click(function (e) {
 let $job_chooser = $("#foot_col4_job");
 export function clearBar() {
     $("#total_bar_left").find(".total-bar-thumb").css({width: `0%`}).text("");
+    $("#score_right").add($("#score_left")).text("");
     $("#total_bar_right").find(".total-bar-thumb").css({width: `0%`}).text("");
 }
 export function clearJobChooser() {
@@ -190,14 +233,21 @@ $job_chooser.click(function (e) {
                         console.log(json);
                         $.post(G.PYTHON_SERVER_ROOT + "postScore", {requirement: JSON.stringify(json)}, function (res) {
                             let scoreLeft = res['score'].toFixed(2);
+                            let scoreDetailL = res['log'];
+
                             json['干部编号'] = parseInt(rightPerson.ID);
                             console.log(json);
                             $.post(G.PYTHON_SERVER_ROOT + "postScore", {requirement: JSON.stringify(json)}, function (res) {
                                 clearBar();
                                 let scoreRight = res['score'].toFixed(2);
+                                let scoreDetailR = res['log'];
                                 //设置PK比分条
-                                $("#total_bar_left").find(".total-bar-thumb").css({width: `${scoreLeft}%`}).text(`${scoreLeft}`);
-                                $("#total_bar_right").find(".total-bar-thumb").css({width: `${scoreRight}%`}).text(`${scoreRight}`);
+                                $("#total_bar_left").find(".total-bar-thumb").css({width: `${scoreLeft}%`});
+                                $("#total_bar_right").find(".total-bar-thumb").css({width: `${scoreRight}%`});
+                                //显示分数
+                                $("#score_left").text(`${scoreLeft}`);
+                                $("#score_right").text(`${scoreRight}`);
+                                $("#img_pk").data("scoreDetailL", scoreDetailL).data("scoreDetailR", scoreDetailR);
                             }, "json");
                         }, "json");
                     });

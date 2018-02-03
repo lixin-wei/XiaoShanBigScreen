@@ -4,6 +4,19 @@ if(!isset($_SESSION['username'])) {
     echo "请先登录！";
     exit(0);
 }
+
+include_once "php/mysqlAll.php";//调用数据库处理函数
+$db = new mysql();
+
+$db->query("SELECT `key`, `value` FROM config");
+
+$config = array();
+
+while($row = $db->fetch_assoc()) {
+    $config[$row['key']] = $row['value'];
+}
+
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -22,6 +35,9 @@ if(!isset($_SESSION['username'])) {
         <div></div>
     </div>
     <div id="head">
+        <div id="system_title">
+            <?php echo $config['SYSTEM_TITLE']?>
+        </div>
         <div id="head_right_button_group">
             <div id="plan_name">*当前计划：2017秋模拟调动A计划</div>
             <span>
@@ -74,7 +90,7 @@ if(!isset($_SESSION['username'])) {
         <div id="mid_col3">
             <div id="mid_col3_header">
                 <div class="title-bar vertical orange"></div>
-                候选人名单
+                <?php echo $config['CANDIDATE_FIELD_TITLE']?>
                 <div id="mid_col3_header_right">
                     <button class="btn orange large" id="btnMatch"><i class="fa fa-group"></i>智能选配</button>
                     <button class="btn green large" id="btnAddPerson"><i class="fa fa-plus"></i>添加候选人</button>
@@ -106,7 +122,7 @@ if(!isset($_SESSION['username'])) {
         <div id="foot_col2">
             <div id="foot_col2_header">
                 <div class="title-bar horizontal green"></div>
-                <div class="text-vertical content-center width-fill">领导班子信息（区委）</div>
+                <div class="text-vertical content-center width-fill"><?php echo $config['GROUP_FIELD_TITLE']?></div>
             </div>
             <div class="photo photo-square" id="group_photo">
                 <img src="" alt="" class="fit-height">
@@ -178,7 +194,7 @@ if(!isset($_SESSION['username'])) {
         <div id="foot_col3">
             <div id="foot_col3_header">
                 <div class="title-bar horizontal blue"></div>
-                <div class="text-vertical content-center width-fill">干部个人信息</div>
+                <div class="text-vertical content-center width-fill"><?php echo $config['PERSON_DETIAL_FIELD_TITLE']?></div>
             </div>
             <div id="foot_col3_photo_container" class="flex flex-column space-content-around align-items-center">
                 <div class="photo photo-large">
@@ -272,7 +288,7 @@ if(!isset($_SESSION['username'])) {
         <div id="foot_col4">
             <div id="foot_col4_header">
                 <div class="title-bar horizontal red"></div>
-                <div class="text-vertical content-center width-fill">干部PK擂台</div>
+                <div class="text-vertical content-center width-fill"><?php echo $config['PK_FIELD_TITLE']?></div>
             </div>
             <div class="photo-col" id="photo_col_left">
                 <div class="photo">
@@ -284,10 +300,13 @@ if(!isset($_SESSION['username'])) {
                 <button class="btn light-blue"><i class="fa fa-trash"></i>离开PK</button>
             </div>
             <!--顶部pk条 start-->
+            <div id="score_left"></div>
             <div class="total-bar total-bar-revert" id="total_bar_left">
                 <div class="total-bar-thumb" style="width: 100%"></div>
             </div>
             <img src="images/pk.png" alt="pk" id="img_pk">
+
+            <div id="score_right"></div>
             <div class="total-bar" id="total_bar_right">
                 <div class="total-bar-thumb" style="width: 100%"></div>
             </div>

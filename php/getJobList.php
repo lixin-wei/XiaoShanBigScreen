@@ -4,12 +4,13 @@ $db = new mysql();
 $db2 = new mysql();
 $groupID = intval($_GET['groupID']);
 //jobName
-$db->query("SELECT GZID as ID FROM bmjg WHERE BMID = $groupID");
+$db->query("SELECT GZID as ID FROM bmjg WHERE BMID = $groupID AND ISSHOW = 1");
+
 
 $res = [];
 while($row = $db->fetch_assoc()) {
 //    var_dump($row);
-    $db2->query("SELECT ZW_NAME FROM bmzw WHERE BMID = $groupID AND GZID = {$row['ID']}");
+    $db2->query("SELECT ZW_NAME FROM bmzw WHERE BMID = $groupID AND GZID = {$row['ID']} AND ISSET = 1");
     $jobName = "";
     while($rr = $db2->fetch_assoc()) {
         $jobName .= $rr['ZW_NAME']. " ";

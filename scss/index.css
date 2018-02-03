@@ -183,7 +183,7 @@ img {
 }
 
 #main_container {
-  background: url("../images/bkg.jpg");
+  background: url("../images/bkg2.jpg");
   width: 4000px;
   height: 1200px;
   display: flex;
@@ -204,6 +204,14 @@ img {
 #head {
   height: 70px;
   position: relative;
+}
+#head #system_title {
+  display: inline-block;
+  position: absolute;
+  top: 12px;
+  left: 156px;
+  color: white;
+  font-size: 24pt;
 }
 #head #head_right_button_group {
   position: absolute;
@@ -649,15 +657,33 @@ img {
   left: 229px;
   text-align: right;
 }
+#foot #foot_col4 #score_left {
+  position: absolute;
+  top: 9px;
+  left: 228px;
+  text-align: left;
+  width: 300px;
+}
 #foot #foot_col4 #total_bar_right {
   position: absolute;
   top: 32px;
   right: 137px;
+  text-align: left;
+}
+#foot #foot_col4 #score_right {
+  position: absolute;
+  top: 9px;
+  right: 137px;
+  text-align: right;
+  width: 300px;
 }
 #foot #foot_col4 #img_pk {
   position: absolute;
   top: 23px;
   left: 603px;
+}
+#foot #foot_col4 #img_pk:hover {
+  filter: drop-shadow(0 0 20px white);
 }
 #foot #foot_col4 #foot_col_mid_container {
   position: absolute;
@@ -1066,7 +1092,6 @@ img {
   display: inline-block;
   height: 100%;
   text-align: right;
-  padding: 0 10px;
   background: linear-gradient(90deg, #ffde00, #40b500);
   transition: all 0.5s;
 }
