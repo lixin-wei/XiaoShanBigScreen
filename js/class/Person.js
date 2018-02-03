@@ -33,7 +33,7 @@ export class Person {
                             <i class="fa fa-close"></i>
                         </div>
                         <div class="last-row">
-                            <button class="btn blue"><i class="fa fa-file-text"></i>个人资料</button>
+                            <button class="btn blue"><i class="fa fa-file-text"></i>个人信息</button>
                             <div style="display: none;">
                                 匹配度:
                                 <div class="percent-bar">

@@ -742,7 +742,6 @@ img {
   height: 143px;
   margin-bottom: 20px;
   position: absolute;
-  cursor: pointer;
 }
 .info-box.active, .info-box:hover {
   filter: drop-shadow(0 0 20px #537aa7) brightness(1.2);
@@ -809,6 +808,9 @@ img {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.info-box .btn:hover {
+  cursor: pointer;
 }
 
 .title-bar.horizontal {

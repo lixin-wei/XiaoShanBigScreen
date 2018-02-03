@@ -8,6 +8,7 @@ import * as PKStage from "./PKStageField";
 import * as Data from "./DataController";
 import * as Plan from "./PlanManageField";
 import {Person} from "./class/Person";
+import * as Highlight from "./Highlight";
 
 
 /** info-box拖动 **/
@@ -35,6 +36,8 @@ export function focusOn($ele) {
     }
 }
 export function setPersonInfo(person) {
+    //高亮时顺便把所有都高亮起来
+    Highlight.highlightPerson(person.ID);
     PopBox.remove();
     console.log(`person_id = ${person.ID}`);
     G.setShowingPersonID(person.ID);
@@ -243,9 +246,6 @@ export function onMouseMoveInfoBox(e) { //InfoBox的拖出事件
     }
 }
 export function onClickInfoBox() { //InfoBox的点击事件
-    console.log("click");
-    focusOn($(this));
-    setPersonInfo($(this).data("person_obj"));
 }
 
 //cell 的相关事件响应
@@ -254,9 +254,6 @@ export function onMouseEnterCell() {
 }
 export function onMouseLeaveCell() {
     G.setActiveCell(null);
-}
-export function onMouseMoveCell(e) { //cell中的box拖出事件
-
 }
 export function onRightClickCell(e) {
     if(!$(this).data("person")) {
@@ -352,6 +349,8 @@ $(window).on("mouseup", function (e) {
             GroupBox.update();
             //隐藏box
             G.getFloatingPerson().$box.hide();
+            //高亮这个人
+            setPersonInfo(G.getFloatingPerson());
             if(!hasGone) {
                 G.setFloatingPerson(null);
             }
@@ -383,6 +382,8 @@ $(window).on("mouseup", function (e) {
 
         }
         else { //否则让box回trash去
+            //取消所有高亮
+            Highlight.cancelHighlight();
             let fltPerson = G.getFloatingPerson();
             removePersonLine(fltPerson);
             goToList(fltPerson.$box, function () {
@@ -454,7 +455,7 @@ $(window).on("mousemove", function (e) {
 //事件统一注册函数
 export function initCell($cell) {
     $cell.click(onClickCell)
-        .mousemove(onMouseMoveCell)
+        // .mousemove(onMouseMoveCell)
         .mouseleave(onMouseLeaveCell)
         .mouseenter(onMouseEnterCell)
         .contextmenu(onRightClickCell)
@@ -467,6 +468,13 @@ export function initBox($box, $bind_cell = null, offset = 0) {
         // console.log("close clicked");
         goOut($box);
         e.stopPropagation();
+    });
+    $box.find(".btn").click(function () {
+        console.log("click");
+        focusOn($box);
+        let person = $box.data("person_obj");
+        setPersonInfo(person);
+        Highlight.highlightPerson(person.ID);
     });
     //先隐藏并丢到trash里
     $box.hide().addClass("float");
