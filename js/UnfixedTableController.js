@@ -2,7 +2,7 @@ import * as G from "./include/Global";
 let $tableSet = $("#mid_col2").find("div[ID^=mid_col2] .table-container");
 let curTable = 0;
 let $lastLine = null;
-let row = 0, col = 0, MAX_ROW = 23, MAX_COL = 7;
+let row = 0, col = 0, MAX_ROW = 23, MAX_COL = G.RIGHT_TABLE_COL_NUM;
 let isPad = false;
 export function applyLine () {
     // console.log(`row: ${row }`);

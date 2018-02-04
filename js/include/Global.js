@@ -1,10 +1,26 @@
 window.$ = window.jQuery = require("jquery");
 export const PERSON_PHOTO_ROOT = "images/photos/";
 export const STREET_PHOTO_ROOT = "images/street/";
-export const PYTHON_SERVER_ROOT = "http://localhost:5000/";
-// export const PYTHON_SERVER_ROOT = "http://192.168.0.10:5000/";
+export let PYTHON_SERVER_ROOT = "http://localhost:5000/";
+// export let PYTHON_SERVER_ROOT = "http://192.168.0.10:5000/";
+export let RIGHT_TABLE_COL_NUM = 6;
 export const CELL_EMPTY_ALPHA = "+";
 
+
+//从服务器读取配置信息
+$.ajax({
+    type: "get",
+    url: "php/getConfig.php",
+    cache:false,
+    async:false,
+    dataType: "json",
+    success: function(json){
+        let data = json.data;
+        RIGHT_TABLE_COL_NUM = data['RIGHT_TABLE_COL_NUM'];
+        PYTHON_SERVER_ROOT = data['PYTHON_SERVER_ROOT'];
+    }
+
+});
 export let $box_list = $("#mid_col3_body_list");
 export let $box_trash = $("#mid_col3_box_trash");
 export let $de_tree_label_list = $(".tree-label.purple");

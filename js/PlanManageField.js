@@ -235,24 +235,29 @@ $("#plan_diff").click(function (e) {
         `);
         $content.find("table").append($tr);
     });
+
     if (transLog.length === 0) {
         $content = $(`<div class="text-large text-center">暂无调动记录</div>`);
     }
+
     $content.find("div button").click(function () {
         let output = $content.find("table").getHTML();
         let newWindow = window.open();
         let styleSheet = "<style>table td {border: 1px solid black; text-align: center;}</style>"
         newWindow.document.write(styleSheet + output);
     });
+
     PopBox.show(e.pageX, e.pageY, $content, {
         position: {x: "left", y: "bottom"},
         css: {"max-width": "1200px", "min-width": "600px"},
         showClose: false
     });
+
     e.stopPropagation();
 });
 
 $("#plan_apply").click(function (e) {
+    PopBox.remove();
     if(!isBlocking) {
         blockButtons();
         new ConfirmBox(e.pageX - 150, e.pageY + 100, "此操作是修改性操作，将会修改数据库中的现任方案，无法撤销。<br/>应用以后，所有的调度线、任免方案，都会以这份计划为基准来重新计算，是否继续？", function () {
