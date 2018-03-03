@@ -55,14 +55,19 @@ export class Person {
     }
     setScore(score) {
         score = score.toFixed(2);
+        let width = Math.min(score, 100).toFixed(2);
         this.$box.find("div.last-row div:last-child").show()
-            .find("div.percent-bar .thumb").css({width: `${score}%`}).text(`${score}%`);
+            .find("div.percent-bar .thumb").css({width: `${width}%`}).text(`${score}%`);
     }
     getInfo() {
         if(this.flag === 1) {
             return "市管干部";
         }
-        return `${this.sex} ${this.birthday.format("YYYY-MM")} ${this.politicalStatus}`;
+        let birthday = "";
+        if(this.birthday.isValid()) {
+            birthday = this.birthday.format("YYYY-MM");
+        }
+        return `${this.sex} ${birthday} ${this.politicalStatus}`;
     }
     updateInfo() {
         this.$box.find(".name").text(this.name);

@@ -148,7 +148,7 @@ export function switchPlan(plan) {
         let data_l = positionStc['fixed'];
         LeftTable.newLine();
         LeftTable.addColTitleCell("---");
-        let titles = ["书记","镇长","人大主席","副书记","纪委书记","组织","宣传统战","文教","经济","城建","农业","人武","派出所长","不定","副主席","副主席"];
+        let titles = ["书记","镇长","人大主席","副书记","纪委书记","组织","宣传统战","文教","经济","城建","农业","人武","派出所长","副主席","副主席","不定"];
         for (let i=0 ; i<16 ; ++i) {
             LeftTable.addColTitleCell(titles[i]);
         }

@@ -51,6 +51,8 @@ export function setPerson(person, dir) {
                     }
                     //否则生成一个个badge
                     else {
+                        //控制在三个以内
+                        labels = labels.slice(0, 3);
                         for(let j = 0 ; j<labels.length ; ++j){
                             let label = labels[j];
                             let $badge = $("<span class='badge'/>");
@@ -233,6 +235,7 @@ $job_chooser.click(function (e) {
                         console.log(json);
                         $.post(G.PYTHON_SERVER_ROOT + "postScore", {requirement: JSON.stringify(json)}, function (res) {
                             let scoreLeft = res['score'].toFixed(2);
+                            let widthLeft = Math.min(res['score'], 100).toFixed(2);
                             let scoreDetailL = res['log'];
 
                             json['干部编号'] = parseInt(rightPerson.ID);
@@ -240,10 +243,11 @@ $job_chooser.click(function (e) {
                             $.post(G.PYTHON_SERVER_ROOT + "postScore", {requirement: JSON.stringify(json)}, function (res) {
                                 clearBar();
                                 let scoreRight = res['score'].toFixed(2);
+                                let widthRight = Math.min(res['score'], 100).toFixed(2);
                                 let scoreDetailR = res['log'];
                                 //设置PK比分条
-                                $("#total_bar_left").find(".total-bar-thumb").css({width: `${scoreLeft}%`});
-                                $("#total_bar_right").find(".total-bar-thumb").css({width: `${scoreRight}%`});
+                                $("#total_bar_left").find(".total-bar-thumb").css({width: `${widthLeft}%`});
+                                $("#total_bar_right").find(".total-bar-thumb").css({width: `${widthRight}%`});
                                 //显示分数
                                 $("#score_left").text(`${scoreLeft}`);
                                 $("#score_right").text(`${scoreRight}`);

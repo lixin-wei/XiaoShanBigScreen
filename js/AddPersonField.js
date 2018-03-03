@@ -25,6 +25,8 @@ $("#btnAddPerson").click(function (e) {
                 $content.find("ul").empty();
                 //搜出人名，加到列表里
                 res.forEach((person) => {
+                    if(person.sex === null) person.sex = "";
+                    if(person.birthday === null) person.birthday = "";
                     let $li = $('<li class="hover-white" />').text(`${person.name} ${person.sex} ${person.birthday}`);
                     //点击人名项，添加相应的box
                     $li.click(function () {

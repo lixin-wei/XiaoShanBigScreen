@@ -4,9 +4,10 @@ include_once "./mysqlAll.php";//调用数据库处理函数
 $db = new mysql();
 $id = intval($_GET['ID']);
 
-
+$sql_set = [];
 //先获取到所有经历过的地点
 $db->select("grjl", "QSSJ, ZZSJ, JLDD, JLSQ", "BH = $id", "QSSJ");
+array_push($sql_set, $db->getLastSQL());
 $experiences = [];
 while($row = $db->fetch_assoc()) {
     //去掉在校经历和在家待业
@@ -24,7 +25,6 @@ while($row = $db->fetch_assoc()) {
 
 
 $res = [];
-$sql_set = [];
 //对于每条经历，找出时间区间内的所有同事
 foreach ($experiences as $exp) {
     $condition1 = $exp['ZZSJ'] ? "(QSSJ IS NOT NULL AND QSSJ>\"{$exp['ZZSJ']}\")" : "0";
@@ -57,7 +57,7 @@ SQL;
             "jobs" => $jobs
         ));
     }
-    if(count($jobList) != 0) {
+//    if(count($jobList) != 0) {
         $item = array (
             "begin_time" => $exp['QSSJ'],
             "end_time" => $exp['ZZSJ'],
@@ -66,12 +66,12 @@ SQL;
             "colleagues" => $colleagues
         );
         array_push($res, $item);
-    }
+//    }
 }
 
 $return = array(
     "res" => $res,
-    //"debug" => $experiences,
-    //"debug2" => $sql_set
+    "debug" => $experiences,
+    "debug2" => $sql_set
 );
 echo json_encode($return);

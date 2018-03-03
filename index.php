@@ -369,7 +369,7 @@ while($row = $db->fetch_assoc()) {
                     <img src="" alt="">
                 </div>
                 <div class="photo-col-name">---</div>
-                <button class="btn blue"><i class="fa fa-file-text"></i>个人资料</button>
+                <button class="btn blue"><i class="fa fa-file-text"></i>个人信息</button>
                 <!--<button class="btn blue"><i class="fa fa-edit"></i>配置本岗位</button>-->
                 <button class="btn light-blue"><i class="fa fa-trash"></i>离开PK</button>
             </div>
