@@ -1,6 +1,7 @@
 window.$ = window.jQuery = require("jquery");
-export const PERSON_PHOTO_ROOT = "../images/photos/";
-export const STREET_PHOTO_ROOT = "../images/street/";
+export let BIGSCREEN_IMAGE_ROOT = "../images";
+export let PERSON_PHOTO_ROOT = BIGSCREEN_IMAGE_ROOT + "/photos/";
+export let STREET_PHOTO_ROOT = BIGSCREEN_IMAGE_ROOT + "/street/";
 // export let PYTHON_SERVER_ROOT = "http://localhost:5000/";
 export let PYTHON_SERVER_ROOT = "http://192.168.0.10:5000/";
 export let RIGHT_TABLE_COL_NUM = 6;
@@ -18,6 +19,9 @@ $.ajax({
         let data = json.data;
         RIGHT_TABLE_COL_NUM = data['RIGHT_TABLE_COL_NUM'];
         PYTHON_SERVER_ROOT = data['PYTHON_SERVER_ROOT'];
+        BIGSCREEN_IMAGE_ROOT = data['BIGSCREEN_IMAGE_ROOT'];
+        PERSON_PHOTO_ROOT = BIGSCREEN_IMAGE_ROOT + "/photos/";
+        STREET_PHOTO_ROOT = BIGSCREEN_IMAGE_ROOT + "/street/";
     }
 
 });

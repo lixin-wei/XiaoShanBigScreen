@@ -147,7 +147,7 @@ function openSaveAsBox(e) {
         `);
         $content.find("div button").click(function () {
             let planName = $content.find("p input").val();
-            $.post("php/savePlan", {planName: planName, json: JSON.stringify(Data.curPlan)}, (insertID) => {
+            $.post("php/savePlan.php", {planName: planName, json: JSON.stringify(Data.curPlan)}, (insertID) => {
                 PopBox.remove();
                 setPlanName(planName);
                 curPlanName = planName;
@@ -165,7 +165,7 @@ function openSaveAsBox(e) {
 
 $("#plan_save").click(function (e) {
     if (curPlanID !== null) {
-        $.post("php/updatePlan", {planID: curPlanID, json: JSON.stringify(Data.curPlan)}, () => {
+        $.post("php/updatePlan.php", {planID: curPlanID, json: JSON.stringify(Data.curPlan)}, () => {
             PopBox.remove();
             setPlanName(curPlanName);
             hasChanged = false;

@@ -166,7 +166,7 @@ export function switchPlan(plan) {
                     let p_data = personInfoMap[pID];
                     let $cell = null;
                     //副主席-2去掉所有空职位
-                    if(y === 16 && pID === null) {
+                    if(y === 14 && pID === null) {
                         $cell = LeftTable.addEmptyCell();
                     }
                     else {
@@ -303,7 +303,7 @@ $(document).ready(function () {
     Loading.show();
     //首先获取整个职位结构
     Loading.setInfo("获取职位结构中");
-    $.get("php/getPositionStructure", {}, function (stcData) {
+    $.get("php/getPositionStructure.php", {}, function (stcData) {
         positionStc = stcData;
         setToDefaultPlan();
     }, "json");
