@@ -179,7 +179,7 @@ export function switchPlan(plan) {
                     if(!cellMap[groupID])cellMap[groupID] = {};
                     cellMap[groupID][jobID] = $cell;
 
-                    if(pID !== null) {
+                    if(pID !== null && p_data !== undefined) {
                         p_data['groupID'] = groupID;
                         p_data['jobID'] = jobID;
                         p_data['job'] = `${data_l[x].name} ${data_l[x].items[y].name}`;
@@ -231,7 +231,7 @@ export function switchPlan(plan) {
                     if(!cellMap[groupID])cellMap[groupID] = {};
                     cellMap[groupID][jobID] = $cell;
 
-                    if(pID !== null) {
+                    if(pID !== null && p_data !== undefined) {
                         p_data['groupID'] = groupID;
                         p_data['jobID'] = jobID;
                         p_data['job'] = `${data_r[x].name} ${data_r[x].items[y].name}`;
