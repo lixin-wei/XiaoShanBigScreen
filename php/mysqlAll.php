@@ -1,6 +1,6 @@
 <?php
 class mysql {
-    private $db_host="localhost"; //数据库主机
+    private $db_host="127.0.0.1"; //数据库主机
     private $db_user = "root"; //数据库用户名
     private $db_pwd = "root"; //数据库用户名密码
     private $db_database = "xsdb"; //数据库名

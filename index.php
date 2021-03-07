@@ -1,9 +1,9 @@
 <?php
-session_start();
-if(!isset($_SESSION['username'])) {
-    echo "请先登录！";
-    exit(0);
-}
+//session_start();
+//if(!isset($_SESSION['username'])) {
+//    echo "请先登录！";
+//    exit(0);
+//}
 
 include_once "php/mysqlAll.php";//调用数据库处理函数
 $db = new mysql();
