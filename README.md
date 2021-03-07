@@ -34,7 +34,8 @@ SCSS放在`scss`目录下，`scss/index.scss`编译成`scss/index.css`
    把整个工程放到 `www`目录下。启动apache，以XiaoSHanBigScreen为根目录。
    打开浏览器访问 `localhost:8080/`，应该就能显示出页面。
    
-3. JS文件的编译，NPM，装一下node.js。`npm run watch`，会自动检测你工程目录下文件的变动，
+3. JS文件的编译，NPM，装一下node.js。 `npm install` 安装所有依赖。
+   `npm run watch`，会自动检测你工程目录下文件的变动，
    自动进行编译。
    
 4. scss文件的编译，按这个教程<https://sass-lang.com/install>装SCSS编译器（用npm装）。
@@ -46,3 +47,5 @@ SCSS放在`scss`目录下，`scss/index.scss`编译成`scss/index.css`
 对于php写的后端接口，我默认是在同一个目录下，搜`$.post`
 
 对于python的算法接口，我默认ip写在 `js/Global.js`里，`PYTHON_SERVER_ROOT`。
+
+如果换成Java后端，index.php应该也不能用php了，需要改成.html。
